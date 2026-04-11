@@ -10,7 +10,7 @@
 //<![CDATA[
 var M = {}; M.yui = {};
 M.pageloadstarttime = new Date();
-M.cfg = {"wwwroot":"https:\/\/famaf.aulavirtual.unc.edu.ar","apibase":"https:\/\/famaf.aulavirtual.unc.edu.ar\/r.php\/api","homeurl":{},"sesskey":"wWiUTMYlME","sessiontimeout":"28800","sessiontimeoutwarning":"1200","themerev":"1775872991","slasharguments":1,"theme":"boost","iconsystemmodule":"core\/icon_system_fontawesome","jsrev":"1775872993","admin":"admin","svgicons":true,"usertimezone":"Am\u00e9rica\/Argentina\/C\u00f3rdoba","language":"es","courseId":753,"courseContextId":70617,"contextid":70617,"contextInstanceId":753,"langrev":1775872993,"templaterev":"1775872993","siteId":1,"userId":12890,"developerdebug":true};var yui1ConfigFn = function(me) {if(/-skin|reset|fonts|grids|base/.test(me.name)){me.type='css';me.path=me.path.replace(/\.js/,'.css');me.path=me.path.replace(/\/yui2-skin/,'/assets/skins/sam/yui2-skin')}};
+M.cfg = {"wwwroot":"https:\/\/famaf.aulavirtual.unc.edu.ar","apibase":"https:\/\/famaf.aulavirtual.unc.edu.ar\/r.php\/api","homeurl":{},"sesskey":"REDACTED","sessiontimeout":"28800","sessiontimeoutwarning":"1200","themerev":"1775872991","slasharguments":1,"theme":"boost","iconsystemmodule":"core\/icon_system_fontawesome","jsrev":"1775872993","admin":"admin","svgicons":true,"usertimezone":"Am\u00e9rica\/Argentina\/C\u00f3rdoba","language":"es","courseId":753,"courseContextId":70617,"contextid":70617,"contextInstanceId":753,"langrev":1775872993,"templaterev":"1775872993","siteId":1,"userId":0,"developerdebug":true};var yui1ConfigFn = function(me) {if(/-skin|reset|fonts|grids|base/.test(me.name)){me.type='css';me.path=me.path.replace(/\.js/,'.css');me.path=me.path.replace(/\/yui2-skin/,'/assets/skins/sam/yui2-skin')}};
 var yui2ConfigFn = function(me) {var parts=me.name.replace(/^moodle-/,'').split('-'),component=parts.shift(),module=parts[0],min='-min';if(/-(skin|core)$/.test(me.name)){parts.pop();me.type='css';min=''}
 if(module){var filename=parts.join('-');me.path=component+'/'+module+'/'+filename+min+'.'+me.type}else{me.path=component+'/'+component+'.'+me.type}};
 YUI_config = {"debug":true,"base":"https:\/\/famaf.aulavirtual.unc.edu.ar\/lib\/yuilib\/3.18.1\/","comboBase":"https:\/\/famaf.aulavirtual.unc.edu.ar\/theme\/yui_combo.php?","combine":true,"filter":"RAW","insertBefore":"firstthemesheet","groups":{"yui2":{"base":"https:\/\/famaf.aulavirtual.unc.edu.ar\/lib\/yuilib\/2in3\/2.9.0\/build\/","comboBase":"https:\/\/famaf.aulavirtual.unc.edu.ar\/theme\/yui_combo.php?","combine":true,"ext":false,"root":"2in3\/2.9.0\/build\/","patterns":{"yui2-":{"group":"yui2","configFn":yui1ConfigFn}}},"moodle":{"name":"moodle","base":"https:\/\/famaf.aulavirtual.unc.edu.ar\/theme\/yui_combo.php?m\/1775872993\/","combine":true,"comboBase":"https:\/\/famaf.aulavirtual.unc.edu.ar\/theme\/yui_combo.php?","ext":false,"root":"m\/1775872993\/","patterns":{"moodle-":{"group":"moodle","configFn":yui2ConfigFn}},"filter":"DEBUG","modules":{"moodle-core-notification":{"requires":["moodle-core-notification-dialogue","moodle-core-notification-alert","moodle-core-notification-confirm","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-core-notification-dialogue":{"requires":["base","node","panel","escape","event-key","dd-plugin","moodle-core-widget-focusafterclose","moodle-core-lockscroll"]},"moodle-core-notification-alert":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-confirm":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-exception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-notification-ajaxexception":{"requires":["moodle-core-notification-dialogue"]},"moodle-core-dragdrop":{"requires":["base","node","io","dom","dd","event-key","event-focus","moodle-core-notification"]},"moodle-core-lockscroll":{"requires":["plugin","base-build"]},"moodle-core-maintenancemodetimer":{"requires":["base","node"]},"moodle-core-event":{"requires":["event-custom"]},"moodle-core-handlebars":{"condition":{"trigger":"handlebars","when":"after"}},"moodle-core-blocks":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification"]},"moodle-core-actionmenu":{"requires":["base","event","node-event-simulate"]},"moodle-core-chooserdialogue":{"requires":["base","panel","moodle-core-notification"]},"moodle-core_availability-form":{"requires":["base","node","event","event-delegate","panel","moodle-core-notification-dialogue","json"]},"moodle-course-management":{"requires":["base","node","io-base","moodle-core-notification-exception","json-parse","dd-constrain","dd-proxy","dd-drop","dd-delegate","node-event-delegate"]},"moodle-course-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-course-coursebase","moodle-course-util"]},"moodle-course-util":{"requires":["node"],"use":["moodle-course-util-base"],"submodules":{"moodle-course-util-base":{},"moodle-course-util-section":{"requires":["node","moodle-course-util-base"]},"moodle-course-util-cm":{"requires":["node","moodle-course-util-base"]}}},"moodle-course-categoryexpander":{"requires":["node","event-key"]},"moodle-form-shortforms":{"requires":["node","base","selector-css3","moodle-core-event"]},"moodle-form-dateselector":{"requires":["base","node","overlay","calendar"]},"moodle-question-searchform":{"requires":["base","node"]},"moodle-question-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-availability_completion-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_date-form":{"requires":["base","node","event","io","moodle-core_availability-form"]},"moodle-availability_grade-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_group-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_grouping-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-availability_profile-form":{"requires":["base","node","event","moodle-core_availability-form"]},"moodle-mod_assign-history":{"requires":["node","transition"]},"moodle-mod_attendance-groupfilter":{"requires":["base","node"]},"moodle-mod_customcert-rearrange":{"requires":["dd-delegate","dd-drag"]},"moodle-mod_quiz-quizbase":{"requires":["base","node"]},"moodle-mod_quiz-dragdrop":{"requires":["base","node","io","dom","dd","dd-scroll","moodle-core-dragdrop","moodle-core-notification","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-base","moodle-mod_quiz-util-page","moodle-mod_quiz-util-slot","moodle-course-util"]},"moodle-mod_quiz-util":{"requires":["node","moodle-core-actionmenu"],"use":["moodle-mod_quiz-util-base"],"submodules":{"moodle-mod_quiz-util-base":{},"moodle-mod_quiz-util-slot":{"requires":["node","moodle-mod_quiz-util-base"]},"moodle-mod_quiz-util-page":{"requires":["node","moodle-mod_quiz-util-base"]}}},"moodle-mod_quiz-modform":{"requires":["base","node","event"]},"moodle-mod_quiz-questionchooser":{"requires":["moodle-core-chooserdialogue","moodle-mod_quiz-util","querystring-parse"]},"moodle-mod_quiz-toolboxes":{"requires":["base","node","event","event-key","io","moodle-mod_quiz-quizbase","moodle-mod_quiz-util-slot","moodle-core-notification-ajaxexception"]},"moodle-mod_quiz-autosave":{"requires":["base","node","event","event-valuechange","node-event-delegate","io-form","datatype-date-format"]},"moodle-message_airnotifier-toolboxes":{"requires":["base","node","io"]},"moodle-editor_atto-editor":{"requires":["node","transition","io","overlay","escape","event","event-simulate","event-custom","node-event-html5","node-event-simulate","yui-throttle","moodle-core-notification-dialogue","moodle-editor_atto-rangy","handlebars","timers","querystring-stringify"]},"moodle-editor_atto-plugin":{"requires":["node","base","escape","event","event-outside","handlebars","event-custom","timers","moodle-editor_atto-menu"]},"moodle-editor_atto-menu":{"requires":["moodle-core-notification-dialogue","node","event","event-custom"]},"moodle-editor_atto-rangy":{"requires":[]},"moodle-report_eventlist-eventfilter":{"requires":["base","event","node","node-event-delegate","datatable","autocomplete","autocomplete-filters"]},"moodle-report_loglive-fetchlogs":{"requires":["base","event","node","io","node-event-delegate"]},"moodle-gradereport_history-userselector":{"requires":["escape","event-delegate","event-key","handlebars","io-base","json-parse","moodle-core-notification-dialogue"]},"moodle-qbank_editquestion-chooser":{"requires":["moodle-core-chooserdialogue"]},"moodle-tool_lp-dragdrop-reorder":{"requires":["moodle-core-dragdrop"]},"moodle-assignfeedback_editpdf-editor":{"requires":["base","event","node","io","graphics","json","event-move","event-resize","transition","querystring-stringify-simple","moodle-core-notification-dialog","moodle-core-notification-alert","moodle-core-notification-warning","moodle-core-notification-exception","moodle-core-notification-ajaxexception"]},"moodle-atto_accessibilitychecker-button":{"requires":["color-base","moodle-editor_atto-plugin"]},"moodle-atto_accessibilityhelper-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_align-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_bold-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_charmap-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_clear-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_collapse-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_emojipicker-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_emoticon-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_equation-button":{"requires":["moodle-editor_atto-plugin","moodle-core-event","io","event-valuechange","tabview","array-extras"]},"moodle-atto_fontfamily-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_fullscreen-button":{"requires":["event-resize","moodle-editor_atto-plugin"]},"moodle-atto_h5p-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_html-button":{"requires":["promise","moodle-editor_atto-plugin","moodle-atto_html-beautify","moodle-atto_html-codemirror","event-valuechange"]},"moodle-atto_html-codemirror":{"requires":["moodle-atto_html-codemirror-skin"]},"moodle-atto_html-beautify":{},"moodle-atto_image-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_indent-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_italic-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_justify-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_link-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_managefiles-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_managefiles-usedfiles":{"requires":["node","escape"]},"moodle-atto_media-button":{"requires":["moodle-editor_atto-plugin","moodle-form-shortforms"]},"moodle-atto_noautolink-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_orderedlist-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_preview-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_recordrtc-button":{"requires":["moodle-editor_atto-plugin","moodle-atto_recordrtc-recording"]},"moodle-atto_recordrtc-recording":{"requires":["moodle-atto_recordrtc-button"]},"moodle-atto_rtl-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_strike-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_subscript-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_superscript-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_table-button":{"requires":["moodle-editor_atto-plugin","moodle-editor_atto-menu","event","event-valuechange"]},"moodle-atto_title-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_underline-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_undo-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_unorderedlist-button":{"requires":["moodle-editor_atto-plugin"]},"moodle-atto_wiris-button":{"requires":["moodle-editor_atto-plugin","get"]}}},"gallery":{"name":"gallery","base":"https:\/\/famaf.aulavirtual.unc.edu.ar\/lib\/yuilib\/gallery\/","combine":true,"comboBase":"https:\/\/famaf.aulavirtual.unc.edu.ar\/theme\/yui_combo.php?","ext":false,"root":"gallery\/1775872993\/","patterns":{"gallery-":{"group":"gallery"}}}},"modules":{"core_filepicker":{"name":"core_filepicker","fullpath":"https:\/\/famaf.aulavirtual.unc.edu.ar\/lib\/javascript.php\/1775872993\/repository\/filepicker.js","requires":["base","node","node-event-simulate","json","async-queue","io-base","io-upload-iframe","io-form","yui2-treeview","panel","cookie","datatable","datatable-sort","resize-plugin","dd-plugin","escape","moodle-core_filepicker","moodle-core-notification-dialogue"]},"core_comment":{"name":"core_comment","fullpath":"https:\/\/famaf.aulavirtual.unc.edu.ar\/lib\/javascript.php\/1775872993\/comment\/comment.js","requires":["base","io-base","node","json","yui2-animation","overlay","escape"]}},"logInclude":[],"logExclude":[],"logLevel":null};
@@ -169,7 +169,7 @@ document.body.className += ' jsenabled';
             </ul>
     
             <div id="usernavigation" class="navbar-nav ms-auto h-100">
-                <div class="popover-region collapsed popover-region-notifications" id="nav-notification-popover-container" data-userid="12890" data-region="popover-region">
+                <div class="popover-region collapsed popover-region-notifications" id="nav-notification-popover-container" data-userid="0" data-region="popover-region">
     <div class="popover-region-toggle nav-link icon-no-margin" data-region="popover-region-toggle" aria-controls="popover-region-container-69dab7a9c6bc069dab7a9c28522" aria-haspopup="true" aria-expanded="false" aria-label=" Mostrar la ventana de notificaciones cuando no hay ninguna   " title=" Mostrar la ventana de notificaciones cuando no hay ninguna   " tabindex="0" role="button">
                 <i class="icon fa fa-bell fa-fw " aria-hidden="true"></i>
         <div class="count-container hidden" data-region="count-container" aria-hidden="true">
@@ -222,7 +222,7 @@ document.body.className += ' jsenabled';
                                         <span class="userbutton">
                                             <span class="avatars">
                                                     <span class="avatar current">
-                                                        <span class="userinitials size-35" title="RUBEN RASI" aria-label="RUBEN RASI" role="img">RR</span>
+                                                        <span class="userinitials size-35" title="USUARIO" aria-label="USUARIO" role="img">RR</span>
                                                     </span>
                                             </span>
                                         </span>
@@ -262,7 +262,7 @@ document.body.className += ' jsenabled';
                                                                 Preferencias
                                                             </a>
                                                         <div class="dropdown-divider"></div>
-                                                            <a href="https://famaf.aulavirtual.unc.edu.ar/login/logout.php?sesskey=wWiUTMYlME" class="dropdown-item" role="menuitem" tabindex="-1">
+                                                            <a href="https://famaf.aulavirtual.unc.edu.ar/login/logout.php?sesskey=REDACTED" class="dropdown-item" role="menuitem" tabindex="-1">
                                                                     
                                                                 Cerrar sesión
                                                             </a>
@@ -956,7 +956,7 @@ document.body.className += ' jsenabled';
                     </div>
                 <div class="footer-section p-3 border-bottom">
                     <div class="logininfo">
-                        <div class="logininfo">Usted se ha identificado como <a href="https://famaf.aulavirtual.unc.edu.ar/user/profile.php?id=12890">RUBEN RASI</a> (<a href="https://famaf.aulavirtual.unc.edu.ar/login/logout.php?sesskey=wWiUTMYlME">Cerrar sesión</a>)</div>
+                        <div class="logininfo">Usted se ha identificado como <a href="https://famaf.aulavirtual.unc.edu.ar/user/profile.php?id=REDACTED">USUARIO</a> (<a href="https://famaf.aulavirtual.unc.edu.ar/login/logout.php?sesskey=REDACTED">Cerrar sesión</a>)</div>
                     </div>
                     <div class="tool_usertours-resettourcontainer">
                     <div class="usertour">
@@ -1212,7 +1212,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                             </div>
                         </div>
                         <div class="ms-2">
-                            <a href="#" data-route="view-settings" data-route-param="12890" aria-label="Ajustes" role="button">
+                            <a href="#" data-route="view-settings" data-route-param="0" aria-label="Ajustes" role="button">
                                 <i class="icon fa fa-gear fa-fw " aria-hidden="true"></i>
                             </a>
                         </div>
@@ -1278,7 +1278,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                 
                 <div class="hidden" data-region="view-contact" aria-hidden="true">
                     <div class="p-2 pt-3" data-region="content-container"></div>
-                </div>                <div class="hidden h-100" data-region="view-contacts" aria-hidden="true" data-user-id="12890">
+                </div>                <div class="hidden h-100" data-region="view-contacts" aria-hidden="true" data-user-id="0">
                     <div class="d-flex flex-column h-100">
                         <div class="p-3 border-bottom">
                             <ul class="nav nav-pills nav-fill" role="tablist">
@@ -1299,7 +1299,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                             </ul>
                         </div>
                         <div class="tab-content d-flex flex-column h-100">
-                                            <div class="tab-pane fade show active h-100 lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="12890" id="contacts-tab-panel-69dab7a9d1d0669dab7a9c28524" data-section="contacts" role="tabpanel" aria-labelledby="contacts-tab-69dab7a9d1d0669dab7a9c28524">
+                                            <div class="tab-pane fade show active h-100 lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="0" id="contacts-tab-panel-69dab7a9d1d0669dab7a9c28524" data-section="contacts" role="tabpanel" aria-labelledby="contacts-tab-69dab7a9d1d0669dab7a9c28524">
                     
                     <div class="hidden text-center p-2" data-region="empty-message-container">
                         No hay contactos
@@ -1315,7 +1315,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                     </div>
                 </div>
                 
-                                            <div class="tab-pane fade h-100 lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="12890" id="requests-tab-panel-69dab7a9d1d0669dab7a9c28524" data-section="requests" role="tabpanel" aria-labelledby="requests-tab-69dab7a9d1d0669dab7a9c28524">
+                                            <div class="tab-pane fade h-100 lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="0" id="requests-tab-panel-69dab7a9d1d0669dab7a9c28524" data-section="requests" role="tabpanel" aria-labelledby="requests-tab-69dab7a9d1d0669dab7a9c28524">
                     
                     <div class="hidden text-center p-2" data-region="empty-message-container">
                         No hay solicitudes de contacto
@@ -1334,7 +1334,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                     </div>
                 </div>
                 
-                <div class="view-conversation hidden h-100" aria-hidden="true" data-region="view-conversation" data-user-id="12890" data-midnight="1775876400" data-message-poll-min="10" data-message-poll-max="120" data-message-poll-after-max="300" style="overflow-y: auto; overflow-x: hidden">
+                <div class="view-conversation hidden h-100" aria-hidden="true" data-region="view-conversation" data-user-id="0" data-midnight="1775876400" data-message-poll-min="10" data-message-poll-max="120" data-message-poll-after-max="300" style="overflow-y: auto; overflow-x: hidden">
                     <div class="position-relative h-100" data-region="content-container" style="overflow-y: auto; overflow-x: hidden">
                         <div class="content-message-container hidden h-100 px-2 pt-0" data-region="content-message-container" role="log" style="overflow-y: auto; overflow-x: hidden">
                             <div class="py-3 border-bottom text-center hidden" data-region="contact-request-sent-message-container">
@@ -1647,7 +1647,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                 
                 <div class="hidden" aria-hidden="true" data-region="view-group-info">
                     <div class="pt-3 h-100 d-flex flex-column" data-region="group-info-content-container" style="overflow-y: auto"></div>
-                </div>                <div class="h-100 view-overview-body" aria-hidden="false" data-region="view-overview" data-user-id="12890">
+                </div>                <div class="h-100 view-overview-body" aria-hidden="false" data-region="view-overview" data-user-id="0">
                     <div id="message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524" class="d-flex flex-column h-100" style="overflow-y: auto">
                             
                             
@@ -1679,7 +1679,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                                         </span>
                                     </button>
                                 </div>
-                                                            <div class="collapse border-bottom  lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="12890" id="view-overview-favourites-target-69dab7a9d1d0669dab7a9c28524" aria-labelledby="view-overview-favourites-toggle" data-parent="#message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524">
+                                                            <div class="collapse border-bottom  lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="0" id="view-overview-favourites-target-69dab7a9d1d0669dab7a9c28524" aria-labelledby="view-overview-favourites-toggle" data-parent="#message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524">
                                 
                                 <div class="hidden text-center p-2" data-region="empty-message-container">
                                             <p class="text-muted mt-2">Sin conversaciones destacadas</p>
@@ -1728,7 +1728,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                                         </span>
                                     </button>
                                 </div>
-                                                            <div class="collapse border-bottom  lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="12890" id="view-overview-group-messages-target-69dab7a9d1d0669dab7a9c28524" aria-labelledby="view-overview-group-messages-toggle" data-parent="#message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524">
+                                                            <div class="collapse border-bottom  lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="0" id="view-overview-group-messages-target-69dab7a9d1d0669dab7a9c28524" aria-labelledby="view-overview-group-messages-toggle" data-parent="#message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524">
                                 
                                 <div class="hidden text-center p-2" data-region="empty-message-container">
                                             <p class="text-muted mt-2">No hay conversaciónes de grupo</p>
@@ -1777,7 +1777,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                                         </span>
                                     </button>
                                 </div>
-                                                            <div class="collapse border-bottom  lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="12890" id="view-overview-messages-target-69dab7a9d1d0669dab7a9c28524" aria-labelledby="view-overview-messages-toggle" data-parent="#message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524">
+                                                            <div class="collapse border-bottom  lazy-load-list" aria-live="polite" data-region="lazy-load-list" data-user-id="0" id="view-overview-messages-target-69dab7a9d1d0669dab7a9c28524" aria-labelledby="view-overview-messages-toggle" data-parent="#message-drawer-view-overview-container-69dab7a9d1d0669dab7a9c28524">
                                 
                                 <div class="hidden text-center p-2" data-region="empty-message-container">
                                             <p class="text-muted mt-2">No hay conversaciones privadas</p>
@@ -1799,7 +1799,7 @@ Y.use("moodle-core-notification-dialogue",function() {M.course.format.dialoguein
                     </div>
                 </div>
                 
-                <div data-region="view-search" aria-hidden="true" class="h-100 hidden" data-user-id="12890" data-users-offset="0" data-messages-offset="0" style="overflow-y: auto">
+                <div data-region="view-search" aria-hidden="true" class="h-100 hidden" data-user-id="0" data-users-offset="0" data-messages-offset="0" style="overflow-y: auto">
                     <div class="hidden" data-region="search-results-container" style="overflow-y: auto">
                         
                         <div class="d-flex flex-column">
