@@ -151,6 +151,9 @@ $$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$
 
 **Para salarios:** la mediana es casi siempre mejor que la media, porque la distribución de salarios suele estar sesgada a la derecha (pocos valores muy altos que "tiran" la media hacia arriba).
 
+![Media vs Mediana](img/02_01_media_vs_mediana.png)
+*Fig. 2.1 — Distribución de salarios netos del dataset Sysarmy 2026. Nótese cómo la media (línea roja) se desplaza hacia la derecha respecto a la mediana (línea verde) debido a la asimetría positiva: unos pocos salarios altos "tiran" el promedio hacia arriba.*
+
 ### 2.2 Medidas de dispersión
 
 Buscan responder: **¿cuán "esparcidos" están los datos?**
@@ -225,6 +228,9 @@ df['salary_monthly_NETO'].quantile(0.25)  # Q1
 df['salary_monthly_NETO'].quantile(0.90)  # Percentil 90
 ```
 
+![Cuantiles y percentiles](img/02_02_cuantiles_percentiles.png)
+*Fig. 2.2 — Percentiles y cuartiles marcados sobre la distribución salarial. El área entre Q1 y Q3 contiene el 50% central de los datos (IQR). P10 y P90 delimitan el 80% central.*
+
 ### 2.4 Asimetría y curtosis
 
 #### Asimetría (skewness)
@@ -253,6 +259,9 @@ Mide cuán "puntiaguda" o "achatada" es la distribución comparada con la normal
 
 **En Python:** `df['salary_monthly_NETO'].kurtosis()`
 
+![Tipos de asimetría](img/02_03_asimetria.png)
+*Fig. 2.3 — Tres tipos de asimetría. Izquierda: distribución simétrica (skew ≈ 0). Centro: distribución de salarios reales con asimetría positiva (cola derecha larga). Derecha: asimetría negativa simulada (cola izquierda larga).*
+
 ---
 
 ## 3. Visualización de una variable
@@ -274,6 +283,9 @@ Mide cuán "puntiaguda" o "achatada" es la distribución comparada con la normal
 ```python
 plt.hist(df['salary_monthly_NETO'], bins=40, density=True, alpha=0.7)
 ```
+
+![Efecto del número de bins](img/03_01_histograma_bins.png)
+*Fig. 3.1 — El mismo dataset con distinto número de bins. Con 10 bins se pierde detalle; con 40 se logra un buen equilibrio; con 150 aparece ruido excesivo. La elección del número de bins afecta la interpretación.*
 
 ### 3.2 Boxplot (diagrama de caja)
 
@@ -307,6 +319,9 @@ plt.hist(df['salary_monthly_NETO'], bins=40, density=True, alpha=0.7)
 sns.boxplot(data=df, x='salary_monthly_NETO', y='language', showfliers=False)
 ```
 
+![Anatomía de un boxplot](img/03_02_boxplot_anatomia.png)
+*Fig. 3.2 — Anatomía de un boxplot sobre los salarios netos reales. Se señalan Q1, la mediana y Q3. Los bigotes se extienden hasta 1.5×IQR. Puntos fuera de los bigotes son outliers.*
+
 ### 3.3 Violin plot
 
 **¿Qué es?** Combina un boxplot con una estimación de densidad (KDE). La "anchura" del violín en cada punto muestra la densidad de datos en ese valor.
@@ -318,6 +333,9 @@ sns.boxplot(data=df, x='salary_monthly_NETO', y='language', showfliers=False)
 ```python
 sns.violinplot(data=df, x='salary_monthly_NETO', y='language', inner='quartile')
 ```
+
+![Boxplot vs Violin plot](img/03_03_boxplot_vs_violin.png)
+*Fig. 3.3 — Comparación entre boxplot y violin plot sobre los mismos datos salariales. El violin plot muestra la forma completa de la densidad, revelando información que el boxplot oculta (como concentraciones o multimodalidad).*
 
 ### 3.4 Gráfico de barras (variables categóricas)
 
@@ -331,6 +349,9 @@ Para variables categóricas, el equivalente al histograma es el **gráfico de ba
 df['work_seniority'].value_counts().plot(kind='bar')
 ```
 
+![Gráfico de barras](img/03_04_barras_categorica.png)
+*Fig. 3.4 — Distribución de la variable categórica `work_seniority`. Las barras no se tocan porque representan categorías discretas, no un continuo. Senior es la categoría más frecuente.*
+
 ### 3.5 KDE (Kernel Density Estimation)
 
 **¿Qué es?** Una versión "suavizada" del histograma. En vez de bins discretos, estima una curva continua de densidad colocando una "campana" pequeña (kernel) sobre cada dato y sumándolas.
@@ -342,6 +363,9 @@ df['work_seniority'].value_counts().plot(kind='bar')
 ```python
 sns.kdeplot(data=df, x='salary_monthly_NETO', hue='language')
 ```
+
+![KDE por seniority](img/03_05_kde.png)
+*Fig. 3.5 — Estimación de densidad por kernel (KDE) del salario neto, segmentado por seniority. Se aprecia cómo los Seniors tienen una distribución desplazada a la derecha (salarios más altos), mientras que los Juniors se concentran en valores más bajos.*
 
 ---
 
@@ -400,6 +424,12 @@ Descartar valores por debajo del P5 y por encima del P95 (o P1/P99). Es más sim
 
 **Recomendación para el entregable:** usar el método IQR, posiblemente combinado con un piso mínimo lógico (ej: salario mínimo real).
 
+![Outliers antes y después](img/04_01_outliers_antes_despues.png)
+*Fig. 4.1 — Efecto de la limpieza de outliers. Arriba: datos crudos con valores extremos que comprimen toda la distribución visualmente. Abajo: tras eliminar outliers, se aprecia la distribución real de los salarios.*
+
+![Método IQR](img/04_02_metodo_iqr.png)
+*Fig. 4.2 — Método IQR para detección de outliers. El área verde marca el rango intercuartílico (Q1 a Q3). Las líneas rojas punteadas indican los límites: Q1 - 1.5×IQR y Q3 + 1.5×IQR. Todo valor fuera de estos límites se considera outlier.*
+
 ### 4.3 Selección de sub-población
 
 A veces no queremos analizar todos los datos sino un **subgrupo específico**. Esto se llama seleccionar una sub-población.
@@ -443,6 +473,12 @@ El objetivo es comparar salarios **entre grupos** (lenguajes de programación). 
 - ¿Un lenguaje tiene más **dispersión** que otro?
 - ¿Las distribuciones se **superponen** mucho o poco?
 - ¿Alguna distribución tiene una **forma inusual** (bimodal, asimétrica)?
+
+![Boxplot por lenguaje](img/05_01_boxplot_lenguajes.png)
+*Fig. 5.1 — Boxplots comparativos de salario neto por lenguaje de programación, ordenados por mediana descendente. Permite comparar rápidamente la posición central y la dispersión de cada grupo.*
+
+![Violin por lenguaje](img/05_02_violin_lenguajes.png)
+*Fig. 5.2 — Violin plots de los mismos datos. La forma del "violín" revela la concentración de salarios en cada lenguaje: algunos tienen distribuciones más compactas que otros.*
 
 ### 5.2 Comparación de medidas descriptivas
 
@@ -488,6 +524,9 @@ $$P(\text{salario} > 4M \mid \text{sabe Python}) = \frac{\text{personas que sabe
 Y concluir: "Saber Go se asocia a un 37% más de chances de ganar > $4M comparado con Python" (48/35 - 1 = 37%).
 
 **Cuidado:** esto es una **asociación**, no causalidad. No significa que aprender Go te haga ganar más. Puede ser que Go lo usan perfiles más senior.
+
+![Probabilidad condicional](img/05_03_probabilidad_condicional.png)
+*Fig. 5.3 — Probabilidad de estar en el top 25% de salarios (por encima del P75 global) según lenguaje de programación. Cada barra muestra P(salario > P75 | sabe lenguaje X). Lenguajes de mayor demanda especializada tienden a tener probabilidades más altas.*
 
 ### 5.4 Variables confusoras y sesgo
 
@@ -549,6 +588,12 @@ $$r = \frac{Cov(X, Y)}{s_X \cdot s_Y}$$
 
 **En Python:** `df['salary_monthly_BRUTO'].corr(df['salary_monthly_NETO'])`
 
+![Scatter Bruto vs Neto](img/06_01_scatter_bruto_neto.png)
+*Fig. 6.1 — Scatterplot de salario bruto vs neto con coeficientes de correlación. La línea roja punteada (y=x) sirve de referencia: los puntos por debajo indican que el neto es menor al bruto (lo esperado por deducciones). La correlación es muy alta, indicando una relación casi determinística.*
+
+![Tipos de correlación](img/06_03_tipos_correlacion.png)
+*Fig. 6.2 — Cuatro escenarios de correlación. De izquierda a derecha: positiva fuerte, negativa moderada, sin correlación lineal, y relación no lineal (cuadrática) donde Pearson r ≈ 0 a pesar de existir un patrón claro. Esto ilustra la limitación de Pearson.*
+
 ### 6.3 Coeficiente de correlación de Spearman (ρ)
 
 En vez de medir la correlación lineal entre los valores, mide la correlación entre los **rangos** (posiciones en el ordenamiento).
@@ -582,6 +627,9 @@ corr_matrix = df[['salary_monthly_BRUTO', 'salary_monthly_NETO',
                    'profile_years_experience', 'profile_age']].corr()
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0)
 ```
+
+![Heatmap de correlación](img/06_02_heatmap_correlacion.png)
+*Fig. 6.3 — Matriz de correlación de Pearson entre variables numéricas del dataset. Los colores cálidos (rojo) indican correlación positiva; los fríos (azul) negativa. Se destaca la correlación casi perfecta entre bruto y neto (0.97) y la correlación moderada entre años de experiencia y edad.*
 
 ---
 
@@ -656,6 +704,12 @@ $$f(Y | X) = f(Y)$$
 
 **Ejemplo del dataset:** ¿Son independientes el salario y el nivel de estudio? Si al separar por nivel de estudio las distribuciones de salario son muy similares, entonces son aproximadamente independientes. Si los universitarios ganan sistemáticamente más, no son independientes.
 
+![Densidad condicional por estudio](img/07_01_densidad_condicional_estudio.png)
+*Fig. 7.1 — Izquierda: histogramas superpuestos de salario condicional al nivel de estudio (Universitario vs Terciario). Derecha: boxplots comparativos. Las diferencias entre ambas distribuciones sugieren que salario y nivel de estudio NO son completamente independientes.*
+
+![Independencia visual](img/07_02_independencia_visual.png)
+*Fig. 7.2 — Ejemplo didáctico de independencia. Izquierda: dos grupos con distribuciones idénticas → las variables son independientes (f(Y|A) = f(Y|B)). Derecha: distribuciones claramente distintas → las variables son dependientes (f(Y|A) ≠ f(Y|B)).*
+
 ---
 
 ## 8. Visualización multivariada
@@ -692,6 +746,9 @@ sns.scatterplot(data=df, x='profile_years_experience', y='salary_monthly_NETO',
                 hue='work_seniority', alpha=0.3)
 ```
 
+![Scatterplot con hue seniority](img/08_01_scatter_hue_seniority.png)
+*Fig. 8.1 — Scatterplot de salario vs experiencia, coloreado por seniority. Se aprecia cómo los Seniors (verde) dominan la zona de salarios altos y mayor experiencia, mientras que los Juniors (rojo) se concentran abajo a la izquierda. El color agrega una tercera dimensión informativa al gráfico 2D.*
+
 **Parámetro `hue` en seaborn:** es la variable categórica usada para colorear. Funciona en scatterplot, boxplot, violinplot, histplot, etc.
 
 ### 8.3 Pairplot (matriz de dispersión)
@@ -705,6 +762,9 @@ sns.scatterplot(data=df, x='profile_years_experience', y='salary_monthly_NETO',
 ```python
 sns.pairplot(df[['salary_monthly_NETO', 'profile_years_experience', 'profile_age']])
 ```
+
+![Pairplot](img/08_02_pairplot.png)
+*Fig. 8.2 — Pairplot (matriz de dispersión) de tres variables numéricas. La diagonal muestra los histogramas individuales. Las celdas fuera de la diagonal muestran la relación bivariada. Se observa asociación positiva entre experiencia y edad, y entre experiencia y salario.*
 
 ### 8.4 Heatmap de correlación
 
@@ -732,6 +792,12 @@ sns.heatmap(df[num_cols].corr(), annot=True, cmap='coolwarm', center=0)
 sns.boxplot(data=df, x='work_seniority', y='salary_monthly_NETO', 
             hue='profile_gender', order=['Junior', 'Semi-Senior', 'Senior'])
 ```
+
+![Boxplot facetado](img/08_03_boxplot_facetado.png)
+*Fig. 8.3 — Boxplot facetado: salario por seniority con hue por género. Permite observar si la brecha salarial de género existe y si varía según el nivel de seniority. Cada par de cajas compara hombres (azul) y mujeres (rosa) dentro del mismo nivel.*
+
+![Scatter con hue género](img/08_04_scatter_hue_genero.png)
+*Fig. 8.4 — Scatterplot de salario vs experiencia, coloreado por género. Las distribuciones se superponen considerablemente, pero podrían existir diferencias sutiles que requieran análisis estadístico formal.*
 
 **¿Qué muestra?** Si el efecto de una variable categórica (seniority) sobre el salario **cambia** según otra variable categórica (género). Por ejemplo: ¿la brecha salarial de género existe en todos los niveles de seniority o solo en algunos?
 
