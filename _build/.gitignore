@@ -1,0 +1,6 @@
+# Entorno virtual Python
+ayvd/.venv/
+
+# Archivos generados (los informes van a entregables/)
+*.pyc
+__pycache__/

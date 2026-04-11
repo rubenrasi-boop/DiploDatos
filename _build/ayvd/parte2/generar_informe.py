@@ -4,7 +4,7 @@ Entregable AyVD Parte 2 — Generador de informe HTML/PDF
 Diplomatura en Ciencia de Datos 2026 — FAMAF, UNC
 
 Alumno: Rubén Rasi
-Docente de seguimiento: Fredy Restrepo Blandón
+Docente de seguimiento: Fredy Alexander Restrepo Blandon
 
 Objetivos:
   1. Describir y analizar la base desde varios ángulos, múltiples variables,

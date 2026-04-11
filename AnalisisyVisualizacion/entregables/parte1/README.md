@@ -2,7 +2,7 @@
 
 **Materia:** Análisis y Visualización de Datos 2026
 **Alumno:** Rubén Rasi
-**Docente de seguimiento:** Fredy Restrepo Blandón
+**Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
 ---
 

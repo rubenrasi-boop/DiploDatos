@@ -14,7 +14,7 @@
 | **Fechas de cursado** | 27/03, 28/03, 10/04 y 11/04 de 2026 |
 | **Horarios** | Viernes 18:00–22:00 · Sábados 10:00–14:00 |
 | **Plataforma** | [Aula Virtual FAMAF](https://famaf.aulavirtual.unc.edu.ar/course/view.php?id=753) |
-| **Docente de seguimiento** | Fredy Alexander Restrepo Blandón (fredy.restrepo@unc.edu.ar) |
+| **Docente de seguimiento** | Fredy Alexander Restrepo Blandon (fredy.restrepo@unc.edu.ar) |
 
 ---
 
@@ -24,7 +24,7 @@
 - Georgina Flesia (georgina.flesia@unc.edu.ar)
 - Karim Nemer (karim.nemer@unc.edu.ar)
 
-**Docentes de seguimiento:** Ingrid Daza-Perilla, Vanesa Meinardi, Agustín Rodríguez Medrano, Yirana Mejía Correa, Marcos Argañaraz, **Fredy Restrepo Blandón** *(mi grupo)*, Leila Saker, Grisel Britos, Rocío Giuzio.
+**Docentes de seguimiento:** Ingrid Vanessa Daza-Perilla, Vanesa Beatriz Meinardi, Agustín Rodríguez Medrano, Yirana Isabel Mejia Correa, Marcos Ariel Argañaraz, **Fredy Alexander Restrepo Blandon** *(mi grupo)*, Leila Saker, Grisel Maribel Britos, Rocio Giuzio.
 
 ---
 
