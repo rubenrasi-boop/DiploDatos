@@ -14,6 +14,7 @@
 | **Fechas de cursado** | 27/03, 28/03, 10/04 y 11/04 de 2026 |
 | **Horarios** | Viernes 18:00–22:00 · Sábados 10:00–14:00 |
 | **Plataforma** | [Aula Virtual FAMAF](https://famaf.aulavirtual.unc.edu.ar/course/view.php?id=753) |
+| **Docente de seguimiento** | Fredy Alexander Restrepo Blandón (fredy.restrepo@unc.edu.ar) |
 
 ---
 
@@ -23,7 +24,7 @@
 - Georgina Flesia (georgina.flesia@unc.edu.ar)
 - Karim Nemer (karim.nemer@unc.edu.ar)
 
-**Docentes de seguimiento:** Ingrid Daza-Perilla, Vanesa Meinardi, Agustín Rodríguez Medrano, Yirana Mejía Correa, Marcos Argañaraz, Fredy Restrepo Blandón, Leila Saker, Grisel Britos, Rocío Giuzio.
+**Docentes de seguimiento:** Ingrid Daza-Perilla, Vanesa Meinardi, Agustín Rodríguez Medrano, Yirana Mejía Correa, Marcos Argañaraz, **Fredy Restrepo Blandón** *(mi grupo)*, Leila Saker, Grisel Britos, Rocío Giuzio.
 
 ---
 
@@ -60,9 +61,9 @@
 - Estadística descriptiva
 
 **Materiales:**
-- 📑 Slides: *Introducción* · *Probabilidad y Estadística*
-- 📓 Notebooks: `00_Inicios_en_Python.ipynb` · `01_Probabilidad.ipynb`
-- 📊 Dataset: [Encuesta Sysarmy 2026](https://sysarmy.com/blog/posts/resultados-de-la-encuesta-de-sueldos-2026-1/)
+- 📑 Slides: [Introducción](https://docs.google.com/presentation/d/1VeklzWjRLGgS1dEOwtETYX23G5nNC_WP/edit?slide=id.p1#slide=id.p1) · [Probabilidad y Estadística](https://docs.google.com/presentation/d/1do5BSgqE_lkesHfkrPLkun8KLLOQxPCi/edit?slide=id.p1#slide=id.p1)
+- 📓 Notebooks: [00. Inicios en Python](https://colab.research.google.com/drive/1w39UcJ2mPMNEA39PkOgaEEG3yOAWCB91) · [01. Probabilidad](https://colab.research.google.com/drive/1qMmedZEc8oaPXl-XcC7KT3imfyJqBjjr)
+- 📊 Dataset: [Encuesta Sysarmy 2026](https://sysarmy.com/blog/posts/resultados-de-la-encuesta-de-sueldos-2026-1/) · [CSV procesado](https://raw.githubusercontent.com/DiploDatos/AnalisisyVisualizacion/master/sysarmy_survey_2026_processed.csv)
 
 ### Clase 2 — Datos, Modelos y Múltiples Variables
 > *28 de marzo de 2026*
@@ -73,8 +74,8 @@
 - Estadística descriptiva multivariada
 
 **Materiales:**
-- 📑 Slides: *Datos y Modelos* · *Varias Variables*
-- 📓 Notebooks: `02_Datos_y_Modelos.ipynb` · `03_Varias_Variables.ipynb`
+- 📑 Slides: [Datos y Modelos](https://docs.google.com/presentation/d/1LtWnr73XHih-UjcRjRjfEGGPZATJED9X/edit?slide=id.p1#slide=id.p1) · [Varias Variables](https://docs.google.com/presentation/d/1yhp_0p9Mun6Qjud4k0NWZt0tKxFcrQ86/edit)
+- 📓 Notebooks: [02. Datos y Modelos](https://colab.research.google.com/drive/16QQk1Mp-_Jm0hSSTsFWqujtT9UlyNag2) · [03. Varias Variables](https://colab.research.google.com/drive/1YxQYidMoDJE0O_jhzwxRd5cVh8jVS2Iu)
 
 ### Clase 3 — Estadísticos y Estimación
 > *10 de abril de 2026*
@@ -83,8 +84,8 @@
 - Estimación puntual e intervalar
 
 **Materiales:**
-- 📑 Slides: *Estadísticos y Estadística* · *Estimación*
-- 📓 Notebook: `04_Estadisticos.ipynb`
+- 📑 Slides: [Estadísticos y Estadística](https://docs.google.com/presentation/d/1y57J0FW-uqJttYHsyesjGw63RYvfpN1c/edit) · [Estimación](https://docs.google.com/presentation/d/1BNcIQHCEfifmPcvJWblgGlrmYoO5-OEF/edit)
+- 📓 Notebook: [04. Estadísticos](https://colab.research.google.com/drive/1kb6T7rWaw-_MA3n13cyWEj32ZTuV2dPs)
 
 ### Clase 4 — Test de Hipótesis y Visualización
 > *11 de abril de 2026*
@@ -93,8 +94,8 @@
 - Visualización y comunicación de resultados
 
 **Materiales:**
-- 📑 Slides: *Test de Hipótesis* · *Visualización y Comunicación*
-- 📓 Notebook: `05_Test_de_Hipotesis.ipynb`
+- 📑 Slides: [Test de Hipótesis](https://docs.google.com/presentation/d/10RWp7bJl6HfXmc9ua8-Qypvh8lXPf8VO/edit) · [Visualización y Comunicación](https://docs.google.com/presentation/d/1FakW8yBFTPR3xrv_9pebBB9w4ZogYBtB/edit)
+- 📓 Notebook: [05. Test de Hipótesis](https://colab.research.google.com/drive/1SFantK0fK39lnmvNccYUyrmS8bWW7xjj)
 
 ---
 
@@ -107,6 +108,7 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 |-------|---------|
 | **Apertura** | Viernes 10/04/2026, 00:00 |
 | **Entrega** | Lunes 13/04/2026, 23:59 |
+| **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1devPC-DscjuaA-5FId39jgDAz6B-Vr03/view?usp=sharing) |
 | **Objetivos** | Describir y analizar la base desde varios ángulos, múltiples variables, visualmente y con medidas descriptivas. Observar relaciones. Plantear preguntas, hipótesis y diseñar un abordaje. |
 
 ### Entregable Parte 2
@@ -114,6 +116,7 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 |-------|---------|
 | **Apertura** | Jueves 17/04/2026, 06:00 |
 | **Entrega** | Domingo 27/04/2026, 23:59 |
+| **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1FBA-CVfB-EUfHtpOCndy_wCI4u2kFya7/view?usp=sharing) |
 | **Objetivos** | 1) Describir y analizar desde múltiples ángulos. 2) Diferenciar datos de modelos. 3) Inferencia: estimación y testeo. 4) Comunicar resultados. |
 
 ---
@@ -126,15 +129,6 @@ AnalisisyVisualizacion/
 ├── notebooks/             ← Notebooks de clase y experimentación
 └── entregables/           ← Trabajos prácticos entregados
 ```
-
----
-
-## 🔗 Recursos adicionales
-
-- 🎥 [Grabaciones de clases (Google Drive)](https://drive.google.com/drive/folders/1GzQFrAhIPepYI4tLLQfIVS7G1ptOrMON)
-- 📊 [Dataset Sysarmy 2026 procesado (CSV)](https://raw.githubusercontent.com/DiploDatos/AnalisisyVisualizacion/master/sysarmy_survey_2026_processed.csv)
-- 🎬 Videos opcionales: *Percentiles y detección de outliers* · *Gráficos simples*
-- 🌐 TED Talk recomendada: *The best stats you've ever seen* — Hans Rosling
 
 ---
 

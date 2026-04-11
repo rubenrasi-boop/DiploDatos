@@ -45,7 +45,6 @@ DiploDatos/
 │   ├── README.md
 │   ├── notebooks/                 ← Notebooks de trabajo
 │   └── entregables/               ← TPs entregables
-├── site/                          ← Exports del aula virtual (referencia)
 └── (futuras materias)/
 ```
 
