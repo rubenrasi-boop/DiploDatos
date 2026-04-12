@@ -1204,8 +1204,8 @@ fig_g10.add_trace(go.Scatter(
     x=mediana_por_exp_g10['profile_years_experience'],
     y=mediana_por_exp_g10['median'] / 1e6,
     mode='lines+markers',
-    line=dict(color='#2E3440', width=2.2),
-    marker=dict(size=5, color='#2E3440'),
+    line=dict(color='#5E6472', width=1.8),
+    marker=dict(size=4.5, color='#5E6472'),
     name='Mediana por año (n ≥ 5)',
     hovertemplate=(
         'Año: %{x}<br>Mediana: $ %{y:.2f} M<extra></extra>'
