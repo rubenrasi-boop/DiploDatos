@@ -123,6 +123,7 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Objetivos** | 1) Describir y analizar desde múltiples ángulos. 2) Diferenciar datos de modelos. 3) Inferencia: estimación y testeo. 4) Comunicar resultados. |
 | **Estado** | 🟡 Borrador inicial — ver [entregables/parte2/](entregables/parte2/README.md) |
 | **Archivo principal** | [`entregables/parte2/entregable_ayvd_parte2.ipynb`](entregables/parte2/entregable_ayvd_parte2.ipynb) |
+| **Informe HTML** | [`entregables/parte2/entregable_ayvd_parte2.html`](entregables/parte2/entregable_ayvd_parte2.html) |
 | **Apéndice de datos** | [`entregables/parte2/datos_parte2.py`](entregables/parte2/datos_parte2.py) |
 | **Comunicación Ej 3** | [`entregables/parte2/comunicacion_ej3.pdf`](entregables/parte2/comunicacion_ej3.pdf) |
 
@@ -153,6 +154,7 @@ AnalisisyVisualizacion/
         ├── README.md
         ├── consigna_parte2.ipynb         ← consigna oficial (intacta)
         ├── entregable_ayvd_parte2.ipynb  ← notebook entregable (consigna + respuestas)
+        ├── entregable_ayvd_parte2.html   ← informe HTML interactivo (Plotly)
         ├── datos_parte2.py               ← apéndice de datos ejecutable
         ├── datos_parte2_img/             ← 5 gráficos matplotlib/seaborn
         ├── comunicacion_ej3.pdf          ← PDF del ejercicio 3 (reporte técnico A4)

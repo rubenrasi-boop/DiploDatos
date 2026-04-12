@@ -83,6 +83,7 @@ parte2/
 │
 ├── entregable_ayvd_parte2.ipynb        ← 📓 NOTEBOOK ENTREGABLE
 │                                         (consigna + respuestas integradas)
+├── entregable_ayvd_parte2.html         ← 📄 INFORME HTML interactivo (Plotly)
 │
 ├── datos_parte2.py                     ← 🐍 Apéndice ejecutable de datos
 │
@@ -103,15 +104,19 @@ parte2/
 
 ## 🚀 Cómo revisar el entregable
 
-### Opción 1 — Notebook entregable (recomendada)
+### Opción 1 — Notebook entregable (recomendada para revisión académica)
 
 Abrir **`entregable_ayvd_parte2.ipynb`** en Jupyter, VS Code o Google Colab. El notebook se construye sobre la consigna oficial (celdas intactas) e intercala después de cada ejercicio una celda de respuesta con los hallazgos clave y los gráficos embebidos desde `datos_parte2_img/`. Las limitaciones y la discusión sobre "tendencia general vs juicio penal" están incorporadas como parte de la respuesta al ejercicio 2.3.
 
-### Opción 2 — PDF del ejercicio 3
+### Opción 2 — Informe HTML interactivo
+
+Abrir **`entregable_ayvd_parte2.html`** en cualquier navegador moderno. Es el mismo análisis que el apéndice y el notebook, pero con los 5 gráficos renderizados en **Plotly interactivo** (hover, zoom, desplazamiento). Las fórmulas matemáticas están renderizadas con KaTeX. El informe es autocontenido: los scripts de Plotly y KaTeX se cargan desde CDN, por lo que requiere conexión a internet en la primera visualización. Sigue los mismos lineamientos visuales del informe HTML de parte 1.
+
+### Opción 3 — PDF del ejercicio 3
 
 Abrir **`comunicacion_ej3.pdf`** directamente. Es una página A4 autocontenida con el reporte técnico pedido por el ejercicio 3: título, resumen, figura principal, tabla técnica, limitaciones y oración con énfasis.
 
-### Opción 3 — Cotejar los datos por consola
+### Opción 4 — Cotejar los datos por consola
 
 El archivo **`datos_parte2.py`** es el apéndice de datos del entregable. Imprime por consola los 16 cuadros intermedios (filtros, estadísticos, componentes del IC, test de Welch, Mann-Whitney, potencia) y regenera los 5 gráficos matplotlib.
 
