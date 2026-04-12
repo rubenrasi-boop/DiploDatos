@@ -3,3 +3,6 @@
 
 # Entornos virtuales Python
 **/.venv/
+
+# Exports CSV on-demand del apéndice de datos
+**/datos_parte1_csv/

@@ -110,6 +110,9 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Entrega** | Lunes 13/04/2026, 23:59 |
 | **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1devPC-DscjuaA-5FId39jgDAz6B-Vr03/view?usp=sharing) |
 | **Objetivos** | Describir y analizar la base desde varios ángulos, múltiples variables, visualmente y con medidas descriptivas. Observar relaciones. Plantear preguntas, hipótesis y diseñar un abordaje. |
+| **Estado** | ✅ Listo para presentar — ver [entregables/parte1/](entregables/parte1/README.md) |
+| **Archivo principal** | [`entregables/parte1/entregable_ayvd_parte1.html`](entregables/parte1/entregable_ayvd_parte1.html) |
+| **Apéndice de datos** | [`entregables/parte1/datos_parte1.py`](entregables/parte1/datos_parte1.py) |
 
 ### Entregable Parte 2
 | Campo | Detalle |
@@ -125,9 +128,25 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 
 ```
 AnalisisyVisualizacion/
-├── README.md              ← Este archivo
-├── notebooks/             ← Notebooks de clase y experimentación
-└── entregables/           ← Trabajos prácticos entregados
+├── README.md                           ← Este archivo
+├── notebooks/                          ← Notebooks de clase y experimentación
+│   ├── 00_Inicios_en_Python.ipynb
+│   ├── 01_Probabilidad.ipynb
+│   ├── 02_Datos_y_Modelos.ipynb
+│   ├── 03_Varias_Variables.ipynb
+│   ├── 04_Estadisticos.ipynb
+│   └── 05_Test_de_Hipotesis.ipynb
+└── entregables/
+    ├── parte1/                         ← ✅ Entregable Parte 1 (listo)
+    │   ├── README.md
+    │   ├── consigna_parte1.ipynb
+    │   ├── entregable_ayvd_parte1.html ← informe principal
+    │   ├── datos_parte1.py             ← apéndice de datos ejecutable
+    │   ├── datos_parte1_img/           ← 11 gráficos matplotlib/seaborn
+    │   └── data/                       ← dataset sysarmy 2026 procesado
+    └── parte2/                         ← 🕒 Entregable Parte 2 (pendiente)
+        ├── README.md
+        └── consigna_parte2.ipynb
 ```
 
 ---

@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>Prototipos de gráficos modernos — AyVD</title>
+<!-- Librerías vía CDN -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  :root {
+    --bg:#0b1020; --card:#141a33; --card2:#1a2144; --text:#e8ecf8;
+    --muted:#8a93b3; --accent:#7c9cff; --border:#232a4d;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; }
+  body {
+    font-family:-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
+    background:linear-gradient(160deg,#0b1020,#151c3b);
+    color:var(--text); min-height:100vh;
+  }
+  header {
+    padding:44px 32px 24px; max-width:1200px; margin:0 auto;
+    border-bottom:1px solid var(--border);
+  }
+  h1 { margin:0 0 10px; font-size:2.1rem; letter-spacing:-.02em; }
+  header p { color:var(--muted); max-width:780px; line-height:1.6; margin:0; }
+  nav.tabs {
+    max-width:1200px; margin:0 auto; padding:24px 32px 0;
+    display:flex; flex-wrap:wrap; gap:10px;
+  }
+  nav.tabs button {
+    background:var(--card); color:var(--text);
+    border:1px solid var(--border); border-radius:10px;
+    padding:12px 18px; font-size:.95rem; cursor:pointer;
+    font-family:inherit; transition:all .15s; font-weight:500;
+  }
+  nav.tabs button:hover { border-color:var(--accent); }
+  nav.tabs button.active {
+    background:linear-gradient(135deg,#2a3472,#4a5ab0);
+    border-color:var(--accent); box-shadow:0 4px 16px rgba(124,156,255,.2);
+  }
+  main { max-width:1200px; margin:0 auto; padding:24px 32px 64px; }
+  .panel { display:none; }
+  .panel.active { display:block; animation:fadeIn .25s ease-out; }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(6px);} to {opacity:1;} }
+  .panel-header {
+    background:linear-gradient(135deg,var(--card),var(--card2));
+    padding:22px 26px; border-radius:14px; margin-bottom:20px;
+    border:1px solid var(--border);
+  }
+  .panel-header h2 { margin:0 0 6px; font-size:1.4rem; }
+  .panel-header p { margin:0; color:var(--muted); line-height:1.5; }
+  .grid { display:grid; gap:20px; }
+  .card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:22px;
+  }
+  .card h3 { margin:0 0 4px; font-size:1.05rem; }
+  .card p.desc { margin:0 0 14px; color:var(--muted); font-size:.88rem; }
+  .chart { width:100%; height:380px; }
+  .chart-plot { background:white; border-radius:8px; padding:10px; }
+  .comparison {
+    margin-top:24px; background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:24px;
+  }
+  .comparison h2 { margin:0 0 14px; font-size:1.2rem; }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); }
+  th { color:var(--accent); font-weight:600; text-transform:uppercase; font-size:.75rem; letter-spacing:.06em; }
+  footer { text-align:center; padding:24px; color:var(--muted); font-size:.82rem; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.72rem;
+           background:#1f2a55; color:var(--accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Prototipos de gráficos modernos — AyVD</h1>
+  <p>Cuatro librerías web replicando los gráficos del curso <b>Análisis y Visualización de Datos</b> con datos inspirados en la encuesta <i>sysarmy 2026</i>. Archivo único, autónomo (todo vía CDN), listo para enviar por mail o chat.</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" data-tab="compare">📋 Comparación</button>
+  <button data-tab="plot">🌟 Observable Plot</button>
+  <button data-tab="echarts">⚡ Apache ECharts</button>
+  <button data-tab="apex">🎨 ApexCharts</button>
+  <button data-tab="plotly">🔬 Plotly.js</button>
+</nav>
+
+<main>
+
+<!-- ═══════════ COMPARACIÓN ═══════════ -->
+<section class="panel active" id="panel-compare">
+  <div class="panel-header">
+    <span class="badge">Resumen ejecutivo</span>
+    <h2>Comparación de las 4 librerías</h2>
+    <p>Todas soportan los gráficos estadísticos del curso. La diferencia está en la estética, la curva de aprendizaje y la interactividad.</p>
+  </div>
+  <div class="comparison">
+    <h2>Tabla comparativa</h2>
+    <table>
+      <thead><tr><th>Aspecto</th><th>Observable Plot</th><th>ECharts</th><th>ApexCharts</th><th>Plotly.js</th></tr></thead>
+      <tbody>
+        <tr><td><b>Estética</b></td><td>Minimalista tipo ggplot</td><td>Dashboard animado</td><td>Plano SaaS</td><td>Científico clásico</td></tr>
+        <tr><td><b>Curva aprendizaje</b></td><td>Baja (semántica)</td><td>Media</td><td>Baja</td><td>Baja (= Python)</td></tr>
+        <tr><td><b>Interactividad</b></td><td>Básica</td><td>Alta (zoom, DL)</td><td>Alta</td><td>Muy alta</td></tr>
+        <tr><td><b>Boxplot/Violín</b></td><td>✅ nativo</td><td>✅ nativo</td><td>✅ nativo</td><td>✅ nativo</td></tr>
+        <tr><td><b>Pairplot (SPLOM)</b></td><td>⚠️ manual</td><td>⚠️ manual</td><td>❌</td><td>✅ nativo</td></tr>
+        <tr><td><b>Heatmap correlación</b></td><td>✅</td><td>✅</td><td>⚠️ básico</td><td>✅</td></tr>
+        <tr><td><b>Tamaño librería</b></td><td>~50 KB</td><td>~1 MB</td><td>~450 KB</td><td>~3.5 MB</td></tr>
+        <tr><td><b>Mejor para</b></td><td>Estadística pura</td><td>Dashboards</td><td>Reportes planos</td><td>Notebook científico</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="comparison">
+    <h2>💡 Recomendación</h2>
+    <p style="line-height:1.65;">
+      Para un entregable de <b>diplomatura</b> con estética moderna manteniendo la semántica estadística de seaborn/matplotlib:
+    </p>
+    <ol style="line-height:1.8;">
+      <li>🥇 <b>Observable Plot</b> — sintaxis casi idéntica a ggplot, embebible en cualquier HTML, estética 2026.</li>
+      <li>🥈 <b>Apache ECharts</b> — si se prioriza el efecto "wow dashboard" con animaciones.</li>
+      <li>🥉 <b>Plotly.js</b> — si no se quiere cambiar de stack (port directo desde Python).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ═══════════ OBSERVABLE PLOT ═══════════ -->
+<section class="panel" id="panel-plot">
+  <div class="panel-header">
+    <span class="badge">Observable Plot</span>
+    <h2>🌟 Estilo "grammar of graphics"</h2>
+    <p>Sintaxis declarativa, ideal para reemplazar seaborn manteniendo la semántica estadística.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Histograma de sueldos NETO</h3><p class="desc">rectY + binX con línea de mediana.</p><div id="plot-hist" class="chart-plot"></div></div>
+    <div class="card"><h3>Boxplot por lenguaje</h3><p class="desc">boxX ordenado por mediana.</p><div id="plot-box" class="chart-plot"></div></div>
+    <div class="card"><h3>Heatmap de correlación</h3><p class="desc">cell + text overlay con escala divergente.</p><div id="plot-heat" class="chart-plot"></div></div>
+    <div class="card"><h3>Scatter sueldo vs experiencia (hue = seniority)</h3><p class="desc">dot con fill categórico y regresión lineal.</p><div id="plot-scatter" class="chart-plot"></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ ECHARTS ═══════════ -->
+<section class="panel" id="panel-echarts">
+  <div class="panel-header">
+    <span class="badge">Apache ECharts</span>
+    <h2>⚡ Dashboard animado</h2>
+    <p>Animaciones fluidas, tooltips ricos, tema oscuro corporativo.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Boxplot por lenguaje con outliers</h3><p class="desc">Serie boxplot + scatter para atípicos.</p><div id="ec-box" class="chart"></div></div>
+    <div class="card"><h3>Heatmap de correlación</h3><p class="desc">visualMap divergente con valores inline.</p><div id="ec-heat" class="chart" style="height:440px"></div></div>
+    <div class="card"><h3>Scatter sueldo vs experiencia</h3><p class="desc">Series múltiples con leyenda togglable.</p><div id="ec-scatter" class="chart"></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ APEXCHARTS ═══════════ -->
+<section class="panel" id="panel-apex">
+  <div class="panel-header">
+    <span class="badge">ApexCharts</span>
+    <h2>🎨 Plano y limpio</h2>
+    <p>Estética SaaS plana, animaciones out-of-the-box.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Boxplot con outliers</h3><p class="desc">Serie boxPlot + scatter superpuesto.</p><div id="apex-box" class="chart-plot"></div></div>
+    <div class="card"><h3>Histograma de sueldos NETO</h3><p class="desc">Binning manual con gradiente.</p><div id="apex-hist" class="chart-plot"></div></div>
+    <div class="card"><h3>Ranking de sueldo mediano</h3><p class="desc">Barras horizontales con colores distribuidos.</p><div id="apex-rank" class="chart-plot"></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ PLOTLY ═══════════ -->
+<section class="panel" id="panel-plotly">
+  <div class="panel-header">
+    <span class="badge">Plotly.js</span>
+    <h2>🔬 Científico interactivo</h2>
+    <p>Equivalente directo a seaborn/matplotlib pero con interactividad completa.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Violín por lenguaje</h3><p class="desc">Violines con box interior y puntos individuales.</p><div id="plotly-violin" class="chart-plot" style="height:440px"></div></div>
+    <div class="card"><h3>Heatmap de correlación</h3><p class="desc">Paleta divergente RdBu.</p><div id="plotly-heat" class="chart-plot" style="height:440px"></div></div>
+    <div class="card"><h3>Matriz de scatter (pairplot / SPLOM)</h3><p class="desc">Equivalente a <code>sns.pairplot</code>, interactivo.</p><div id="plotly-splom" class="chart-plot" style="height:600px"></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Prototipos para comparar con la versión matplotlib/seaborn del curso · Abrir con cualquier navegador moderno · Requiere conexión (CDN)
+</footer>
+
+<!-- ═══════════ DATA + SCRIPTS ═══════════ -->
+<script>
+/* Dataset curado, inspirado en sysarmy 2026 (sueldos NETO en miles de ARS) */
+const SUELDOS_POR_LENGUAJE = {
+  "Python":     [850,920,1050,1100,1180,1250,1320,1400,1480,1550,1620,1750,1850,1950,2100,2300,2500,2800,3200,3600],
+  "JavaScript": [780,850,920,980,1050,1120,1200,1280,1350,1420,1500,1580,1680,1780,1900,2050,2250,2500,2850,3100],
+  "Java":       [900,980,1080,1150,1220,1300,1380,1450,1520,1600,1680,1770,1870,1980,2100,2250,2450,2700,3050,3500],
+  "Go":         [1100,1200,1320,1420,1520,1620,1720,1820,1920,2020,2150,2280,2420,2580,2750,2950,3200,3500,3900,4400],
+  "Rust":       [1200,1320,1450,1560,1680,1800,1920,2040,2160,2280,2420,2560,2720,2880,3050,3250,3500,3800,4200,4800],
+  "C#":         [820,890,970,1040,1110,1180,1250,1330,1410,1490,1570,1660,1760,1870,1990,2130,2300,2520,2800,3150],
+  "PHP":        [650,720,790,850,910,970,1030,1100,1170,1240,1310,1390,1480,1580,1690,1820,1970,2150,2380,2700],
+};
+const CORR_VARS = ["Sueldo NETO","Años exp.","Antigüedad","Hs/día","Personas a cargo","Edad"];
+const CORR_MATRIX = [
+  [1.00, 0.62, 0.35,-0.12, 0.48, 0.55],
+  [0.62, 1.00, 0.58,-0.05, 0.41, 0.78],
+  [0.35, 0.58, 1.00, 0.02, 0.30, 0.52],
+  [-0.12,-0.05,0.02, 1.00,-0.08,-0.03],
+  [0.48, 0.41, 0.30,-0.08, 1.00, 0.38],
+  [0.55, 0.78, 0.52,-0.03, 0.38, 1.00],
+];
+const SCATTER = (function(){
+  const sen = ["Junior","Semi Senior","Senior","Lead"], rows=[];
+  for (let i=0;i<220;i++){
+    const s = sen[Math.min(3, Math.floor(Math.random()*Math.random()*4))];
+    const base = {Junior:[0,3,700],"Semi Senior":[2,6,1100],Senior:[5,12,1700],Lead:[8,20,2400]}[s];
+    const exp = base[0]+Math.random()*(base[1]-base[0]);
+    const sal = base[2]+exp*90+(Math.random()-0.5)*500;
+    rows.push({exp:+exp.toFixed(1), sal:Math.round(sal), seniority:s});
+  }
+  return rows;
+})();
+const SUELDOS_FLAT = Object.values(SUELDOS_POR_LENGUAJE).flat();
+function quartiles(arr){
+  const s=[...arr].sort((a,b)=>a-b);
+  const q=p=>{const i=(s.length-1)*p,lo=Math.floor(i),hi=Math.ceil(i);return s[lo]+(s[hi]-s[lo])*(i-lo);};
+  const q1=q(.25),q2=q(.5),q3=q(.75),iqr=q3-q1,lo=q1-1.5*iqr,hi=q3+1.5*iqr;
+  return {min:s.find(v=>v>=lo), q1,q2,q3, max:[...s].reverse().find(v=>v<=hi), outliers:s.filter(v=>v<lo||v>hi)};
+}
+
+/* Tabs */
+const tabs = document.querySelectorAll('#tabs button');
+const panels = document.querySelectorAll('.panel');
+const rendered = new Set(['compare']);
+tabs.forEach(b => b.addEventListener('click', () => {
+  tabs.forEach(x=>x.classList.remove('active'));
+  panels.forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const tab = b.dataset.tab;
+  document.getElementById('panel-'+tab).classList.add('active');
+  if (!rendered.has(tab)) { renderTab(tab); rendered.add(tab); }
+}));
+
+function renderTab(tab){
+  if (tab==='plot') renderObservablePlot();
+  if (tab==='echarts') renderECharts();
+  if (tab==='apex') renderApex();
+  if (tab==='plotly') renderPlotly();
+}
+
+/* ────── Observable Plot ────── */
+function renderObservablePlot(){
+  const W = 1050;
+  const flat = SUELDOS_FLAT.map(v=>({sueldo:v}));
+  const mediana = d3.median(SUELDOS_FLAT);
+  document.getElementById('plot-hist').append(Plot.plot({
+    width:W, height:300, marginLeft:60,
+    x:{label:"Sueldo NETO (miles ARS) →"},
+    y:{label:"↑ Frecuencia", grid:true},
+    marks:[
+      Plot.rectY(flat, Plot.binX({y:"count"},{x:"sueldo", fill:"#7c9cff", fillOpacity:.85})),
+      Plot.ruleX([mediana],{stroke:"#ff5577", strokeWidth:2, strokeDasharray:"4 3"}),
+      Plot.text([{x:mediana,y:0,label:`mediana ${mediana}`}],{x:"x",y:"y",text:"label",dy:-10,fill:"#ff5577",fontWeight:"bold"}),
+      Plot.ruleY([0])
+    ]
+  }));
+  const longData = Object.entries(SUELDOS_POR_LENGUAJE).flatMap(([lang,vals])=>vals.map(v=>({lang,sueldo:v})));
+  document.getElementById('plot-box').append(Plot.plot({
+    width:W, height:340, marginLeft:90,
+    x:{label:"Sueldo NETO (miles ARS) →", grid:true}, y:{label:null},
+    marks:[Plot.boxX(longData,{x:"sueldo", y:"lang", fill:"#5cd3c7", sort:{y:"x", reduce:"median", reverse:true}})]
+  }));
+  const corr = [];
+  CORR_MATRIX.forEach((row,i)=>row.forEach((v,j)=>corr.push({x:CORR_VARS[j], y:CORR_VARS[i], v})));
+  document.getElementById('plot-heat').append(Plot.plot({
+    width:W, height:440, marginLeft:130, marginBottom:100,
+    x:{label:null, tickRotate:-30}, y:{label:null},
+    color:{type:"diverging", scheme:"RdBu", domain:[-1,1], legend:true},
+    marks:[
+      Plot.cell(corr,{x:"x",y:"y",fill:"v",inset:1}),
+      Plot.text(corr,{x:"x",y:"y",text:d=>d.v.toFixed(2),fill:d=>Math.abs(d.v)>0.5?"white":"#1b2140",fontWeight:"bold"})
+    ]
+  }));
+  document.getElementById('plot-scatter').append(Plot.plot({
+    width:W, height:360, marginLeft:70,
+    x:{label:"Años experiencia →", grid:true},
+    y:{label:"↑ Sueldo NETO (miles ARS)", grid:true},
+    color:{legend:true, scheme:"Tableau10"},
+    marks:[
+      Plot.dot(SCATTER,{x:"exp",y:"sal",fill:"seniority",r:5,fillOpacity:.75,stroke:"white",strokeWidth:.5}),
+      Plot.linearRegressionY(SCATTER,{x:"exp",y:"sal",stroke:"#1b2140",strokeDasharray:"4 3"})
+    ]
+  }));
+}
+
+/* ────── ECharts ────── */
+function renderECharts(){
+  const theme = {color:['#7c9cff','#5cd3c7','#ffb86b','#ff7ca8','#a78bff'], textStyle:{color:'#e8ecf8'}, backgroundColor:'transparent'};
+  const langs = Object.keys(SUELDOS_POR_LENGUAJE);
+  const boxData=[], outData=[];
+  langs.forEach((l,i)=>{
+    const q=quartiles(SUELDOS_POR_LENGUAJE[l]);
+    boxData.push([q.min,q.q1,q.q2,q.q3,q.max]);
+    q.outliers.forEach(v=>outData.push([i,v]));
+  });
+  echarts.init(document.getElementById('ec-box')).setOption({
+    ...theme, tooltip:{trigger:'item'},
+    grid:{left:70,right:30,top:20,bottom:40},
+    xAxis:{type:'category',data:langs,axisLine:{lineStyle:{color:'#8a93b3'}}},
+    yAxis:{type:'value',name:'Sueldo (miles)',splitLine:{lineStyle:{color:'#232a4d'}},axisLine:{lineStyle:{color:'#8a93b3'}}},
+    series:[
+      {name:'box',type:'boxplot',data:boxData,itemStyle:{color:'#7c9cff55',borderColor:'#7c9cff'}},
+      {name:'outlier',type:'scatter',data:outData,symbolSize:8,itemStyle:{color:'#ff7ca8'}}
+    ]
+  });
+  const heatData=[];
+  CORR_MATRIX.forEach((row,i)=>row.forEach((v,j)=>heatData.push([j,i,+v.toFixed(2)])));
+  echarts.init(document.getElementById('ec-heat')).setOption({
+    ...theme, tooltip:{position:'top'},
+    grid:{left:130,right:60,top:20,bottom:110},
+    xAxis:{type:'category',data:CORR_VARS,splitArea:{show:true},axisLabel:{rotate:-25}},
+    yAxis:{type:'category',data:CORR_VARS,splitArea:{show:true}},
+    visualMap:{min:-1,max:1,calculable:true,orient:'horizontal',left:'center',bottom:10,
+               inRange:{color:['#b93a55','#f0f0f5','#3c6ef0']},textStyle:{color:'#e8ecf8'}},
+    series:[{type:'heatmap',data:heatData,label:{show:true,color:'#0b1020',fontWeight:'bold'}}]
+  });
+  const bySen={};
+  SCATTER.forEach(d=>(bySen[d.seniority]||=[]).push([d.exp,d.sal]));
+  echarts.init(document.getElementById('ec-scatter')).setOption({
+    ...theme, legend:{top:6,textStyle:{color:'#e8ecf8'}},
+    tooltip:{trigger:'item'}, grid:{left:70,right:30,top:40,bottom:50},
+    xAxis:{type:'value',name:'Años experiencia',splitLine:{lineStyle:{color:'#232a4d'}}},
+    yAxis:{type:'value',name:'Sueldo (miles)',splitLine:{lineStyle:{color:'#232a4d'}}},
+    series:Object.entries(bySen).map(([name,data])=>({name,type:'scatter',data,symbolSize:10,itemStyle:{opacity:.8}}))
+  });
+}
+
+/* ────── ApexCharts ────── */
+function renderApex(){
+  const langs = Object.keys(SUELDOS_POR_LENGUAJE);
+  const boxSeries = langs.map(l=>{const q=quartiles(SUELDOS_POR_LENGUAJE[l]);return {x:l,y:[q.min,q.q1,q.q2,q.q3,q.max]};});
+  const outliers = [];
+  langs.forEach(l=>{const q=quartiles(SUELDOS_POR_LENGUAJE[l]);q.outliers.forEach(v=>outliers.push({x:l,y:v}));});
+  new ApexCharts(document.getElementById('apex-box'),{
+    chart:{type:'boxPlot',height:380,toolbar:{show:false},fontFamily:'inherit'},
+    series:[{name:'Sueldo',type:'boxPlot',data:boxSeries},{name:'Outliers',type:'scatter',data:outliers}],
+    colors:['#0072ff','#ff4d6d'],
+    plotOptions:{boxPlot:{colors:{upper:'#7ab8ff',lower:'#cfe4ff'}}},
+    xaxis:{type:'category'}, yaxis:{title:{text:'Sueldo (miles ARS)'}}
+  }).render();
+  const bins=20, min=Math.min(...SUELDOS_FLAT), max=Math.max(...SUELDOS_FLAT), step=(max-min)/bins;
+  const counts=new Array(bins).fill(0);
+  SUELDOS_FLAT.forEach(v=>counts[Math.min(bins-1,Math.floor((v-min)/step))]++);
+  new ApexCharts(document.getElementById('apex-hist'),{
+    chart:{type:'bar',height:340,toolbar:{show:false},fontFamily:'inherit'},
+    series:[{name:'Frecuencia',data:counts}],
+    xaxis:{categories:counts.map((_,i)=>Math.round(min+i*step)),title:{text:'Sueldo (miles ARS)'},labels:{rotate:-45}},
+    yaxis:{title:{text:'Frecuencia'}}, colors:['#0072ff'],
+    plotOptions:{bar:{columnWidth:'95%',borderRadius:3}},
+    fill:{type:'gradient',gradient:{shade:'light',type:'vertical',gradientToColors:['#00b3a4'],opacityFrom:.95,opacityTo:.7}},
+    dataLabels:{enabled:false}
+  }).render();
+  const ranking = langs.map(l=>({lang:l,med:quartiles(SUELDOS_POR_LENGUAJE[l]).q2})).sort((a,b)=>b.med-a.med);
+  new ApexCharts(document.getElementById('apex-rank'),{
+    chart:{type:'bar',height:340,toolbar:{show:false},fontFamily:'inherit'},
+    series:[{name:'Mediana',data:ranking.map(r=>r.med)}],
+    xaxis:{categories:ranking.map(r=>r.lang)},
+    plotOptions:{bar:{horizontal:true,borderRadius:6,distributed:true}},
+    colors:['#0072ff','#008cff','#00a6ff','#00b8c5','#00c08a','#38c172','#7bd389'],
+    legend:{show:false}, dataLabels:{formatter:v=>v+'k'}
+  }).render();
+}
+
+/* ────── Plotly ────── */
+function renderPlotly(){
+  const langs = Object.keys(SUELDOS_POR_LENGUAJE);
+  Plotly.newPlot('plotly-violin',
+    langs.map(l=>({type:'violin',name:l,y:SUELDOS_POR_LENGUAJE[l],box:{visible:true},meanline:{visible:true},points:'all',jitter:.3,pointpos:0,marker:{size:4,opacity:.6}})),
+    {margin:{t:20,l:60,r:20,b:50},yaxis:{title:'Sueldo NETO (miles ARS)',gridcolor:'#eef0fa'},plot_bgcolor:'#fff',paper_bgcolor:'#fff',showlegend:false},
+    {displaylogo:false,responsive:true}
+  );
+  Plotly.newPlot('plotly-heat',[{
+    type:'heatmap',z:CORR_MATRIX,x:CORR_VARS,y:CORR_VARS,
+    colorscale:'RdBu',zmin:-1,zmax:1,reversescale:true,
+    text:CORR_MATRIX.map(r=>r.map(v=>v.toFixed(2))),
+    texttemplate:'%{text}',textfont:{size:13}
+  }],{margin:{t:20,l:130,r:30,b:110},xaxis:{tickangle:-25},paper_bgcolor:'#fff'},{displaylogo:false,responsive:true});
+  const splom = SCATTER.map(d=>({...d,antig:+(d.exp*0.75+Math.random()*2).toFixed(1)}));
+  const senIdx = {Junior:0,"Semi Senior":1,Senior:2,Lead:3};
+  Plotly.newPlot('plotly-splom',[{
+    type:'splom',
+    dimensions:[
+      {label:'Experiencia',values:splom.map(d=>d.exp)},
+      {label:'Antigüedad',values:splom.map(d=>d.antig)},
+      {label:'Sueldo NETO',values:splom.map(d=>d.sal)}
+    ],
+    text:splom.map(d=>d.seniority),
+    marker:{color:splom.map(d=>senIdx[d.seniority]),
+            colorscale:[[0,'#7c9cff'],[.33,'#5cd3c7'],[.66,'#ffb86b'],[1,'#ff7ca8']],
+            size:6,opacity:.75,line:{color:'white',width:.5}},
+    diagonal:{visible:false},showupperhalf:false
+  }],{margin:{t:20,l:60,r:20,b:60},paper_bgcolor:'#fff',plot_bgcolor:'#fafbff'},{displaylogo:false,responsive:true});
+}
+</script>
+</body>
+</html>

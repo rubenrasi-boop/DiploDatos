@@ -1,123 +1,1552 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Entregable AyVD Parte 1 — Generador de informe HTML/PDF
+Entregable AyVD — Parte 1
 Diplomatura en Ciencia de Datos 2026 — FAMAF, UNC
 
-Alumno: Rubén Rasi
-Docente de seguimiento: Fredy Alexander Restrepo Blandon
+Alumno:  Rubén Rasi
+Docente: Fredy Alexander Restrepo Blandon
 
-Objetivos:
-  - Describir y analizar la base desde varios ángulos
-  - Múltiples variables, visualmente y con medidas descriptivas
-  - Observar relaciones
-  - Plantear preguntas, hipótesis y diseñar un abordaje
-
-Ejercicios:
-  1. Análisis descriptivo: ¿Cuáles son los lenguajes de programación asociados
-     a los mejores salarios?
-  2a. Densidad conjunta (3 numéricas + 2 categóricas)
-  2b. Asociación: correlación Bruto vs Neto
-  2c. Densidad condicional: salario según nivel de estudio
-  2d. Densidad conjunta condicional: scatterplot con hue
+Ejercicios cubiertos:
+    1.  ¿Cuáles son los lenguajes de programación asociados a los mejores
+        salarios?
+    2a. Densidad conjunta con 3 numéricas y 2 categóricas.
+    2b. Asociación: correlación entre sueldo BRUTO y sueldo NETO.
+    2c. Densidad condicional: sueldo según nivel de estudio.
+    2d. Densidad conjunta condicional: experiencia vs sueldo coloreada
+        por categoría (seniority, género).
 
 Uso:
-  python generar_informe.py            → genera HTML
-  python generar_informe.py --pdf      → genera HTML + PDF
+    python generar_informe.py
+        Imprime por consola los cuadros y estadísticos que se muestran
+        en el informe HTML, y escribe informe_parte1.html en el mismo
+        directorio.
 """
 
-import os
-import sys
-import warnings
+from __future__ import annotations
+
+import math
+from pathlib import Path
+from typing import List, Dict
+
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
-warnings.filterwarnings('ignore')
+pd.set_option('display.width', 130)
+pd.set_option('display.max_columns', 20)
+pd.set_option('display.max_rows', 60)
+
 
 # ============================================================
 # CONFIGURACIÓN
 # ============================================================
 
-DATASET_URL = (
-    'https://raw.githubusercontent.com/DiploDatos/'
-    'AnalisisyVisualizacion/master/sysarmy_survey_2026_processed.csv'
+BASE_DIR = Path(__file__).resolve().parent
+DATA_PATH = BASE_DIR / 'data' / 'sysarmy_survey_2026_processed.csv'
+OUTPUT_HTML = BASE_DIR / 'informe_parte1.html'
+
+# Umbral mínimo de observaciones para mostrar un lenguaje en el ranking.
+# No descarta datos: es una exclusión de visualización (ver sección 1.5).
+N_MIN_LENGUAJE = 30
+
+# Paleta clara con contraste suave pero perceptible
+PALETA = ['#5B8DEF', '#6BBF80', '#E8A04F', '#C96C6C',
+          '#9673C0', '#4BAFB0', '#C78EB0', '#8C99AD',
+          '#D6A35C', '#70A9A1', '#A4B8D3', '#B8868B']
+COLOR_BASE = '#5B8DEF'
+COLOR_GRID = '#E6E8EF'
+COLOR_TEXTO = '#2E3440'
+BG_PLOT = '#FAFBFC'
+
+
+def titulo(texto: str) -> None:
+    print(f'\n=== {texto} ' + '=' * max(0, 70 - len(texto)))
+
+
+# ============================================================
+# 1.0  Carga del conjunto de datos
+# ============================================================
+
+df = pd.read_csv(DATA_PATH)
+N_INICIAL = len(df)
+
+titulo('1.0  Carga')
+print(f'archivo:          {DATA_PATH.name}')
+print(f'filas iniciales:  {N_INICIAL}')
+print(f'columnas totales: {len(df.columns)}')
+
+
+# ============================================================
+# 1.1  Selección de columnas relevantes
+# ============================================================
+# Se retienen únicamente las variables necesarias para el ejercicio.
+
+COLUMNAS_RELEVANTES = [
+    'tools_programming_languages',   # variable explicativa ej 1
+    'salary_monthly_NETO',           # variable respuesta principal
+    'salary_monthly_BRUTO',          # segunda variable de sueldo (2b)
+    'salary_in_usd',                 # tipo de dolarización (ej 1)
+    'work_dedication',               # filtro de homogeneidad
+    'work_contract_type',            # filtro de homogeneidad
+    'profile_years_experience',      # ej 2a, 2d
+    'profile_age',                   # ej 2a
+    'work_seniority',                # ej 2a, 2d
+    'profile_studies_level',         # ej 2c
+    'profile_studies_level_state',   # ej 2c
+    'profile_gender',                # ej 2a, 2d
+]
+df = df[COLUMNAS_RELEVANTES].copy()
+
+titulo('1.1  Columnas retenidas')
+print(pd.DataFrame({'columna': COLUMNAS_RELEVANTES}))
+
+
+# ============================================================
+# 1.2  Análisis de la variable sueldo y su dolarización
+# ============================================================
+# Se ejecuta antes del filtrado: define cómo interpretar la columna
+# respuesta y cómo se estratifica el análisis por grupo de moneda.
+
+# Se preserva el valor literal de salary_in_usd. El único tratamiento
+# es reemplazar NaN por la etiqueta '(sin declarar)' para poder indexar
+# la fila correspondiente en los agrupamientos.
+df['moneda_categoria'] = df['salary_in_usd'].fillna('(sin declarar)')
+
+orden_cats = [
+    '(sin declarar)',
+    'Mi sueldo está dolarizado (pero cobro en moneda local)',
+    'Cobro parte del salario en dólares',
+    'Cobro todo el salario en dólares',
+]
+resumen_moneda = (
+    df.groupby('moneda_categoria')['salary_monthly_NETO']
+    .agg(n='count',
+         mediana='median',
+         q1=lambda x: x.quantile(.25),
+         q3=lambda x: x.quantile(.75))
+    .reindex(orden_cats)
+    .round(0)
 )
 
-ENTREGABLES_DIR = os.path.join(
-    os.path.dirname(__file__), '..', '..', '..',
-    'AnalisisyVisualizacion', 'entregables', 'parte1'
+med_sin_dato = resumen_moneda.loc['(sin declarar)', 'mediana']
+med_ligado = resumen_moneda.loc[
+    'Mi sueldo está dolarizado (pero cobro en moneda local)', 'mediana']
+diff_pct = 100 * (med_ligado - med_sin_dato) / med_sin_dato
+
+titulo('1.2  Sueldo NETO por valor literal de salary_in_usd')
+print(resumen_moneda)
+print(f'\ndiferencia grupo NaN vs "Mi sueldo está dolarizado '
+      f'(pero cobro en moneda local)": {diff_pct:+.2f} %')
+
+# Grupos analíticos derivados: ARS, USD parcial, USD total. No son
+# valores del dataset sino etiquetas para agrupar los 4 estados
+# literales en 3 subpoblaciones con comportamiento salarial comparable.
+MAPEO_GRUPO = {
+    '(sin declarar)':                                           'ARS',
+    'Mi sueldo está dolarizado (pero cobro en moneda local)':   'ARS',
+    'Cobro parte del salario en dólares':                       'USD parcial',
+    'Cobro todo el salario en dólares':                         'USD total',
+}
+df['moneda_grupo'] = df['moneda_categoria'].map(MAPEO_GRUPO)
+
+titulo('1.2  Grupos de moneda derivados')
+print(df['moneda_grupo'].value_counts().to_frame('n'))
+
+
+# ============================================================
+# 1.3  Limpieza y filtrado progresivo
+# ============================================================
+
+filtros_aplicados: List[Dict] = []
+
+
+def aplicar_filtro(dataframe: pd.DataFrame, nombre: str,
+                   motivo: str, mascara: pd.Series) -> pd.DataFrame:
+    n_antes = len(dataframe)
+    nuevo = dataframe[mascara].copy()
+    n_despues = len(nuevo)
+    filtros_aplicados.append({
+        'filtro': nombre,
+        'motivo': motivo,
+        'n_antes': n_antes,
+        'n_despues': n_despues,
+        'recorte': n_antes - n_despues,
+        'pct': round(100 * (n_antes - n_despues) / n_antes, 1) if n_antes else 0,
+    })
+    return nuevo
+
+
+# F1 — sin lenguaje declarado o sin sueldo NETO
+df = aplicar_filtro(
+    df,
+    'F1 - sin lenguaje o sin sueldo NETO',
+    'observaciones sin alguna de las dos variables principales no aportan.',
+    df['tools_programming_languages'].notna() & df['salary_monthly_NETO'].notna(),
 )
-OUTPUT_HTML = os.path.join(ENTREGABLES_DIR, 'entregable_ayvd_parte1.html')
-OUTPUT_PDF = os.path.join(ENTREGABLES_DIR, 'entregable_ayvd_parte1.pdf')
+
+# F2 — solo jornada Full-Time
+df = aplicar_filtro(
+    df,
+    'F2 - solo jornada Full-Time',
+    'jornada reducida no es comparable con jornada completa.',
+    df['work_dedication'] == 'Full-Time',
+)
+
+# F3 — contratos cuyo ingreso es un sueldo mensual
+# Se retienen las tres modalidades en las que el respondente cobra un
+# sueldo mensual. Se descartan Freelance y Cooperativa porque facturan
+# por honorarios, monotributo o participación societaria.
+CONTRATOS_VALIDOS = [
+    'Staff (planta permanente)',
+    'Contractor',
+    'Tercerizado (trabajo a través de consultora o agencia)',
+]
+df = aplicar_filtro(
+    df,
+    'F3 - contratos con ingreso en forma de sueldo mensual',
+    'Se conservan los valores literales "Staff (planta permanente)", '
+    '"Contractor" y "Tercerizado (trabajo a través de consultora o '
+    'agencia)" de work_contract_type, cuyo ingreso es un sueldo '
+    'mensual. Se descartan "Freelance" y "Participación societaria en '
+    'una cooperativa" porque facturan por honorarios o participación, '
+    'y su ingreso no es directamente comparable con un sueldo NETO.',
+    df['work_contract_type'].isin(CONTRATOS_VALIDOS),
+)
+
+
+# F4 — regla de Tukey 1,5·IQR aplicada dentro de cada grupo de moneda
+# Para cada grupo se calculan Q1 y Q3 del sueldo NETO y se descartan
+# las observaciones fuera de [Q1 − 1,5·IQR, Q3 + 1,5·IQR]. La
+# estratificación es necesaria porque ARS, USD parcial y USD total
+# tienen medianas naturalmente distintas: un IQR calculado sobre el
+# conjunto completo no separaría correctamente los atípicos de cada
+# subpoblación.
+def mascara_iqr_por_grupo(dframe: pd.DataFrame, col: str, grupo: str) -> pd.Series:
+    mask = pd.Series(False, index=dframe.index)
+    for _, sub in dframe.groupby(grupo):
+        q1, q3 = sub[col].quantile([.25, .75])
+        iqr = q3 - q1
+        lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+        mask.loc[sub.index] = sub[col].between(lo, hi)
+    return mask
+
+
+df = aplicar_filtro(
+    df,
+    'F4 - valores atípicos con regla 1,5·IQR por grupo de moneda',
+    'Se aplica la regla clásica de Tukey [Q1 − 1,5·IQR, Q3 + 1,5·IQR] '
+    'al sueldo NETO, calculando Q1, Q3 e IQR por separado dentro de '
+    'cada grupo de moneda (ARS, USD parcial, USD total). La '
+    'estratificación impide mezclar poblaciones con medianas distintas '
+    'en un único cálculo, que resultaría demasiado amplio para detectar '
+    'atípicos dentro de cada subpoblación.',
+    mascara_iqr_por_grupo(df, 'salary_monthly_NETO', 'moneda_grupo'),
+)
+
+N_FINAL = len(df)
+df_filtros = pd.DataFrame(filtros_aplicados)
+
+titulo('1.3  Secuencia de filtros aplicados')
+print(df_filtros[['filtro', 'n_antes', 'n_despues', 'recorte', 'pct']]
+      .to_string(index=False))
+print(f'\nN inicial: {N_INICIAL}  →  N final: {N_FINAL}  '
+      f'(recorte total {100*(N_INICIAL-N_FINAL)/N_INICIAL:.1f} %)')
+
 
 # ============================================================
-# CARGA DE DATOS
+# 1.4  Desanidado de la lista de lenguajes
 # ============================================================
+# Cada respondente declara una lista separada por comas. Se pasa a
+# formato largo: una fila por (persona, lenguaje). Una persona que
+# usa N lenguajes contribuye a N grupos distintos.
 
-# TODO: implementar
+df_long = df.assign(
+    lenguaje=df['tools_programming_languages'].str.split(',')
+).explode('lenguaje')
+df_long['lenguaje'] = df_long['lenguaje'].str.strip()
+df_long = df_long[df_long['lenguaje'].astype(bool)]
 
+PROMEDIO_LENGS = len(df_long) / max(len(df), 1)
+freq = df_long['lenguaje'].value_counts()
 
-# ============================================================
-# EJERCICIO 1 — Análisis descriptivo: Lenguajes y salarios
-# ============================================================
-
-# 1.1 Selección de columnas relevantes
-# TODO: implementar
-
-# 1.2 Selección y limpieza de filas
-# TODO: implementar
-
-# 1.3 Conteo de frecuencias de lenguajes
-# TODO: implementar
-
-# 1.4 Filtrado de lenguajes relevantes
-# TODO: implementar
-
-# 1.5 Métricas y análisis
-# TODO: implementar
-
-# 1.6 Conclusiones
-# TODO: implementar
+titulo('1.4  Frecuencias después del desanidado')
+print(f'filas tras desanidar:               {len(df_long)}')
+print(f'lenguajes por respondente (prom.):  {PROMEDIO_LENGS:.2f}')
+print(f'lenguajes únicos detectados:        {len(freq)}')
+print('\ntop 15 por frecuencia:')
+print(freq.head(15).to_frame('n'))
 
 
 # ============================================================
-# EJERCICIO 2a — Densidad conjunta
+# 1.5  Umbral de frecuencia mínima (exclusión de visualización)
 # ============================================================
+# Es una exclusión de visualización, no un filtro sobre los datos:
+# los lenguajes con n < N_MIN_LENGUAJE siguen en df_long.
 
-# TODO: implementar
+lenguajes_mostrables = sorted(freq[freq >= N_MIN_LENGUAJE].index.tolist())
+n_excluidos = int((freq < N_MIN_LENGUAJE).sum())
 
+titulo(f'1.5  Umbral de visualización (n ≥ {N_MIN_LENGUAJE})')
+print(f'incluidos en el ranking:  {len(lenguajes_mostrables)}')
+print(f'excluidos de la vista:    {n_excluidos}')
 
-# ============================================================
-# EJERCICIO 2b — Asociación: Bruto vs Neto
-# ============================================================
-
-# TODO: implementar
-
-
-# ============================================================
-# EJERCICIO 2c — Densidad condicional: salario según estudio
-# ============================================================
-
-# TODO: implementar
+df_rank = df_long[df_long['lenguaje'].isin(lenguajes_mostrables)].copy()
 
 
 # ============================================================
-# EJERCICIO 2d — Densidad conjunta condicional (hue)
+# 1.6  Resumen por lenguaje y dispersión relativa de la mediana
+# ============================================================
+# Indicador descriptivo que combina la dispersión del 50 % central
+# (IQR), el tamaño de muestra (n) y el valor de la mediana:
+#
+#   disp_i  =  100 · IQR_i / ( √n_i · mediana_i )      (en %)
+#
+# A mayor dispersión o menor n, mayor es disp_i. Se utiliza como
+# indicador puramente descriptivo: no supone una distribución ni
+# realiza inferencia.
+#
+# Criterio de estabilidad (sin umbrales arbitrarios):
+#   un lenguaje se marca como "dispersión alta" si
+#       disp_i  >  2 · mediana(disp)
+# sobre el conjunto de lenguajes mostrados. El umbral se recalibra
+# solo con cada corrida porque depende del propio conjunto.
+
+def resumen_robusto(serie: pd.Series) -> pd.Series:
+    q1, mediana, q3 = serie.quantile([.25, .5, .75])
+    n = int(serie.count())
+    iqr = q3 - q1
+    disp_pct = (100 * iqr / (math.sqrt(n) * mediana)
+                if n > 0 and mediana else np.nan)
+    return pd.Series({
+        'n': n,
+        'mediana': mediana,
+        'q1': q1,
+        'q3': q3,
+        'iqr': iqr,
+        'disp_pct': disp_pct,
+    })
+
+
+resumen_global = (
+    df_rank.groupby('lenguaje')['salary_monthly_NETO']
+    .apply(resumen_robusto).unstack()
+    .sort_values('mediana', ascending=False)
+)
+
+disp_mediana = resumen_global['disp_pct'].median()
+UMBRAL_DISP = 2 * disp_mediana
+resumen_global['estable'] = resumen_global['disp_pct'] <= UMBRAL_DISP
+
+titulo('1.6  Resumen por lenguaje y dispersión relativa de la mediana')
+print(f'dispersión relativa mediana del conjunto: {disp_mediana:.2f} %')
+print(f'umbral (2 × mediana):                     {UMBRAL_DISP:.2f} %')
+print(f'lenguajes marcados:                       '
+      f'{(~resumen_global["estable"]).sum()}\n')
+
+vista = resumen_global.copy()
+for c in ('mediana', 'q1', 'q3', 'iqr'):
+    vista[c] = '$ ' + (vista[c] / 1e6).round(2).astype(str) + ' M'
+vista['disp_pct'] = vista['disp_pct'].round(2).astype(str) + ' %'
+vista['estable'] = vista['estable'].map({True: 'sí', False: 'no'})
+print(vista.to_string())
+
+marcados = resumen_global[~resumen_global['estable']]
+
+# Resumen segmentado por grupo de moneda (para el gráfico G3)
+resumen_por_grupo = (
+    df_rank.groupby(['moneda_grupo', 'lenguaje'])['salary_monthly_NETO']
+    .agg(n='count', mediana='median').reset_index()
+)
+resumen_por_grupo = resumen_por_grupo[resumen_por_grupo['n'] >= 10]
+
+titulo('1.6  Mediana por grupo de moneda × lenguaje (n ≥ 10)')
+print(resumen_por_grupo
+      .sort_values(['moneda_grupo', 'mediana'], ascending=[True, False])
+      .to_string(index=False))
+
+
+# ============================================================
+# 1.7  Gráficos (Plotly)
 # ============================================================
 
-# TODO: implementar
+def layout_claro(fig: go.Figure, titulo_fig: str, alto: int = 460) -> go.Figure:
+    fig.update_layout(
+        title=dict(text=titulo_fig, font=dict(size=15, color=COLOR_TEXTO)),
+        plot_bgcolor=BG_PLOT,
+        paper_bgcolor='white',
+        font=dict(family='-apple-system, Segoe UI, Inter, sans-serif',
+                  size=12, color=COLOR_TEXTO),
+        margin=dict(l=80, r=40, t=60, b=80),
+        height=alto,
+    )
+    fig.update_xaxes(gridcolor=COLOR_GRID, linecolor=COLOR_GRID, zerolinecolor=COLOR_GRID)
+    fig.update_yaxes(gridcolor=COLOR_GRID, linecolor=COLOR_GRID, zerolinecolor=COLOR_GRID)
+    return fig
+
+
+orden_lenguajes = resumen_global.index.tolist()
+estables = resumen_global['estable'].to_dict()
+
+# Paleta desaturada para las barras de grupo de moneda (G3)
+COLORES_MONEDA = {
+    'ARS':         '#7B96C9',   # azul polvo
+    'USD parcial': '#D4A574',   # arena
+    'USD total':   '#8FB39E',   # salvia
+}
+
+# G1 — Ranking por mediana. Los lenguajes con dispersión alta llevan
+# asterisco y opacidad reducida.
+etiquetas_y = [f'{l} *' if not estables[l] else l for l in orden_lenguajes]
+opacidades = [0.45 if not estables[l] else 1.0 for l in orden_lenguajes]
+max_mediana_m = float(resumen_global['mediana'].max() / 1e6)
+fig_rank = go.Figure(go.Bar(
+    x=resumen_global['mediana'] / 1e6,
+    y=etiquetas_y,
+    orientation='h',
+    marker=dict(
+        color=resumen_global['mediana'],
+        colorscale=[[0, '#CBD9EE'], [1, '#3A63A8']],
+        line=dict(color='white', width=1),
+        opacity=opacidades,
+    ),
+    text=[f'$ {v/1e6:.2f} M  (n={int(n)}, disp. {d:.1f} %)'
+          for v, n, d in zip(resumen_global['mediana'],
+                              resumen_global['n'],
+                              resumen_global['disp_pct'])],
+    textposition='outside',
+    hovertemplate=('<b>%{y}</b><br>'
+                   'Mediana: $ %{x:.2f} M ARS<extra></extra>'),
+))
+fig_rank.update_layout(yaxis=dict(autorange='reversed'))
+layout_claro(fig_rank,
+             'Ranking de lenguajes por sueldo NETO mediano',
+             alto=max(420, 32 * len(orden_lenguajes) + 180))
+fig_rank.update_xaxes(title='Sueldo NETO mediano (millones de ARS)',
+                      range=[0, max_mediana_m * 1.55])
+fig_rank.update_yaxes(title='')
+fig_rank.add_annotation(
+    text=(f'*  dispersión relativa de la mediana superior a '
+          f'{UMBRAL_DISP:.1f} % (2 × la mediana del conjunto)'),
+    xref='paper', yref='paper', x=0, y=-0.08, showarrow=False,
+    font=dict(size=10, color='#5E6472'), xanchor='left',
+)
+
+# G2 — Distribución por lenguaje (diagrama de caja horizontal).
+# Los lenguajes marcados se dibujan con opacidad reducida.
+fig_box = go.Figure()
+for i, lang in enumerate(orden_lenguajes):
+    vals = df_rank[df_rank['lenguaje'] == lang]['salary_monthly_NETO'] / 1e6
+    color = PALETA[i % len(PALETA)]
+    es_estable = estables[lang]
+    fig_box.add_trace(go.Box(
+        x=vals,
+        name=lang if es_estable else f'{lang} *',
+        orientation='h',
+        marker=dict(color=color),
+        line=dict(width=1.2, color=color),
+        fillcolor=color,
+        opacity=0.55 if es_estable else 0.25,
+        boxmean=True,
+    ))
+fig_box.update_layout(showlegend=False, yaxis=dict(autorange='reversed'))
+layout_claro(fig_box,
+             'Distribución de sueldos NETO por lenguaje',
+             alto=max(420, 34 * len(orden_lenguajes) + 140))
+fig_box.update_xaxes(title='Sueldo NETO (millones de ARS)')
+fig_box.update_yaxes(title='')
+
+# G3 — Mediana por lenguaje y grupo de moneda
+pivot = (resumen_por_grupo
+         .pivot(index='lenguaje', columns='moneda_grupo', values='mediana')
+         .reindex(orden_lenguajes))
+
+fig_grupo = go.Figure()
+grupos_orden = [g for g in ['ARS', 'USD parcial', 'USD total']
+                if g in pivot.columns]
+for g in grupos_orden:
+    fig_grupo.add_trace(go.Bar(
+        x=pivot.index, y=pivot[g] / 1e6, name=g,
+        marker_color=COLORES_MONEDA.get(g, COLOR_BASE),
+        marker_line=dict(color='white', width=1),
+    ))
+fig_grupo.update_layout(
+    barmode='group',
+    legend=dict(title='Grupo de moneda', orientation='h',
+                yanchor='bottom', y=1.02, xanchor='right', x=1),
+)
+layout_claro(fig_grupo,
+             'Sueldo NETO mediano por lenguaje y grupo de moneda',
+             alto=480)
+fig_grupo.update_yaxes(title='Mediana (millones de ARS)')
+fig_grupo.update_xaxes(title='', tickangle=-30)
+
+# G4 — Frecuencia vs mediana, tamaño proporcional al IQR.
+etiquetas_g4 = [f'{l} *' if not estables[l] else l for l in resumen_global.index]
+fig_nm = go.Figure(go.Scatter(
+    x=resumen_global['n'],
+    y=resumen_global['mediana'] / 1e6,
+    mode='markers+text',
+    text=etiquetas_g4,
+    textposition='top center',
+    textfont=dict(size=10, color=COLOR_TEXTO),
+    marker=dict(
+        size=np.sqrt(resumen_global['iqr'] / 1e5) * 4 + 8,
+        color=resumen_global['mediana'],
+        colorscale=[[0, '#CBD9EE'], [1, '#3A63A8']],
+        line=dict(color='white', width=1),
+        opacity=[1.0 if c else 0.5 for c in resumen_global['estable']],
+        showscale=False,
+    ),
+    hovertemplate=('<b>%{text}</b><br>'
+                   'N: %{x}<br>'
+                   'Mediana: $ %{y:.2f} M ARS<extra></extra>'),
+))
+layout_claro(fig_nm,
+             'Frecuencia vs sueldo mediano  (tamaño = dispersión IQR)',
+             alto=500)
+fig_nm.update_xaxes(title='Cantidad de respondentes (escala logarítmica)', type='log')
+fig_nm.update_yaxes(title='Sueldo NETO mediano (millones de ARS)')
+
+titulo('1.7  Gráficos generados')
+print('G1  Ranking de lenguajes por sueldo NETO mediano')
+print('G2  Distribución de sueldos NETO por lenguaje')
+print('G3  Mediana por lenguaje y grupo de moneda')
+print('G4  Frecuencia vs sueldo mediano')
 
 
 # ============================================================
-# GENERACIÓN DEL INFORME HTML
+# 1.8  Conclusiones
 # ============================================================
 
-# TODO: implementar
+top3 = resumen_global.head(3)
+mediana_global = resumen_global['mediana'].median()
+premio_top = 100 * (top3['mediana'].iloc[0] / mediana_global - 1)
+
+conclusiones = [
+    f'Los tres lenguajes con mejor sueldo NETO mediano son: '
+    f'{", ".join(top3.index)}.',
+
+    f'{top3.index[0]} encabeza el ranking con una mediana de '
+    f'{top3["mediana"].iloc[0]/1e6:.2f} millones de ARS, un '
+    f'{premio_top:.0f} % por encima de la mediana del conjunto de '
+    f'lenguajes analizados.',
+
+    'El análisis preliminar de la variable sueldo confirma que la columna '
+    'salary_monthly_NETO contiene el total pesificado del sueldo para todos '
+    'los respondentes, lo que habilita un ranking único sobre una variable '
+    'coherente.',
+
+    'Dentro de cada grupo de moneda el orden entre lenguajes se mantiene '
+    'razonablemente estable, pero el salto de ARS a USD total es mayor que '
+    'casi cualquier diferencia entre lenguajes dentro del mismo grupo. '
+    'Parte del premio observado para algunos lenguajes proviene de la '
+    'proporción de sueldos dolarizados en esa población.',
+
+    f'{len(marcados)} lenguajes quedan marcados porque su dispersión '
+    f'relativa de la mediana supera el doble de la dispersión relativa '
+    f'mediana del conjunto. Sus posiciones en el ranking deben leerse '
+    f'con reserva.',
+]
+
+titulo('1.8  Conclusiones')
+for i, c in enumerate(conclusiones, 1):
+    print(f'{i}. {c}')
 
 
 # ============================================================
-# GENERACIÓN PDF (opcional)
+# EJERCICIO 2 — Análisis y figuras
+# ============================================================
+# Se reutiliza df (nivel persona, N = N_FINAL) del ejercicio 1.
+# No se desanida la lista de lenguajes.
+
+titulo('2.0  Variables seleccionadas para el ejercicio 2')
+
+VARS_NUMERICAS = ['salary_monthly_NETO',
+                  'profile_years_experience',
+                  'profile_age']
+VARS_CATEGORICAS = ['work_seniority', 'profile_gender']
+GENEROS_PRINCIPALES = ['Hombre Cis', 'Mujer Cis']
+ORDEN_ESTUDIOS = [
+    'Secundario',
+    'Terciario',
+    'Universitario',
+    'Posgrado/Especialización',
+    'Maestría',
+    'Doctorado',
+    'Posdoctorado',
+]
+
+print(f'  numéricas:   {VARS_NUMERICAS}')
+print(f'  categóricas: {VARS_CATEGORICAS}')
+
+
+# --- 2.a  Estadísticos y correlaciones ---
+describe_num = (
+    df[VARS_NUMERICAS]
+    .describe(percentiles=[.10, .25, .50, .75, .90]).round(2)
+)
+corr_pearson = df[VARS_NUMERICAS].corr(method='pearson').round(3)
+corr_spearman = df[VARS_NUMERICAS].corr(method='spearman').round(3)
+
+seniority_counts = df['work_seniority'].value_counts().reindex(
+    ['Junior', 'Semi-Senior', 'Senior'])
+gender_counts = df['profile_gender'].value_counts()
+
+titulo('2.a  Estadísticos de numéricas y correlaciones')
+print(describe_num.to_string())
+print('\ncorrelación de Spearman:')
+print(corr_spearman.to_string())
+
+
+# --- 2.b  Bruto vs Neto + columna DESCUENTOS (clase 03) ---
+bn = df[['salary_monthly_BRUTO', 'salary_monthly_NETO']].dropna()
+bn = bn[(bn['salary_monthly_BRUTO'] > 0) & (bn['salary_monthly_NETO'] > 0)]
+bn['ratio_neto_bruto'] = bn['salary_monthly_NETO'] / bn['salary_monthly_BRUTO']
+# Columna derivada tal como se enseña en el práctico de la clase 03
+bn['descuentos'] = bn['salary_monthly_BRUTO'] - bn['salary_monthly_NETO']
+bn['descuentos_pct'] = 100 * bn['descuentos'] / bn['salary_monthly_BRUTO']
+
+p_bn = bn[['salary_monthly_BRUTO', 'salary_monthly_NETO']].corr(
+    method='pearson').iloc[0, 1]
+s_bn = bn[['salary_monthly_BRUTO', 'salary_monthly_NETO']].corr(
+    method='spearman').iloc[0, 1]
+ratio_mediana = bn['ratio_neto_bruto'].median()
+ratio_media = bn['ratio_neto_bruto'].mean()
+coef_reg = np.polyfit(bn['salary_monthly_BRUTO'],
+                      bn['salary_monthly_NETO'], 1)
+
+desc_mediano = bn['descuentos'].median()
+desc_pct_mediano = bn['descuentos_pct'].median()
+desc_pct_q1 = bn['descuentos_pct'].quantile(.25)
+desc_pct_q3 = bn['descuentos_pct'].quantile(.75)
+
+titulo('2.b  Asociación Bruto vs Neto')
+print(f'  n válidos:       {len(bn)}')
+print(f'  Pearson:         {p_bn:.4f}')
+print(f'  Spearman:        {s_bn:.4f}')
+print(f'  ratio mediano:   {ratio_mediana:.4f}')
+print(f'  descuentos mediano:         ${desc_mediano:,.0f}'.replace(',', '.'))
+print(f'  descuento % mediano:        {desc_pct_mediano:.2f} %')
+print(f'  descuento % Q1 - Q3:        {desc_pct_q1:.2f} % - '
+      f'{desc_pct_q3:.2f} %')
+
+
+# --- 2.c  Sueldo por nivel de estudio y subpoblaciones seleccionadas ---
+df_estudios = df[df['profile_studies_level'].notna()].copy()
+niveles_presentes = [n for n in ORDEN_ESTUDIOS
+                     if n in df_estudios['profile_studies_level'].unique()]
+describe_estudios = (
+    df_estudios.groupby('profile_studies_level')['salary_monthly_NETO']
+    .agg(n='count', mediana='median',
+         q1=lambda x: x.quantile(.25),
+         q3=lambda x: x.quantile(.75))
+    .reindex(niveles_presentes)
+    .round(0)
+)
+
+# Selección de las 2 subpoblaciones más numerosas (consigna literal)
+n_por_nivel = (
+    df_estudios['profile_studies_level']
+    .value_counts()
+    .reindex(niveles_presentes)
+)
+SUBPOB_SELECCIONADAS = (
+    n_por_nivel.sort_values(ascending=False).head(2).index.tolist()
+)
+
+# Medidas de centralización y dispersión por subpoblación
+medidas_subpob = {}
+for nivel in SUBPOB_SELECCIONADAS:
+    sub = df_estudios[
+        df_estudios['profile_studies_level'] == nivel]['salary_monthly_NETO']
+    q1, mediana, q3 = sub.quantile([.25, .5, .75])
+    medidas_subpob[nivel] = {
+        'n':       int(sub.count()),
+        'media':   round(sub.mean(), 0),
+        'mediana': round(mediana, 0),
+        'std':     round(sub.std(), 0),
+        'Q1':      round(q1, 0),
+        'Q3':      round(q3, 0),
+        'IQR':     round(q3 - q1, 0),
+    }
+tabla_medidas_subpob = pd.DataFrame(medidas_subpob).T
+
+# Análisis de independencia vía probabilidad condicional (clase 01)
+#   A = sueldo NETO > mediana global del subset con estudios declarados
+#   B_i = nivel de estudio = subpoblación seleccionada i
+# Si fueran independientes, P(A|B_i) ≈ P(A).
+sal_todos_est = df_estudios['salary_monthly_NETO']
+umbral_mediana_est = sal_todos_est.median()
+P_A_est = (sal_todos_est > umbral_mediana_est).mean()
+
+p_cond_subpob = {}
+for nivel in SUBPOB_SELECCIONADAS:
+    sub = df_estudios[
+        df_estudios['profile_studies_level'] == nivel]['salary_monthly_NETO']
+    p_cond_subpob[nivel] = (sub > umbral_mediana_est).mean()
+
+titulo('2.c  Sueldo NETO por nivel de estudio')
+print(f'  cobertura: {len(df_estudios)}/{len(df)} '
+      f'({100*len(df_estudios)/len(df):.1f} %)')
+print(describe_estudios.to_string())
+print(f'\n  subpoblaciones más numerosas: {SUBPOB_SELECCIONADAS}')
+print(f'  P(A) marginal (sueldo > mediana global): {P_A_est:.4f}')
+for nivel, p in p_cond_subpob.items():
+    print(f'  P(A | {nivel}): {p:.4f}   '
+          f'(distancia a P(A): {abs(p - P_A_est):.4f})')
+
+
+# --- 2.d  Por seniority y por género ---
+seniority_stats = (
+    df.groupby('work_seniority')['salary_monthly_NETO']
+    .agg(n='count', mediana='median',
+         q1=lambda x: x.quantile(.25),
+         q3=lambda x: x.quantile(.75))
+    .reindex(['Junior', 'Semi-Senior', 'Senior'])
+    .round(0)
+)
+
+df_gender = df[df['profile_gender'].isin(GENEROS_PRINCIPALES)].copy()
+gender_stats = (
+    df_gender.groupby('profile_gender')['salary_monthly_NETO']
+    .agg(n='count', mediana='median',
+         q1=lambda x: x.quantile(.25),
+         q3=lambda x: x.quantile(.75))
+    .reindex(GENEROS_PRINCIPALES)
+    .round(0)
+)
+
+med_hombre = gender_stats.loc['Hombre Cis', 'mediana']
+med_mujer = gender_stats.loc['Mujer Cis', 'mediana']
+brecha_ratio = med_mujer / med_hombre
+
+titulo('2.d  Seniority y género')
+print('por seniority:')
+print(seniority_stats.to_string())
+print('\npor género (restringido a Hombre Cis y Mujer Cis):')
+print(gender_stats.to_string())
+print(f'\nbrecha relativa a favor de Hombre Cis: '
+      f'{100*(1-brecha_ratio):.1f} %')
+
+
+# ============================================================
+# Figuras del ejercicio 2 (Plotly)
 # ============================================================
 
-if '--pdf' in sys.argv:
-    # TODO: implementar (weasyprint o similar)
-    pass
+# --- G5  Histogramas de las 3 numéricas (subplots 1x3) ---
+fig_g5 = make_subplots(rows=1, cols=3,
+                       subplot_titles=(
+                           'Sueldo NETO (millones de ARS)',
+                           'Años de experiencia',
+                           'Edad (años)'))
+fig_g5.add_trace(go.Histogram(
+    x=df['salary_monthly_NETO'] / 1e6, nbinsx=30,
+    marker_color='#5B8DEF', marker_line=dict(color='white', width=0.4),
+    opacity=0.85, showlegend=False), row=1, col=1)
+fig_g5.add_trace(go.Histogram(
+    x=df['profile_years_experience'], nbinsx=30,
+    marker_color='#6BBF80', marker_line=dict(color='white', width=0.4),
+    opacity=0.85, showlegend=False), row=1, col=2)
+fig_g5.add_trace(go.Histogram(
+    x=df['profile_age'], nbinsx=30,
+    marker_color='#E8A04F', marker_line=dict(color='white', width=0.4),
+    opacity=0.85, showlegend=False), row=1, col=3)
+layout_claro(fig_g5,
+             'Distribución marginal de las 3 variables numéricas',
+             alto=360)
+fig_g5.update_yaxes(title='frecuencia', row=1, col=1)
+
+
+# --- G6  Heatmap de correlación (Pearson, coherente con clase 03) ---
+fig_g6 = go.Figure(go.Heatmap(
+    z=corr_pearson.values,
+    x=corr_pearson.columns, y=corr_pearson.index,
+    colorscale=[[0, '#C96C6C'], [0.5, '#F5F7FB'], [1, '#3A63A8']],
+    zmin=-1, zmax=1,
+    text=corr_pearson.round(2).values,
+    texttemplate='%{text}',
+    textfont=dict(size=13, color='#2E3440'),
+    colorbar=dict(title='r Pearson'),
+))
+layout_claro(fig_g6,
+             'Matriz de correlación (Pearson) entre numéricas',
+             alto=420)
+fig_g6.update_xaxes(tickangle=-20)
+
+
+# --- G7  Distribución de las categóricas (subplots 1x2) ---
+fig_g7 = make_subplots(rows=1, cols=2,
+                       subplot_titles=('Nivel de seniority',
+                                       'Identidad de género'))
+fig_g7.add_trace(go.Bar(
+    x=seniority_counts.index, y=seniority_counts.values,
+    marker_color=['#5B8DEF', '#6BBF80', '#E8A04F'],
+    marker_line=dict(color='white', width=1),
+    showlegend=False,
+), row=1, col=1)
+colores_gender_bar = ['#5B8DEF' if g in GENEROS_PRINCIPALES else '#BFC4D3'
+                      for g in gender_counts.index]
+fig_g7.add_trace(go.Bar(
+    x=gender_counts.index, y=gender_counts.values,
+    marker_color=colores_gender_bar,
+    marker_line=dict(color='white', width=1),
+    showlegend=False,
+), row=1, col=2)
+layout_claro(fig_g7,
+             'Distribución de las variables categóricas',
+             alto=400)
+fig_g7.update_xaxes(tickangle=-20, row=1, col=2)
+
+
+# --- G8  Scatter BRUTO vs NETO con línea de identidad y regresión ---
+bn_plot = bn[['salary_monthly_BRUTO', 'salary_monthly_NETO']] / 1e6
+lim_g8 = float(bn_plot.values.max()) * 1.02
+fig_g8 = go.Figure()
+fig_g8.add_trace(go.Scatter(
+    x=bn_plot['salary_monthly_BRUTO'], y=bn_plot['salary_monthly_NETO'],
+    mode='markers',
+    marker=dict(size=5, color='#5B8DEF', opacity=0.35,
+                line=dict(width=0)),
+    name='observaciones',
+    hovertemplate=('BRUTO: %{x:.2f} M<br>'
+                   'NETO: %{y:.2f} M<extra></extra>'),
+))
+fig_g8.add_trace(go.Scatter(
+    x=[0, lim_g8], y=[0, lim_g8], mode='lines',
+    line=dict(color='#8C99AD', dash='dash', width=1),
+    name='identidad (neto = bruto)',
+))
+xs = np.linspace(0, lim_g8, 100)
+fig_g8.add_trace(go.Scatter(
+    x=xs, y=coef_reg[0] * xs + coef_reg[1] / 1e6,
+    mode='lines', line=dict(color='#C96C6C', width=2),
+    name=f'regresión: neto = {coef_reg[0]:.3f} · bruto',
+))
+layout_claro(fig_g8,
+             'Asociación entre sueldo BRUTO y sueldo NETO',
+             alto=520)
+fig_g8.update_xaxes(title='Sueldo BRUTO mensual (millones de ARS)',
+                    range=[0, lim_g8])
+fig_g8.update_yaxes(title='Sueldo NETO mensual (millones de ARS)',
+                    range=[0, lim_g8])
+
+
+# --- G9  Histogramas comparativos de 2 subpoblaciones (consigna 2c) ---
+# Respuesta literal a la consigna: dos subpoblaciones numerosas,
+# histogramas comparativos. Técnica tomada de la clase 03.
+col_subpob_g9 = {
+    SUBPOB_SELECCIONADAS[0]: '#5B8DEF',
+    SUBPOB_SELECCIONADAS[1]: '#C96C6C',
+}
+fig_g9 = go.Figure()
+for nivel in SUBPOB_SELECCIONADAS:
+    sub_m = (df_estudios[df_estudios['profile_studies_level'] == nivel]
+             ['salary_monthly_NETO'] / 1e6)
+    fig_g9.add_trace(go.Histogram(
+        x=sub_m,
+        name=f'{nivel} (n={len(sub_m)})',
+        marker_color=col_subpob_g9[nivel],
+        marker_line=dict(color='white', width=0.4),
+        opacity=0.55,
+        histnorm='probability density',
+        nbinsx=30,
+    ))
+    # marca de mediana de cada subpoblación
+    fig_g9.add_vline(
+        x=float(sub_m.median()),
+        line=dict(color=col_subpob_g9[nivel], width=1.5, dash='dash'),
+    )
+fig_g9.update_layout(
+    barmode='overlay',
+    legend=dict(title='subpoblación (línea = mediana)'),
+)
+layout_claro(fig_g9,
+             'Histogramas comparativos del sueldo NETO por nivel de estudio',
+             alto=480)
+fig_g9.update_yaxes(title='densidad')
+fig_g9.update_xaxes(title='Sueldo NETO (millones de ARS)')
+
+
+# --- G10  Scatter exp vs sueldo con color = seniority ---
+fig_g10 = go.Figure()
+col_seniority = {'Junior': '#6BBF80',
+                 'Semi-Senior': '#E8A04F',
+                 'Senior': '#C96C6C'}
+for nivel in ['Junior', 'Semi-Senior', 'Senior']:
+    sub = df[df['work_seniority'] == nivel]
+    fig_g10.add_trace(go.Scatter(
+        x=sub['profile_years_experience'],
+        y=sub['salary_monthly_NETO'] / 1e6,
+        mode='markers',
+        marker=dict(size=6, color=col_seniority[nivel], opacity=0.45,
+                    line=dict(width=0)),
+        name=f'{nivel} (n={len(sub)})',
+        hovertemplate=('Exp: %{x} años<br>NETO: %{y:.2f} M<extra></extra>'),
+    ))
+layout_claro(fig_g10,
+             'Experiencia vs sueldo NETO, condicionado por seniority',
+             alto=500)
+fig_g10.update_xaxes(title='Años de experiencia')
+fig_g10.update_yaxes(title='Sueldo NETO (millones de ARS)')
+
+
+# --- G11  Scatter exp vs sueldo con color = género ---
+fig_g11 = go.Figure()
+col_gender = {'Hombre Cis': '#5B8DEF', 'Mujer Cis': '#C96C6C'}
+for g in GENEROS_PRINCIPALES:
+    sub = df_gender[df_gender['profile_gender'] == g]
+    fig_g11.add_trace(go.Scatter(
+        x=sub['profile_years_experience'],
+        y=sub['salary_monthly_NETO'] / 1e6,
+        mode='markers',
+        marker=dict(size=6, color=col_gender[g], opacity=0.45,
+                    line=dict(width=0)),
+        name=f'{g} (n={len(sub)})',
+        hovertemplate=('Exp: %{x} años<br>NETO: %{y:.2f} M<extra></extra>'),
+    ))
+layout_claro(fig_g11,
+             'Experiencia vs sueldo NETO, condicionado por género',
+             alto=500)
+fig_g11.update_xaxes(title='Años de experiencia')
+fig_g11.update_yaxes(title='Sueldo NETO (millones de ARS)')
+
+titulo('Figuras del ejercicio 2 generadas')
+for nombre in ['G5 - Histogramas de numéricas',
+               'G6 - Matriz de correlación',
+               'G7 - Categóricas',
+               'G8 - BRUTO vs NETO',
+               'G9 - Sueldo por nivel de estudio',
+               'G10 - Experiencia × sueldo × seniority',
+               'G11 - Experiencia × sueldo × género']:
+    print(f'  {nombre}')
+
+
+# --- Conclusiones del ejercicio 2 ---
+corr_p_sal_exp = corr_pearson.loc['salary_monthly_NETO',
+                                  'profile_years_experience']
+corr_p_sal_age = corr_pearson.loc['salary_monthly_NETO', 'profile_age']
+
+dist_p_cond = {
+    nivel: abs(p_cond_subpob[nivel] - P_A_est)
+    for nivel in SUBPOB_SELECCIONADAS
+}
+
+conclusiones_ej2 = [
+    f'En esta muestra, y bajo los filtros aplicados, se observa una '
+    f'correlación de Pearson de {corr_p_sal_exp:.3f} entre el sueldo '
+    f'NETO y los años de experiencia, y de {corr_p_sal_age:.3f} entre '
+    f'sueldo NETO y edad. Ambas asociaciones son positivas; la '
+    f'experiencia aparece como el predictor más directo del sueldo en '
+    f'los datos observados.',
+
+    f'La asociación muestral entre sueldo BRUTO y sueldo NETO es muy '
+    f'fuerte (Pearson = {p_bn:.3f}, Spearman = {s_bn:.3f}), con un '
+    f'ratio NETO/BRUTO mediano de {ratio_mediana:.3f} y un descuento '
+    f'relativo mediano del {desc_pct_mediano:.1f} %. En términos '
+    f'descriptivos y a efectos del análisis realizado, la columna '
+    f'BRUTO resulta altamente redundante con NETO: puede considerarse '
+    f'su remoción del formulario sin pérdida sustancial para este tipo '
+    f'de análisis.',
+
+    f'El análisis comparativo de las dos subpoblaciones más numerosas '
+    f'({SUBPOB_SELECCIONADAS[0]}, {SUBPOB_SELECCIONADAS[1]}) muestra '
+    f'que la distancia |P(A|B) − P(A)| no es cercana a cero en ambos '
+    f'grupos (P(A) = {P_A_est:.3f}, distancias '
+    f'{dist_p_cond[SUBPOB_SELECCIONADAS[0]]:.3f} y '
+    f'{dist_p_cond[SUBPOB_SELECCIONADAS[1]]:.3f}). En términos '
+    f'descriptivos, esto sugiere que nivel de estudio y sueldo NO son '
+    f'independientes en esta muestra. Solo el '
+    f'{100*len(df_estudios)/len(df):.0f} % de los respondentes '
+    f'declararon su nivel de estudio, lo que acota el alcance.',
+
+    f'Dentro de cada nivel de seniority la relación experiencia ↔ '
+    f'sueldo se mantiene creciente en los datos observados (G10). '
+    f'Entre las subpoblaciones "Hombre Cis" y "Mujer Cis" se registra, '
+    f'en esta muestra, una diferencia relativa del '
+    f'{100*(1-brecha_ratio):.1f} % a favor de Hombre Cis (G11). Una '
+    f'afirmación sólida sobre una brecha poblacional requeriría un '
+    f'análisis multivariado y herramientas inferenciales que exceden '
+    f'el alcance de esta parte.',
+]
+
+titulo('Conclusiones del ejercicio 2')
+for i, c in enumerate(conclusiones_ej2, 1):
+    print(f'{i}. {c}')
+
+
+# ============================================================
+# Generación del HTML
+# ============================================================
+
+def fig_div(fig: go.Figure) -> str:
+    return fig.to_html(full_html=False, include_plotlyjs=False,
+                       config={'displaylogo': False, 'responsive': True})
+
+
+def tabla_filtros_html() -> str:
+    filas = ''
+    for f in filtros_aplicados:
+        filas += (
+            f'<tr>'
+            f'<td>{f["filtro"]}</td>'
+            f'<td class="muted">{f["motivo"]}</td>'
+            f'<td class="num">{f["n_antes"]}</td>'
+            f'<td class="num">{f["n_despues"]}</td>'
+            f'<td class="num">−{f["recorte"]} ({f["pct"]:.1f} %)</td>'
+            f'</tr>'
+        )
+    return (
+        '<table class="filtros">'
+        '<thead><tr>'
+        '<th>Filtro</th><th>Motivo</th>'
+        '<th>N antes</th><th>N después</th><th>Recorte</th>'
+        '</tr></thead>'
+        f'<tbody>{filas}</tbody></table>'
+    )
+
+
+def fmt_moneda(v: float) -> str:
+    """Formato monetario ARS con signo $."""
+    return f'$ {v:,.0f}'.replace(',', '.')
+
+
+def df_moneda_html() -> str:
+    d = resumen_moneda.copy()
+    fmt = {
+        'mediana': fmt_moneda,
+        'q1':      fmt_moneda,
+        'q3':      fmt_moneda,
+        'n':       lambda v: f'{int(v)}',
+    }
+    return d.to_html(classes='datos', border=0, formatters=fmt)
+
+
+def df_global_html() -> str:
+    d = resumen_global.copy()
+    d.insert(0, '#', range(1, len(d) + 1))
+    d = d[['#', 'n', 'mediana', 'q1', 'q3', 'iqr', 'disp_pct', 'estable']]
+    d = d.rename(columns={
+        'mediana': 'mediana', 'q1': 'Q1', 'q3': 'Q3',
+        'iqr': 'IQR', 'disp_pct': 'dispersión rel.',
+    })
+    d['estable'] = d['estable'].map({True: 'sí', False: 'no'})
+    fmt_m = lambda v: f'$ {v/1e6:.2f} M'
+    fmt = {
+        'mediana':         fmt_m,
+        'Q1':              fmt_m,
+        'Q3':              fmt_m,
+        'IQR':             fmt_m,
+        'dispersión rel.': lambda v: f'{v:.1f} %',
+    }
+    return d.to_html(classes='datos', border=0, formatters=fmt)
+
+
+html = f"""<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>AyVD Parte 1 — Ejercicio 1</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  :root {{
+    --bg:#FAFBFC; --card:#FFFFFF; --border:#E6E8EF;
+    --text:#2E3440; --muted:#5E6472; --accent:#5B8DEF; --soft:#F5F7FB;
+  }}
+  * {{ box-sizing:border-box; }}
+  html,body {{ margin:0; padding:0; }}
+  body {{
+    font-family:-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6;
+  }}
+  header {{
+    background:linear-gradient(135deg,#EEF3FB,#F8FAFF);
+    padding:44px 40px 28px; border-bottom:1px solid var(--border);
+  }}
+  header h1 {{ margin:0 0 8px; font-size:1.85rem; letter-spacing:-.01em; }}
+  header .sub {{ color:var(--muted); font-size:.95rem; margin-top:2px; }}
+  main {{ max-width:1100px; margin:0 auto; padding:32px 40px 72px; }}
+  h2 {{
+    margin-top:44px; padding-bottom:8px;
+    border-bottom:2px solid var(--accent); font-size:1.35rem;
+  }}
+  h3 {{ margin-top:24px; font-size:1.05rem; color:#3A63A8; }}
+  .card {{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:22px 26px; margin:18px 0;
+  }}
+  .nota {{
+    background:var(--soft); border-left:3px solid var(--accent);
+    padding:12px 16px; margin:12px 0; border-radius:0 6px 6px 0;
+    color:var(--muted); font-size:.92rem;
+  }}
+  table {{
+    width:100%; border-collapse:collapse;
+    font-size:.88rem; margin:14px 0;
+  }}
+  th,td {{
+    text-align:left; padding:9px 12px;
+    border-bottom:1px solid var(--border);
+  }}
+  th {{
+    background:var(--soft); color:var(--muted); font-weight:600;
+    text-transform:uppercase; font-size:.72rem; letter-spacing:.05em;
+  }}
+  td.num, .num {{ text-align:right; font-variant-numeric:tabular-nums; }}
+  td.muted, .muted {{ color:var(--muted); font-size:.86rem; }}
+  table.filtros td:first-child {{ font-weight:600; white-space:nowrap; }}
+  table.filtros td:last-child, table.filtros th:last-child {{
+    white-space:nowrap; min-width:120px; text-align:right;
+  }}
+  table.filtros td:nth-child(3),
+  table.filtros td:nth-child(4),
+  table.filtros th:nth-child(3),
+  table.filtros th:nth-child(4) {{ text-align:right; white-space:nowrap; }}
+  ol li, ul li {{ margin:8px 0; }}
+  code {{
+    background:var(--soft); padding:1px 6px; border-radius:4px;
+    font-size:.87em; color:#3A63A8;
+  }}
+  .chart {{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:14px 14px 6px 14px; margin:18px 0;
+    position:relative;
+  }}
+  .chart-id {{
+    text-align:right;
+    font-size:.78rem;
+    color:var(--muted);
+    font-family:"JetBrains Mono",Consolas,monospace;
+    padding:6px 6px 2px 0;
+    letter-spacing:.05em;
+  }}
+  footer {{
+    text-align:center; padding:28px; color:var(--muted);
+    font-size:.82rem; border-top:1px solid var(--border);
+  }}
+  .resumen {{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:14px; margin:16px 0;
+  }}
+  .metric {{
+    background:var(--soft); border-radius:10px; padding:14px 18px;
+    border:1px solid var(--border);
+  }}
+  .metric .label {{
+    color:var(--muted); font-size:.78rem;
+    text-transform:uppercase; letter-spacing:.05em;
+  }}
+  .metric .value {{
+    font-size:1.4rem; font-weight:700; margin-top:4px; color:#3A63A8;
+  }}
+  .formula {{
+    background:var(--soft); border:1px dashed #C5CEDF; border-radius:8px;
+    padding:14px 18px; margin:14px 0;
+    font-family:"JetBrains Mono",Consolas,monospace;
+    font-size:.92rem; color:#2E3440;
+  }}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Análisis y Visualización de Datos — Parte 1</h1>
+  <div class="sub">Diplomatura en Ciencia de Datos 2026 · FAMAF, UNC</div>
+  <div class="sub">Alumno: Rubén Rasi · Docente: Fredy Alexander Restrepo Blandon</div>
+</header>
+
+<main>
+
+<h2>Ejercicio 1 — ¿Cuáles son los lenguajes asociados a los mejores salarios?</h2>
+
+<div class="card">
+  <h3>1.0  Enfoque adoptado</h3>
+  <p>La consigna del ejercicio 1 permite elegir <b>una</b> de las
+  siguientes opciones metodológicas:</p>
+  <ol type="A">
+    <li>Comparar distribuciones de sueldo por lenguaje con visualizaciones.</li>
+    <li>Comparar medidas de estadística descriptiva por lenguaje.</li>
+    <li>Comparar probabilidades.</li>
+  </ol>
+  <p>En este trabajo se utilizan <b>las opciones A y B en conjunto</b>:
+  la visualización (A) responde la pregunta principal y las medidas
+  descriptivas (B) la respaldan cuantitativamente. La decisión se
+  declara explícitamente para evitar ambigüedad.</p>
+  <div class="nota">
+    Todas las observaciones que siguen deben leerse como propiedades
+    <b>de la muestra analizada</b>, bajo los filtros aplicados. No se
+    realizan inferencias a la población general ni tests estadísticos
+    (herramientas que corresponden a la parte 2 del entregable).
+  </div>
+</div>
+
+<div class="resumen">
+  <div class="metric"><div class="label">N inicial</div><div class="value">{N_INICIAL}</div></div>
+  <div class="metric"><div class="label">N final (filtrado)</div><div class="value">{N_FINAL}</div></div>
+  <div class="metric"><div class="label">Lenguajes únicos</div><div class="value">{len(freq)}</div></div>
+  <div class="metric"><div class="label">En el ranking</div><div class="value">{len(lenguajes_mostrables)}</div></div>
+</div>
+
+<div class="card">
+  <h3>1.1  Selección de columnas relevantes</h3>
+  <p>Del conjunto de datos original se retienen <b>{len(COLUMNAS_RELEVANTES)} columnas</b>, estrictamente las necesarias para responder la pregunta del ejercicio:</p>
+  <ul>
+    <li><code>tools_programming_languages</code> — variable explicativa principal</li>
+    <li><code>salary_monthly_NETO</code> — variable respuesta</li>
+    <li><code>salary_in_usd</code> — tipo de dolarización del sueldo</li>
+    <li><code>work_dedication</code> — filtro de homogeneidad (jornada)</li>
+    <li><code>work_contract_type</code> — filtro de homogeneidad (tipo de contrato)</li>
+  </ul>
+  <div class="nota">
+    Trabajar con un subconjunto acotado facilita la auditoría del código y
+    la lectura del análisis. Las variables descartadas pueden re-incorporarse
+    en los ejercicios siguientes si aportan información relevante.
+  </div>
+</div>
+
+<div class="card">
+  <h3>1.2  Análisis de la variable sueldo y su dolarización</h3>
+  <p>La columna <code>salary_in_usd</code> del dataset toma tres valores
+  literales cuando el respondente contesta la pregunta sobre moneda del
+  sueldo, y queda en <code>NaN</code> cuando no la contesta:</p>
+  <ul>
+    <li><code>Cobro todo el salario en dólares</code></li>
+    <li><code>Cobro parte del salario en dólares</code></li>
+    <li><code>Mi sueldo está dolarizado (pero cobro en moneda local)</code></li>
+    <li><code>NaN</code> — representado en este análisis como <code>(sin declarar)</code></li>
+  </ul>
+  <p>Las medianas del sueldo NETO, antes del filtrado, para cada valor
+  literal son:</p>
+  {df_moneda_html()}
+  <p>Dos observaciones orientan el resto del análisis:</p>
+  <ul>
+    <li>
+      Los cuatro grupos reportan valores del mismo orden de magnitud
+      (millones de ARS), no centenares de USD. Esto muestra que la
+      columna <code>salary_monthly_NETO</code> contiene el
+      <b>total pesificado</b> del sueldo para todos los respondentes,
+      con independencia del valor declarado en <code>salary_in_usd</code>.
+      Se puede usar como variable respuesta unificada.
+    </li>
+    <li>
+      El valor literal <code>Mi sueldo está dolarizado (pero cobro en
+      moneda local)</code> tiene mediana prácticamente idéntica al grupo
+      <code>(sin declarar)</code> (diferencia de <b>{diff_pct:+.2f} %</b>).
+      A efectos salariales son una misma población.
+    </li>
+  </ul>
+  <p>Para los cortes posteriores se definen <b>tres grupos analíticos
+  derivados</b> a partir de los cuatro valores literales. Las etiquetas
+  <b>ARS</b>, <b>USD parcial</b> y <b>USD total</b>
+  <u>no son valores del dataset</u>: son etiquetas propias de este
+  análisis.</p>
+  <table class="filtros">
+    <thead><tr>
+      <th>Valor literal de salary_in_usd</th>
+      <th>Grupo analítico derivado</th>
+    </tr></thead>
+    <tbody>
+      <tr><td><code>(sin declarar)</code> (NaN)</td><td><b>ARS</b></td></tr>
+      <tr><td><code>Mi sueldo está dolarizado (pero cobro en moneda local)</code></td><td><b>ARS</b></td></tr>
+      <tr><td><code>Cobro parte del salario en dólares</code></td><td><b>USD parcial</b></td></tr>
+      <tr><td><code>Cobro todo el salario en dólares</code></td><td><b>USD total</b></td></tr>
+    </tbody>
+  </table>
+  <div class="nota">
+    La unificación del grupo <code>(sin declarar)</code> con
+    <code>Mi sueldo está dolarizado (pero cobro en moneda local)</code>
+    se justifica por la diferencia de medianas menor al 1 % entre ambos
+    valores literales (ver cuadro anterior).
+  </div>
+</div>
+
+<div class="card">
+  <h3>1.3  Limpieza y filtrado progresivo</h3>
+  <p>Los filtros se aplican en orden, declarando motivo y N resultante en cada paso. Las cuatro etapas llevan la muestra de <b>{N_INICIAL}</b> a <b>{N_FINAL}</b> filas ({100*(N_INICIAL-N_FINAL)/N_INICIAL:.1f} % de recorte total).</p>
+  {tabla_filtros_html()}
+</div>
+
+<div class="card">
+  <h3>1.4  Desanidado de la lista de lenguajes</h3>
+  <p>La columna <code>tools_programming_languages</code> contiene una lista separada por comas de los lenguajes que declara cada respondente. Se aplica una operación de desanidado para pasar a un formato de una fila por lenguaje: una persona que usa N lenguajes contribuye a N grupos distintos.</p>
+  <ul>
+    <li>Filas después del desanidado: <b>{len(df_long)}</b></li>
+    <li>Promedio de lenguajes por respondente: <b>{PROMEDIO_LENGS:.2f}</b></li>
+    <li>Lenguajes únicos detectados: <b>{len(freq)}</b></li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>1.5  Umbral de frecuencia mínima</h3>
+  <p>Para la visualización y el ranking se muestran únicamente los lenguajes con al menos <b>{N_MIN_LENGUAJE} respondentes</b>. Quedan <b>{len(lenguajes_mostrables)}</b> lenguajes dentro del ranking y <b>{n_excluidos}</b> fuera.</p>
+  <div class="nota">
+    Este umbral <b>no es un filtro sobre los datos</b>. Ninguna observación
+    se descarta del conjunto; es una exclusión de visualización. Los
+    lenguajes excluidos permanecen en <code>df_long</code> y pueden
+    utilizarse en otros análisis.
+  </div>
+</div>
+
+<div class="card">
+  <h3>1.6  Dispersión relativa de la mediana y criterio de estabilidad</h3>
+  <p>Para cada lenguaje del ranking se calcula, además de la mediana y
+  los cuartiles, un indicador descriptivo que combina la dispersión del
+  50&nbsp;% central (IQR) con el tamaño de muestra (n) y el propio valor
+  de la mediana. Permite distinguir lenguajes cuya posición en el
+  ranking es relativamente estable de aquellos cuya mediana depende en
+  buena medida de pocos datos o de una distribución muy dispersa.</p>
+  <p>La fórmula del indicador es:</p>
+  <div class="formula">disp<sub>i</sub>  =  100 · IQR<sub>i</sub> / ( √n<sub>i</sub> · mediana<sub>i</sub> )   [%]</div>
+  <p>Un lenguaje se marca con <b>dispersión alta</b> cuando su indicador
+  supera el doble del indicador mediano del conjunto de lenguajes
+  mostrados:</p>
+  <div class="formula">lenguaje marcado  ⇔  disp<sub>i</sub>  >  2 · mediana(disp)</div>
+  <div class="nota">
+    El criterio está enteramente derivado de los datos: no depende de un
+    umbral de <code>n</code> fijado a priori. Se calcula a partir de la
+    dispersión (IQR), el tamaño de muestra (n) y el propio valor de la
+    mediana de cada lenguaje, y se compara contra el mismo conjunto de
+    lenguajes en estudio. Si la encuesta cambiara de año, el criterio se
+    recalibra automáticamente.
+  </div>
+  <p>Con los datos actuales:</p>
+  <ul>
+    <li>Dispersión relativa mediana del conjunto: <b>{disp_mediana:.2f} %</b></li>
+    <li>Umbral (2 × mediana): <b>{UMBRAL_DISP:.2f} %</b></li>
+    <li>Lenguajes marcados: <b>{len(marcados)}</b></li>
+  </ul>
+  {df_global_html()}
+</div>
+
+<h2>Resultados visuales</h2>
+
+<div class="chart">{fig_div(fig_rank)}<div class="chart-id">G1</div></div>
+<div class="chart">{fig_div(fig_box)}<div class="chart-id">G2</div></div>
+<div class="chart">{fig_div(fig_grupo)}<div class="chart-id">G3</div></div>
+<div class="chart">{fig_div(fig_nm)}<div class="chart-id">G4</div></div>
+
+<div class="card">
+  <h3>1.8  Conclusiones del ejercicio 1</h3>
+  <ol>
+    {''.join(f'<li>{c}</li>' for c in conclusiones)}
+  </ol>
+</div>
+
+<h2>Ejercicio 2 — Variables, relaciones y condicionalidad</h2>
+
+<div class="card">
+  <h3>2.0  Selección de variables</h3>
+  <p>El ejercicio 2 se realiza sobre el mismo conjunto de datos filtrado
+  del ejercicio 1 (<b>N = {N_FINAL}</b>) a nivel persona. No se desanida
+  la lista de lenguajes: las variables estudiadas son demográficas y
+  laborales.</p>
+  <ul>
+    <li><b>Numéricas:</b>
+      <code>salary_monthly_NETO</code> (variable respuesta),
+      <code>profile_years_experience</code> (años de experiencia),
+      <code>profile_age</code> (edad).</li>
+    <li><b>Categóricas:</b>
+      <code>work_seniority</code> (nivel de seniority),
+      <code>profile_gender</code> (identidad de género).</li>
+  </ul>
+</div>
+
+<h3 style="margin-top:32px">2.a  Densidad conjunta (3 numéricas + 2 categóricas)</h3>
+
+<div class="card">
+  <p>Se describen primero las variables por separado y luego su
+  correlación conjunta. Los histogramas (G5) muestran las distribuciones
+  marginales; la matriz (G6) cuantifica las asociaciones lineales
+  monótonas entre las tres variables numéricas.</p>
+  {describe_num.round(2).to_html(classes='datos', border=0)}
+</div>
+
+<div class="chart">{fig_div(fig_g5)}<div class="chart-id">G5</div></div>
+<div class="chart">{fig_div(fig_g6)}<div class="chart-id">G6</div></div>
+
+<div class="card">
+  <p>En el plano categórico, se observa la distribución de seniority y
+  de identidad de género. Los grupos minoritarios (No binarie, Trans,
+  Queer, Agénero, Prefiero no decir) aparecen atenuados en G7 porque
+  cada uno suma menos de 55 observaciones y no se incluirán en los
+  análisis visuales posteriores.</p>
+</div>
+
+<div class="chart">{fig_div(fig_g7)}<div class="chart-id">G7</div></div>
+
+<h3 style="margin-top:32px">2.b  Asociación: sueldo BRUTO vs sueldo NETO</h3>
+
+<div class="card">
+  <p>Se evalúa la asociación entre el sueldo BRUTO declarado y el sueldo
+  NETO. La técnica adoptada sigue el práctico de la clase 03: además de
+  medir la correlación, se construye una columna derivada
+  <code>DESCUENTOS = BRUTO − NETO</code> y se analiza su distribución.</p>
+  <div class="resumen">
+    <div class="metric"><div class="label">Observaciones válidas</div><div class="value">{len(bn)}</div></div>
+    <div class="metric"><div class="label">Correlación Pearson</div><div class="value">{p_bn:.3f}</div></div>
+    <div class="metric"><div class="label">Correlación Spearman</div><div class="value">{s_bn:.3f}</div></div>
+    <div class="metric"><div class="label">Ratio NETO/BRUTO mediano</div><div class="value">{ratio_mediana:.3f}</div></div>
+  </div>
+  <p>La recta ajustada por mínimos cuadrados tiene pendiente muestral
+  <b>{coef_reg[0]:.3f}</b> (ARS netos observados por cada ARS bruto) y
+  ordenada al origen <b>{coef_reg[1]:,.0f}</b> ARS. En esta muestra el
+  descuento relativo mediano es del <b>{desc_pct_mediano:.2f} %</b>,
+  con un rango intercuartil entre <b>{desc_pct_q1:.2f} %</b> y
+  <b>{desc_pct_q3:.2f} %</b>.</p>
+</div>
+
+<div class="chart">{fig_div(fig_g8)}<div class="chart-id">G8</div></div>
+
+<div class="card">
+  <h3>Respuesta a la pregunta implícita: ¿conviene quitar la columna BRUTO?</h3>
+  <p>La consigna adelanta: <i>"Necesitamos decidir si sacar o no la
+  columna de salario bruto. Para hacer la encuesta más simple."</i></p>
+  <p>Dado que en esta muestra y bajo los filtros aplicados:</p>
+  <ul>
+    <li>Las correlaciones muestrales Pearson ({p_bn:.3f}) y Spearman
+    ({s_bn:.3f}) son muy cercanas a 1.</li>
+    <li>El ratio NETO/BRUTO muestra una estructura estable
+    (IQR del descuento relativo entre {desc_pct_q1:.2f} % y
+    {desc_pct_q3:.2f} %).</li>
+    <li>Conocido NETO, el valor esperado de BRUTO se puede recuperar
+    aplicando esta estructura, con un margen descriptivo acotado.</li>
+  </ul>
+  <p>Se puede afirmar, <b>en términos descriptivos y a efectos del
+  análisis realizado</b>, que la columna BRUTO aporta información
+  altamente redundante respecto de NETO y podría removerse del
+  formulario sin pérdida sustancial para este tipo de análisis. Esta
+  observación se limita a la muestra considerada; un diseño final de
+  encuesta debería además considerar otros usos de la columna BRUTO
+  no evaluados aquí.</p>
+</div>
+
+<h3 style="margin-top:32px">2.c  Densidad condicional: sueldo según nivel de estudio</h3>
+
+<div class="card">
+  <p>Se analiza la distribución del sueldo NETO condicionada al nivel
+  educativo declarado. El nivel de estudio fue declarado solo por el
+  <b>{100*len(df_estudios)/len(df):.1f} %</b> de los respondentes del
+  conjunto filtrado ({len(df_estudios)} de {len(df)}), lo que acota el
+  alcance descriptivo de este análisis.</p>
+  <p>Como vista general se muestra primero el describe por nivel de
+  estudio:</p>
+  {describe_estudios.to_html(classes='datos', border=0, float_format=lambda v: f'{v:,.0f}'.replace(',', '.'))}
+</div>
+
+<div class="card">
+  <h3>Selección de dos subpoblaciones numerosas</h3>
+  <p>La consigna pide: <i>"Separe la población según el nivel de
+  estudio (elija dos subpoblaciones numerosas) y grafique de manera
+  comparativa ambos histogramas..."</i></p>
+  <p>Se seleccionan las dos subpoblaciones con mayor cantidad de
+  observaciones declaradas:</p>
+  <ul>
+    <li><code>{SUBPOB_SELECCIONADAS[0]}</code> — n = {medidas_subpob[SUBPOB_SELECCIONADAS[0]]['n']}</li>
+    <li><code>{SUBPOB_SELECCIONADAS[1]}</code> — n = {medidas_subpob[SUBPOB_SELECCIONADAS[1]]['n']}</li>
+  </ul>
+  <p>Medidas de centralización y dispersión por subpoblación (en ARS):</p>
+  {tabla_medidas_subpob.to_html(classes='datos', border=0, float_format=lambda v: f'$ {v:,.0f}'.replace(',', '.'))}
+</div>
+
+<div class="chart">{fig_div(fig_g9)}<div class="chart-id">G9</div></div>
+
+<div class="card">
+  <h3>¿Son independientes el nivel de estudio y el sueldo NETO?</h3>
+  <p>El marco teórico se toma de la clase 01 (probabilidad condicional).
+  Dos eventos A y B son independientes si y sólo si</p>
+  <div class="formula">P(A | B) = P(A)</div>
+  <p>Definimos:</p>
+  <ul>
+    <li><b>A</b> = evento <i>"sueldo NETO mayor que la mediana global"</i> (umbral calculado sobre el conjunto con estudios declarados).</li>
+    <li><b>B</b> = evento <i>"nivel de estudio = X"</i> (para cada subpoblación seleccionada).</li>
+  </ul>
+  <p>Si las variables fueran independientes en esta muestra, las
+  probabilidades condicionales serían similares a la marginal. Los
+  valores observados son:</p>
+  <table class="filtros">
+    <thead><tr><th>Probabilidad</th><th>Valor</th><th>|distancia a P(A)|</th></tr></thead>
+    <tbody>
+      <tr><td>P(A) &nbsp; <i>marginal</i></td><td class="num">{P_A_est:.4f}</td><td class="num">—</td></tr>
+      <tr><td>P(A | {SUBPOB_SELECCIONADAS[0]})</td><td class="num">{p_cond_subpob[SUBPOB_SELECCIONADAS[0]]:.4f}</td><td class="num">{abs(p_cond_subpob[SUBPOB_SELECCIONADAS[0]] - P_A_est):.4f}</td></tr>
+      <tr><td>P(A | {SUBPOB_SELECCIONADAS[1]})</td><td class="num">{p_cond_subpob[SUBPOB_SELECCIONADAS[1]]:.4f}</td><td class="num">{abs(p_cond_subpob[SUBPOB_SELECCIONADAS[1]] - P_A_est):.4f}</td></tr>
+    </tbody>
+  </table>
+  <div class="nota">
+    <b>Lectura descriptiva:</b> las dos probabilidades condicionales
+    no son iguales a P(A). La subpoblación {SUBPOB_SELECCIONADAS[1]}
+    muestra una distancia marcada respecto de la marginal, mientras
+    que {SUBPOB_SELECCIONADAS[0]} se aparta poco. En términos
+    <b>puramente descriptivos</b>, esto sugiere que nivel de estudio y
+    sueldo NETO <u>no son independientes</u> en esta muestra. No se
+    realiza ningún test inferencial; una afirmación más fuerte
+    requeriría herramientas de la parte 2 del entregable.
+  </div>
+</div>
+
+<h3 style="margin-top:32px">2.d  Densidad conjunta condicional: experiencia vs sueldo con hue</h3>
+
+<div class="card">
+  <p>La consigna pide <b>dos variables numéricas y una variable
+  categórica</b>. Se adopta como variable categórica principal
+  <code>work_seniority</code> (G10), por estar directamente vinculada
+  al ejercicio 1. Como <b>análisis extendido</b>, se incluye también
+  <code>profile_gender</code> (G11), restringido a las dos categorías
+  principales por razones de cobertura muestral. Se declara
+  explícitamente que el segundo gráfico va más allá del mínimo
+  solicitado por la consigna.</p>
+  <p>Se explora cómo cambia la relación entre años de experiencia y
+  sueldo NETO al condicionar por cada factor.</p>
+  <div class="resumen">
+    <div class="metric"><div class="label">Mediana Junior</div><div class="value">{seniority_stats.loc['Junior','mediana']/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Semi-Senior</div><div class="value">{seniority_stats.loc['Semi-Senior','mediana']/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Senior</div><div class="value">{seniority_stats.loc['Senior','mediana']/1e6:.2f} M</div></div>
+  </div>
+</div>
+
+<div class="chart">{fig_div(fig_g10)}<div class="chart-id">G10</div></div>
+
+<div class="card">
+  <p>Para el análisis por género se restringe a las dos categorías con
+  muestra suficiente: <b>Hombre Cis</b> y <b>Mujer Cis</b>. El resto de
+  categorías (No binarie, Trans, Queer, Agénero, Prefiero no decir)
+  suman menos de 55 observaciones cada una, lo que impide producir
+  inferencias estables por grupo. Su exclusión se declara explícitamente
+  y el análisis se limita a la comparación binaria.</p>
+  <div class="resumen">
+    <div class="metric"><div class="label">Mediana Hombre Cis</div><div class="value">{med_hombre/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Mujer Cis</div><div class="value">{med_mujer/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Ratio Mujer / Hombre</div><div class="value">{brecha_ratio:.3f}</div></div>
+    <div class="metric"><div class="label">Brecha relativa</div><div class="value">{100*(1-brecha_ratio):.1f} %</div></div>
+  </div>
+  <p>La brecha relativa es la diferencia porcentual de la mediana de
+  Mujer Cis respecto a la mediana de Hombre Cis. Un valor positivo
+  indica que los hombres cis reportan sueldos medianos más altos.</p>
+</div>
+
+<div class="chart">{fig_div(fig_g11)}<div class="chart-id">G11</div></div>
+
+<div class="card">
+  <h3>2.e  Conclusiones del ejercicio 2</h3>
+  <ol>
+    {''.join(f'<li>{c}</li>' for c in conclusiones_ej2)}
+  </ol>
+</div>
+
+</main>
+
+<footer>
+  Generado con Python y Plotly ·
+  Para cotejar los datos y estadísticos que sustentan este informe,
+  ejecutar <code>python datos_parte1.py</code> en el mismo directorio.
+</footer>
+
+</body>
+</html>
+"""
+
+OUTPUT_HTML.write_text(html, encoding='utf-8')
+
+titulo('Generación del HTML')
+print(f'archivo:  {OUTPUT_HTML}')
+print(f'tamaño:   {OUTPUT_HTML.stat().st_size/1024:.1f} KB')
