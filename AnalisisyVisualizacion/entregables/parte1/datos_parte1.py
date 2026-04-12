@@ -862,7 +862,12 @@ def guardar(fig: plt.Figure, nombre_archivo: str, gid: str) -> Path:
 
 
 # --- G1  Ranking por mediana ---------------------------------
-fig, ax = plt.subplots(figsize=(11, 8))
+# Altura calculada en función del número de lenguajes para que las
+# barras ocupen el área principal del gráfico sin dejar espacio blanco
+# desperdiciado debajo. ~0.35 pulgadas por barra + 1.4 pulgadas fijas
+# de chrome (título, xlabel, nota al pie).
+_alto_g1 = max(4.2, 0.35 * len(orden_lenguajes) + 1.4)
+fig, ax = plt.subplots(figsize=(11, _alto_g1))
 y_pos = np.arange(len(orden_lenguajes))
 medianas_m = [resumen_global.loc[l, 'mediana'] / 1e6 for l in orden_lenguajes]
 colores_bar = sns.color_palette('Blues_r', n_colors=len(orden_lenguajes))
@@ -896,9 +901,10 @@ else:
     _nota_g1 = (f'Criterio aplicado: CV robusto (IQR/mediana) con umbral '
                 f'Tukey = {UMBRAL_CV:.0f} %. Ningún lenguaje supera el umbral.')
 ax.text(
-    0, -1.2,
+    0, -0.14,
     _nota_g1,
-    fontsize=8, color='#5E6472', transform=ax.get_xaxis_transform(),
+    fontsize=8, color='#5E6472', transform=ax.transAxes,
+    ha='left', va='top',
 )
 for s in ('top', 'right'):
     ax.spines[s].set_visible(False)
