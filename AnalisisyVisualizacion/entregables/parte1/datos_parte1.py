@@ -1475,60 +1475,116 @@ mostrar('2.c.5  Medidas de centralización y dispersión por subpoblación',
 
 # --- 2.c.6  Análisis de independencia vía probabilidad condicional ---
 # Marco teórico tomado de la clase 01 (Probabilidad): dos eventos A y B
-# son independientes si P(A|B) = P(A). Se define:
+# son independientes si y sólo si
+#
+#     P(A ∩ B) = P(A) · P(B)
+#
+# lo que equivale a AMBAS formas condicionales:
+#
+#     P(A | B) = P(A)     ⇔     P(B | A) = P(B)
+#
+# Matemáticamente estas dos condiciones son equivalentes, pero sus
+# distancias numéricas |P(A|B) − P(A)| y |P(B|A) − P(B)| NO coinciden
+# en general porque dependen de las masas marginales P(A) y P(B): una
+# diferencia dada en la conjunta se proyecta distinto en cada
+# condicional según el tamaño relativo de cada marginal. Reportar
+# ambas direcciones da una lectura más robusta.
+#
+# Se define:
 #
 #   A = evento "sueldo NETO mayor que la mediana global de df_estudios"
 #   B_i = evento "nivel de estudio = i-ésima subpoblación"
-#
-# Si A y B_i fueran independientes, P(A | B_i) debería ser
-# aproximadamente igual a P(A). Una diferencia apreciable sugiere
-# asociación entre las variables (sin realizar tests inferenciales).
 
 sal_todos = df_estudios['salary_monthly_NETO']
+N_estudios = len(df_estudios)
 umbral_mediana_global = sal_todos.median()
 P_A = (sal_todos > umbral_mediana_global).mean()
 
+# Subconjunto donde ocurre A (para calcular P(B | A))
+df_A = df_estudios[sal_todos > umbral_mediana_global]
+N_A = len(df_A)
+
 filas_indep = [{
-    'evento': 'A = sueldo NETO > mediana global',
-    'n': int(sal_todos.count()),
+    'evento':       'A  =  sueldo NETO > mediana global',
+    'n':            int(N_estudios),
     'probabilidad': round(P_A, 4),
 }]
 for nivel in SUBPOB_SELECCIONADAS:
-    sub = df_estudios[
-        df_estudios['profile_studies_level'] == nivel]['salary_monthly_NETO']
-    p_cond = (sub > umbral_mediana_global).mean()
+    sub_B = df_estudios[df_estudios['profile_studies_level'] == nivel]
+    n_B = len(sub_B)
+    P_B = n_B / N_estudios
+    P_A_dado_B = (sub_B['salary_monthly_NETO']
+                  > umbral_mediana_global).mean()
+    n_B_dado_A = int(
+        (df_A['profile_studies_level'] == nivel).sum())
+    P_B_dado_A = n_B_dado_A / N_A if N_A else float('nan')
     filas_indep.append({
-        'evento': f'A | B = ({nivel})',
-        'n': int(sub.count()),
-        'probabilidad': round(p_cond, 4),
+        'evento':       f'B  =  "{nivel}"',
+        'n':            int(n_B),
+        'probabilidad': round(P_B, 4),
+    })
+    filas_indep.append({
+        'evento':       f'A | B  ({nivel})',
+        'n':            int(n_B),
+        'probabilidad': round(P_A_dado_B, 4),
+    })
+    filas_indep.append({
+        'evento':       f'B | A  ({nivel})',
+        'n':            int(n_B_dado_A),
+        'probabilidad': round(P_B_dado_A, 4),
     })
 
 tabla_independencia = pd.DataFrame(filas_indep)
-mostrar('2.c.6  Probabilidad condicional P(A|B) vs marginal P(A)',
-        tabla_independencia)
+mostrar('2.c.6  Probabilidades marginales y condicionales '
+        '(ambas direcciones)', tabla_independencia)
 
-# Distancia entre P(A|B) y P(A) — indicador puramente descriptivo
-brechas_independencia = pd.DataFrame({
-    'subpoblación B': SUBPOB_SELECCIONADAS,
-    '|P(A|B) − P(A)|': [
-        round(abs(
-            (df_estudios[df_estudios['profile_studies_level'] == s]
-             ['salary_monthly_NETO'] > umbral_mediana_global).mean() - P_A),
-            4)
-        for s in SUBPOB_SELECCIONADAS
-    ],
-})
-mostrar('2.c.7  Distancia descriptiva entre la condicional y la marginal',
+# Distancias descriptivas en ambas direcciones
+filas_brechas = []
+for nivel in SUBPOB_SELECCIONADAS:
+    sub_B = df_estudios[df_estudios['profile_studies_level'] == nivel]
+    n_B = len(sub_B)
+    P_B = n_B / N_estudios
+    P_A_dado_B = (sub_B['salary_monthly_NETO']
+                  > umbral_mediana_global).mean()
+    P_B_dado_A = ((df_A['profile_studies_level'] == nivel).sum() / N_A
+                  if N_A else float('nan'))
+    filas_brechas.append({
+        'subpoblación B':    nivel,
+        'P(A)':              round(P_A, 4),
+        'P(A|B)':            round(P_A_dado_B, 4),
+        '|P(A|B) − P(A)|':   round(abs(P_A_dado_B - P_A), 4),
+        'P(B)':              round(P_B, 4),
+        'P(B|A)':            round(P_B_dado_A, 4),
+        '|P(B|A) − P(B)|':   round(abs(P_B_dado_A - P_B), 4),
+    })
+brechas_independencia = pd.DataFrame(filas_brechas)
+mostrar('2.c.7  Distancias descriptivas en ambas direcciones '
+        '(P(A|B) vs P(A)  y  P(B|A) vs P(B))',
         brechas_independencia)
 
 print('\n  Lectura descriptiva (sin inferencia):')
-print('  Si las dos variables fueran independientes en esta muestra,')
-print('  la distancia |P(A|B) − P(A)| sería cercana a cero en cada')
-print('  subpoblación. Cuanto mayor es la distancia, más se aparta la')
-print('  distribución condicional de la marginal, lo que en términos')
-print('  descriptivos sugiere que el nivel de estudio está asociado')
-print('  con el sueldo en esta muestra. Este análisis no realiza un')
-print('  test de independencia estadístico.')
+print('  La definición formal de independencia (clase 01) es')
+print('     P(A ∩ B) = P(A) · P(B)')
+print('  equivalente a  P(A|B) = P(A)  y  P(B|A) = P(B). Ambas formas')
+print('  son matemáticamente equivalentes pero se chequean en paralelo')
+print('  porque dan más certeza cualitativa en presencia de datos reales.')
+print()
+print('  Nota sobre las masas marginales: las magnitudes de las dos')
+print('  distancias no coinciden porque cada una escala con su propia')
+print('  marginal. Partiendo de la relación exacta')
+print('     P(A|B) − P(A)  =  [P(A, B) − P(A)·P(B)] / P(B)')
+print('     P(B|A) − P(B)  =  [P(A, B) − P(A)·P(B)] / P(A)')
+print('  el numerador (la "sobrerepresentación" de la conjunta respecto')
+print('  de la independencia) es idéntico en ambas direcciones, pero')
+print('  se divide por masas marginales distintas. Cuando P(A) y P(B)')
+print('  difieren mucho (por ejemplo P(A) ≈ 0,50 vs P(B) ≈ 0,14 para')
+print('  Terciario), las dos distancias se ven numéricamente distintas')
+print('  aun cuando reflejan la misma asociación subyacente.')
+print()
+print('  Criterio de lectura: si AMBAS distancias son cercanas a cero,')
+print('  aparenta independencia en esta muestra; basta con que UNA de')
+print('  las dos no lo sea para descartar la independencia. Este')
+print('  análisis no realiza un test de independencia estadístico.')
 
 
 # ============================================================
