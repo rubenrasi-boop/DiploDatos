@@ -418,6 +418,29 @@ df = aplicar_filtro(
     mascara_iqr_por_grupo(df, 'salary_monthly_NETO', 'moneda_grupo'),
 )
 
+
+# F5 — piso de sueldo implausible (sueldo irrisorio para full-time IT 2026)
+# La regla IQR del filtro F4 estratificada por grupo de moneda deja
+# pasar algunos valores extremadamente bajos (del orden de 1 a 850 ARS)
+# porque el límite Q1 − 1,5·IQR del grupo ARS puede caer en valores
+# muy bajos o incluso negativos. Esos sueldos son implausibles para
+# una relación laboral de tiempo completo formal en el sector IT.
+PISO_SUELDO_MINIMO = 300_000  # ARS mensuales, orden del SMVM argentino
+df = aplicar_filtro(
+    df,
+    'F5 - piso de sueldo implausible (300.000 ARS)',
+    'Se descartan respondentes con sueldo NETO inferior a 300.000 ARS '
+    'mensuales. Este umbral es del orden del Salario Mínimo Vital y '
+    'Móvil (SMVM) argentino, por debajo del cual un sueldo de tiempo '
+    'completo en el sector IT resulta implausible y casi con certeza '
+    'corresponde a un error de carga del formulario o una lectura '
+    'errónea de la unidad. La regla IQR del F4 no captura estos '
+    'valores porque el límite inferior Q1 − 1,5·IQR del grupo ARS '
+    'puede caer en valores muy bajos o incluso negativos, y no opera '
+    'como piso efectivo.',
+    df['salary_monthly_NETO'] >= PISO_SUELDO_MINIMO,
+)
+
 N_FINAL = len(df)
 df_filtros = pd.DataFrame(registro_filtros)
 
@@ -856,9 +879,12 @@ for i, vals in enumerate(datos_por_lang):
         zorder=2,
     )
 
-# 3) Boxplot interno, angosto, RELLENO TRANSPARENTE con borde oscuro
-#    — capa superior: las líneas del box quedan por delante de los
-#    puntos gracias al zorder=4 (puntos en zorder=2).
+# 3) Boxplot interno, angosto, RELLENO TRANSPARENTE con borde en
+#    gris oscuro. Se usa gris en vez de negro puro para mantener un
+#    contraste equivalente al que tienen los puntos contra el violin,
+#    sin volverse demasiado agresivo visualmente. Zorder=4 mantiene
+#    las líneas por delante de los puntos (zorder=2).
+COLOR_BOX_G2 = '#5E6472'  # gris pizarra, suave pero contrastante
 bp = ax.boxplot(
     datos_por_lang,
     positions=positions,
@@ -866,11 +892,11 @@ bp = ax.boxplot(
     widths=0.22,
     patch_artist=True,
     showfliers=False,  # los fliers ya están en la capa de puntos
-    medianprops=dict(color='#2E3440', linewidth=1.8),
-    boxprops=dict(facecolor='none', edgecolor='#2E3440',
+    medianprops=dict(color=COLOR_BOX_G2, linewidth=1.8),
+    boxprops=dict(facecolor='none', edgecolor=COLOR_BOX_G2,
                   linewidth=1.3),
-    whiskerprops=dict(color='#2E3440', linewidth=1.3),
-    capprops=dict(color='#2E3440', linewidth=1.3),
+    whiskerprops=dict(color=COLOR_BOX_G2, linewidth=1.3),
+    capprops=dict(color=COLOR_BOX_G2, linewidth=1.3),
     zorder=4,
 )
 # zorder explícito sobre cada elemento del boxplot para asegurar que
@@ -1370,62 +1396,107 @@ seniority_resumen = (
 )
 mostrar('2.d.1  Experiencia y sueldo por seniority', seniority_resumen)
 
-# --- 2.d.2  Por género (restringido a Hombre Cis / Mujer Cis) ---
-GENEROS_PRINCIPALES = ['Hombre Cis', 'Mujer Cis']
-df_gender = df[df['profile_gender'].isin(GENEROS_PRINCIPALES)].copy()
+# --- 2.d.2  Por género, con 3 grupos analíticos ---
+# Las categorías minoritarias del formulario (No binarie, Trans,
+# Queer, Agénero, Prefiero no decir) tienen, cada una, menos de 55
+# observaciones, lo que hace inestable el cálculo de estadísticos
+# individuales. Para conservar su presencia en el análisis se las
+# agrupa bajo una única etiqueta "Diversidades", siguiendo la
+# convención que la filmina de clase 03 utiliza para referirse a
+# las identidades que no son varón cis ni mujer cis.
+GENEROS_CIS = ['Hombre Cis', 'Mujer Cis']
+CATEGORIAS_DIVERSIDADES = [
+    'No binarie', 'Trans', 'Queer', 'Agénero', 'Prefiero no decir',
+]
+
+
+def clasificar_genero_analitico(valor):
+    if valor in GENEROS_CIS:
+        return valor
+    if pd.isna(valor):
+        return None
+    return 'Diversidades'
+
+
+df_gender = df.copy()
+df_gender['genero_grupo'] = df_gender['profile_gender'].apply(
+    clasificar_genero_analitico)
+df_gender = df_gender[df_gender['genero_grupo'].notna()].copy()
+
+GRUPOS_GENERO = ['Hombre Cis', 'Mujer Cis', 'Diversidades']
+
+conteo_gender = (
+    df_gender['genero_grupo'].value_counts()
+    .reindex(GRUPOS_GENERO)
+    .to_frame('n')
+)
+conteo_gender['pct'] = (
+    100 * conteo_gender['n'] / conteo_gender['n'].sum()).round(2)
 
 cobertura_gender = pd.DataFrame({
     'métrica': [
         'observaciones en df filtrado',
-        'observaciones con género ∈ {Hombre Cis, Mujer Cis}',
-        'otras categorías (excluidas del análisis visual)',
-        'pct considerado',
+        'Hombre Cis',
+        'Mujer Cis',
+        'Diversidades (agrupación)',
+        'sin género declarado (excluidas)',
+        'pct considerado en el análisis',
     ],
     'valor': [
         len(df),
-        len(df_gender),
+        int(conteo_gender.loc['Hombre Cis', 'n']),
+        int(conteo_gender.loc['Mujer Cis', 'n']),
+        int(conteo_gender.loc['Diversidades', 'n']),
         len(df) - len(df_gender),
         f'{100 * len(df_gender) / len(df):.2f} %',
     ],
 })
 mostrar('2.d.2  Cobertura del análisis por género', cobertura_gender)
-print('\n  Se restringe el análisis por género a "Hombre Cis" y "Mujer Cis"')
-print('  porque el resto de categorías (No binarie, Trans, Queer, Agénero,')
-print('  Prefiero no decir) tienen cada una menos de 55 observaciones, con')
-print('  una precisión insuficiente para inferencia por grupo. La exclusión')
-print('  se declara explícitamente en el informe.')
+print('\n  La etiqueta "Diversidades" agrupa las siguientes categorías')
+print('  literales del formulario, con baja cobertura muestral individual:')
+for cat in CATEGORIAS_DIVERSIDADES:
+    n_cat = int((df['profile_gender'] == cat).sum())
+    print(f'    · {cat:24s}  n = {n_cat}')
+print('  La agrupación permite que estas identidades estén presentes en el')
+print('  análisis sin producir medianas inestables por grupo.')
 
 gender_resumen = (
-    df_gender.groupby('profile_gender')['salary_monthly_NETO']
+    df_gender.groupby('genero_grupo')['salary_monthly_NETO']
     .describe(percentiles=[.25, .5, .75])
-    .reindex(GENEROS_PRINCIPALES)
+    .reindex(GRUPOS_GENERO)
     .round(0)
 )
-mostrar('2.d.3  Sueldo NETO por género (Hombre Cis / Mujer Cis)',
-        gender_resumen)
+mostrar('2.d.3  Sueldo NETO por grupo de género', gender_resumen)
 
-# Brecha salarial estimada entre géneros principales
+# Brecha salarial estimada: se reporta para los tres grupos tomando
+# "Hombre Cis" como referencia para facilitar la comparación.
 med_hombre = gender_resumen.loc['Hombre Cis', '50%']
 med_mujer = gender_resumen.loc['Mujer Cis', '50%']
-brecha_ratio = med_mujer / med_hombre
+med_diversidades = gender_resumen.loc['Diversidades', '50%']
+ratio_mujer = med_mujer / med_hombre
+ratio_diversidades = med_diversidades / med_hombre
 
 brecha_tabla = pd.DataFrame({
     'métrica': [
         'mediana Hombre Cis (ARS)',
         'mediana Mujer Cis (ARS)',
-        'ratio Mujer/Hombre',
-        'brecha Hombre − Mujer (ARS)',
-        'brecha relativa a favor de Hombre Cis',
+        'mediana Diversidades (ARS)',
+        'ratio Mujer Cis / Hombre Cis',
+        'ratio Diversidades / Hombre Cis',
+        'brecha relativa Mujer Cis vs Hombre Cis',
+        'brecha relativa Diversidades vs Hombre Cis',
     ],
     'valor': [
         fmt_ars(med_hombre),
         fmt_ars(med_mujer),
-        f'{brecha_ratio:.4f}',
-        fmt_ars(med_hombre - med_mujer),
-        f'{100 * (1 - brecha_ratio):.2f} %',
+        fmt_ars(med_diversidades),
+        f'{ratio_mujer:.4f}',
+        f'{ratio_diversidades:.4f}',
+        f'{100 * (1 - ratio_mujer):.2f} %',
+        f'{100 * (1 - ratio_diversidades):.2f} %',
     ],
 })
-mostrar('2.d.4  Brecha salarial entre géneros principales', brecha_tabla)
+mostrar('2.d.4  Brecha salarial entre grupos de género', brecha_tabla)
 
 
 # ============================================================
@@ -1433,20 +1504,47 @@ mostrar('2.d.4  Brecha salarial entre géneros principales', brecha_tabla)
 # ============================================================
 
 # --- G5  Histogramas de las 3 variables numéricas ---
+# Para profile_age se acota el eje X a [15, 80] porque es edad humana
+# en contexto laboral; valores fuera de ese rango son implausibles.
+# El número de bins se calibra por variable para que la granularidad
+# sea legible (50 para sueldo y edad, 40 para años de experiencia).
 fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
-datos_g5 = [
-    df['salary_monthly_NETO'] / 1e6,
-    df['profile_years_experience'],
-    df['profile_age'],
+especs_g5 = [
+    {
+        'datos': df['salary_monthly_NETO'] / 1e6,
+        'titulo': 'Sueldo NETO (millones de ARS)',
+        'color': COLOR_ARS,
+        'bins': 50,
+        'rango': None,
+    },
+    {
+        'datos': df['profile_years_experience'],
+        'titulo': 'Años de experiencia',
+        'color': '#6BBF80',
+        'bins': 40,
+        'rango': None,
+    },
+    {
+        'datos': df['profile_age'],
+        'titulo': 'Edad (años)',
+        'color': '#E8A04F',
+        'bins': 50,
+        'rango': (15, 80),
+    },
 ]
-titles_g5 = ['Sueldo NETO (millones de ARS)',
-             'Años de experiencia',
-             'Edad (años)']
-colores_g5 = [COLOR_ARS, '#6BBF80', '#E8A04F']
-for ax_i, datos, ttl, color in zip(axes, datos_g5, titles_g5, colores_g5):
-    ax_i.hist(datos, bins=30, color=color, alpha=0.78, edgecolor='white')
-    ax_i.set_title(ttl, fontsize=11, pad=8, loc='left')
+for ax_i, spec in zip(axes, especs_g5):
+    ax_i.hist(
+        spec['datos'],
+        bins=spec['bins'],
+        range=spec['rango'],
+        color=spec['color'],
+        alpha=0.78,
+        edgecolor='white',
+    )
+    ax_i.set_title(spec['titulo'], fontsize=11, pad=8, loc='left')
     ax_i.set_ylabel('frecuencia')
+    if spec['rango'] is not None:
+        ax_i.set_xlim(spec['rango'])
     for s in ('top', 'right'):
         ax_i.spines[s].set_visible(False)
 fig.suptitle('Distribución marginal de las 3 variables numéricas',
@@ -1456,9 +1554,12 @@ ruta_g5 = guardar(fig, 'G5_histogramas_numericas.png', 'G5')
 # --- G6  Matriz de correlación (Pearson, coherente con clase 03) ---
 # La clase 03 calcula la correlación con np.corrcoef (Pearson). Se
 # conserva el cálculo de Spearman en 2.a.3 como control de robustez.
+# Se invierte el eje Y para que la diagonal de 1 quede ascendente
+# (de abajo-izquierda a arriba-derecha), más natural de leer.
 fig, ax = plt.subplots(figsize=(7.2, 5.5))
+corr_pearson_flip = corr_pearson.iloc[::-1]
 sns.heatmap(
-    corr_pearson, annot=True, fmt='.2f', cmap='RdBu_r',
+    corr_pearson_flip, annot=True, fmt='.2f', cmap='RdBu_r',
     center=0, vmin=-1, vmax=1, square=True, linewidths=0.5,
     linecolor='white', cbar_kws={'label': 'r de Pearson'}, ax=ax,
 )
@@ -1479,7 +1580,7 @@ for s in ('top', 'right'):
     axes[0].spines[s].set_visible(False)
 
 g_plot = df['profile_gender'].value_counts()
-cols_g = [COLOR_ARS if g in GENEROS_PRINCIPALES else '#BFC4D3'
+cols_g = [COLOR_ARS if g in GENEROS_CIS else '#BFC4D3'
           for g in g_plot.index]
 axes[1].bar(g_plot.index, g_plot.values, color=cols_g,
             alpha=0.85, edgecolor='white')
@@ -1559,6 +1660,10 @@ for s in ('top', 'right'):
 ruta_g9 = guardar(fig, 'G9_histogramas_subpob_estudios.png', 'G9')
 
 # --- G10  Scatter exp vs sueldo con hue = seniority (ej 2d) ---
+# Además de los puntos se traza una línea que conecta la mediana
+# del sueldo NETO para cada año entero de experiencia. Funciona
+# como una "mediana móvil" descriptiva que hace visible la
+# tendencia central por año, sin suavizado adicional.
 fig, ax = plt.subplots(figsize=(10, 6.5))
 col_seniority = {'Junior': '#6BBF80',
                  'Semi-Senior': '#E8A04F',
@@ -1568,7 +1673,26 @@ for nivel in ['Junior', 'Semi-Senior', 'Senior']:
     ax.scatter(sub['profile_years_experience'],
                sub['salary_monthly_NETO'] / 1e6,
                s=18, alpha=0.40, color=col_seniority[nivel],
-               edgecolor='none', label=f'{nivel} (n={len(sub)})')
+               edgecolor='none', label=f'{nivel} (n={len(sub)})',
+               zorder=1)
+
+# Línea de mediana por año de experiencia (tendencia central)
+mediana_por_exp = (
+    df.groupby('profile_years_experience')['salary_monthly_NETO']
+    .agg(['median', 'count'])
+    .reset_index()
+)
+# Solo se grafican los años con al menos 5 observaciones para evitar
+# líneas erráticas en los extremos con poca muestra.
+mediana_por_exp = mediana_por_exp[mediana_por_exp['count'] >= 5]
+ax.plot(
+    mediana_por_exp['profile_years_experience'],
+    mediana_por_exp['median'] / 1e6,
+    color='#2E3440', linewidth=1.8, marker='o', markersize=4,
+    label='Mediana por año (n ≥ 5)',
+    zorder=3,
+)
+
 ax.set_xlabel('Años de experiencia')
 ax.set_ylabel('Sueldo NETO (millones de ARS)')
 ax.set_title('Experiencia vs sueldo NETO, condicionado por seniority',
@@ -1578,18 +1702,22 @@ for s in ('top', 'right'):
     ax.spines[s].set_visible(False)
 ruta_g10 = guardar(fig, 'G10_exp_sueldo_seniority.png', 'G10')
 
-# --- G11  Scatter exp vs sueldo con hue = género (ej 2d) ---
+# --- G11  Scatter exp vs sueldo con hue = grupo de género (ej 2d) ---
 fig, ax = plt.subplots(figsize=(10, 6.5))
-col_gender = {'Hombre Cis': COLOR_ARS, 'Mujer Cis': '#C96C6C'}
-for g in GENEROS_PRINCIPALES:
-    sub = df_gender[df_gender['profile_gender'] == g]
+col_gender = {
+    'Hombre Cis':   COLOR_ARS,
+    'Mujer Cis':    '#C96C6C',
+    'Diversidades': '#9673C0',
+}
+for g in GRUPOS_GENERO:
+    sub = df_gender[df_gender['genero_grupo'] == g]
     ax.scatter(sub['profile_years_experience'],
                sub['salary_monthly_NETO'] / 1e6,
-               s=18, alpha=0.40, color=col_gender[g],
+               s=18, alpha=0.45, color=col_gender[g],
                edgecolor='none', label=f'{g} (n={len(sub)})')
 ax.set_xlabel('Años de experiencia')
 ax.set_ylabel('Sueldo NETO (millones de ARS)')
-ax.set_title('Experiencia vs sueldo NETO, condicionado por género',
+ax.set_title('Experiencia vs sueldo NETO, condicionado por grupo de género',
              fontsize=13, pad=14, loc='left')
 ax.legend(loc='upper left', facecolor='white', edgecolor='#E6E8EF')
 for s in ('top', 'right'):
@@ -1651,12 +1779,31 @@ conclusiones_ej2 = [
 
     f'Dentro de cada nivel de seniority la relación entre experiencia y '
     f'sueldo NETO se mantiene creciente en los datos observados (G10). '
-    f'Entre las subpoblaciones "Hombre Cis" y "Mujer Cis" se registra, '
-    f'en esta muestra, una diferencia relativa del '
-    f'{100*(1-brecha_ratio):.1f} % a favor de Hombre Cis (G11). Una '
-    f'afirmación más sólida sobre la existencia de una brecha '
-    f'poblacional requeriría un análisis multivariado y herramientas '
-    f'inferenciales que exceden el alcance de esta parte.',
+    f'Entre los tres grupos analíticos de género considerados se '
+    f'registra, en esta muestra, una brecha relativa de '
+    f'{100*(1-ratio_mujer):.1f} % para Mujer Cis respecto de Hombre Cis '
+    f'y de {100*(1-ratio_diversidades):.1f} % para el grupo Diversidades '
+    f'respecto del mismo grupo de referencia (G11). Una afirmación más '
+    f'sólida sobre brechas poblacionales requeriría un análisis '
+    f'multivariado y herramientas inferenciales que exceden el alcance '
+    f'de esta parte.',
+
+    # Cierre: respuesta a la pregunta general del ejercicio 2
+    f'Respondiendo la pregunta general del ejercicio 2 ("¿qué '
+    f'herramientas prácticas y teóricas son útiles para explorar la '
+    f'base, descubrir patrones y asociaciones?"), el desarrollo de los '
+    f'cuatro sub-ejercicios muestra un conjunto mínimo y defendible '
+    f'compuesto por: histogramas y diagramas de caja para describir '
+    f'distribuciones marginales, coeficientes de correlación (Pearson '
+    f'y Spearman) y matrices de correlación para medir asociaciones '
+    f'entre numéricas, columnas derivadas (como DESCUENTOS = BRUTO − '
+    f'NETO) para caracterizar redundancia entre variables, tablas de '
+    f'contingencia para pares categóricos, comparación de '
+    f'probabilidades marginales y condicionales P(A) vs P(A|B) para '
+    f'el análisis de independencia y scatterplots con hue categórico '
+    f'para la densidad conjunta condicional. Todas estas herramientas '
+    f'son estrictamente descriptivas y suficientes para responder las '
+    f'preguntas planteadas en esta parte del entregable.',
 ]
 
 titulo_ej2 = '2.f  Conclusiones del ejercicio 2'

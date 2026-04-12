@@ -39,6 +39,10 @@ Describir y analizar la base desde "varios ángulos", con varias variables, visu
 
 ### Ejercicio 2 — Densidades y varias variables
 
+**Pregunta general:** ¿Qué herramientas (prácticas y teóricas) son útiles para explorar la base, descubrir patrones y asociaciones?
+
+Esta pregunta se responde de forma sintética al final del ejercicio, como conclusión de cierre que integra las herramientas utilizadas en cada uno de los sub-ejercicios siguientes.
+
 - **2a) Densidad conjunta:** 3 variables numéricas (`salary_monthly_NETO`, `profile_years_experience`, `profile_age`) y 2 categóricas (`work_seniority`, `profile_gender`). Se incluyen histogramas marginales, matriz de correlación de Pearson (coherente con la clase 03) y distribución de las categóricas.
 - **2b) Asociación Bruto ↔ Neto:** correlaciones muestrales de Pearson y Spearman, regresión lineal ajustada, columna derivada `DESCUENTOS = BRUTO − NETO` (técnica del práctico de la clase 03) y respuesta explícita a la pregunta implícita *"¿conviene quitar BRUTO del formulario?"*.
 - **2c) Densidad condicional:** selección de las dos subpoblaciones más numerosas con nivel de estudio declarado (`Universitario` y `Terciario`), histogramas comparativos, medidas de centralización y dispersión por subpoblación, y análisis de independencia vía `P(A|B)` versus `P(A)` según el marco de la clase 01.
