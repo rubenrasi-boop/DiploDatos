@@ -1,0 +1,304 @@
+Análisis y Visualización de Datos
+Diplomatura Diplodatos 2026
+
+Estimación
+Para poder maximizar el aprendizaje durante esta materia, primero es importante tener un pantallazo general de lo que van a aprender durante toda la diplomatura y cómo es el trabajo de data scientists. De esta manera, podremos tener una idea de la utilidad de las herramientas que van a aprender durante este materia, y por que es crítico tener un entendimiento sólido de los conceptos de estadística y análisis de datos.
+
+Estimación de parámetros
+ X1, ...Xn m.a. de modelo paramétrico, parámetro μ
+
+Estimación puntual (por estadístico, estimador del parámetro). 
+
+
+Estimación por intervalo,  ( I=I(X1, ...Xn) y S=S(X1, ...Xn), estadísticos)
+
+
+Estimación puntual
+
+Estimación puntual: Estadístico
+Definición
+Un estadístico es cualquier función real definida sobre una muestra aleatoria de clones.
+g(X₁, ..., Xₙ)
+Propiedad Clave
+Resulta ser una variable aleatoria.
+h(X₁, ..., Xₙ)
+
+Estimación puntual: Estadístico
+Podemos definir estadísticos para estimar un parámetro.
+PARÁMETRO
+Medida resumen del modelo-población.
+Valor desconocido
+ESTADÍSTICO
+Medida resumen de la muestra.
+Variable aleatoria
+Ejemplo:
+parámetro
+μ
+estadístico
+
+Estimación de parámetro por estadístico
+Ejemplo: Sea X₁, ..., Xₙ muestra aleatoria de una población con media μ
+Propiedades del Estimador
+La media muestral X̄ es un:
+Buen estimador de μ
+Consistente
+Justificación: Ley de Grandes Números (LGN)
+Por la LGN, la media muestral converge en probabilidad al parámetro poblacional:
+Esto garantiza que a medida que n crece, el error de estimación tiende a cero.
+
+Estimadores de parámetros: Más Ejemplos
+  estimadores de σ2 = E(X-μ )2
+
+
+
+estimador de σ 
+
+
+
+estimador de E(X-μ )3/σ3 
+
+
+
+Estimadores: Exactitud
+Objetivo: Estimar el parámetro poblacional 
+Estimador (v.a.)
+Sesgo del Estimador
+Insesgadez
+Un estimador es insesgado si su sesgo es igual a 0.
+Conceptos Clave
+Sesgo → EXACTITUD
+Varianza → PRECISIÓN
+
+
+Estimadores: Precisión (eficiencia)
+Definición: Comparación de Varianza
+Un estimador es más preciso (eficiente) que otro, si la varianza del primero es menor que la del segundo.
+Ejemplo Comparativo
+Sean y estimadores de θ:
+Entonces,        es más preciso que 
+CONCLUSIÓN: Un estimador es más preciso cuanto menor es su varianza.
+
+Estimadores: Sesgo y Eficiencia (precisión)
+
+
+Estimador Insesgado y Eficiente (exacto y preciso)
+ X1, ...Xn m.a.  de 
+
+
+El estadístico 				 es un estimador insesgado y eficiente de  μ:
+  
+= μ 
+
+
+
+
+Estimación por intervalos
+
+Intervalos de Confianza
+A veces resulta más conveniente dar un intervalo de valores posibles del parámetro desconocido.
+De manera tal que dicho intervalo contenga al verdadero parámetro con alta probabilidad.
+
+Intervalos de confianza
+Estimación por intervalo,  ( I=I(X1, ...Xn) y S=S(X1, ...Xn), estadísticos)
+
+
+  
+
+Un intervalo de confianza es un intervalo aleatorio (con extremos aleatorios dados por estadísticos).
+
+Intervalos de confianza
+Estimación por intervalo,  se quiere estimar 
+
+
+  
+
+Parámetro desconocido a estimar
+es un valor real entre cero y uno dado de antemano
+
+Intervalos de confianza: Ejemplo
+Por ejemplo si pedimos un 𝝰=0.05 esto implica que 
+
+Una probabilidad del 95% que el intervalo propuesto contenga al verdadero parámetro 
+
+Intervalos de confianza: Ejemplo
+Por ejemplo si pedimos un 𝝰=0.05 esto implica que 
+
+Una probabilidad del 95% que el intervalo propuesto contenga al verdadero parámetro 
+Debido a su naturaleza aleatoria, es poco probable que dos muestras de una población en particular produzcan intervalos de confianza idénticos
+
+Al valor 1 - 𝝰  o a (1 - 𝝰 )100 % se lo llama nivel de confianza del intervalo.
+
+Intervalos de Confianza
+La línea negra representa el valor fijo desconocido µ. Los intervalos de confianza azules que cortan la línea negra contienen al valor µ. El intervalo de confianza rojo que está completamente por debajo de la línea horizontal no lo contiene. Un intervalo de confianza de 95% indica que 19 de c/ 20 “experimentos” (95%) producirán intervalos de confianza que contendrán al parámetro. 
+
+
+
+
+μ 
+
+IC: Método del pivote
+Se define un estadístico (pivote) que depende de la m.a. y del parámetro a estimar y cuya distribución es conocida (o aproximada a una conocida) y no depende del parámetro. 
+
+
+IC: Método del pivote
+Se define un estadístico (pivote) que depende de la m.a. y del parámetro a estimar y cuya distribución es conocida (o aproximada a una conocida) y no depende del parámetro. 
+
+Al conocer la distribución del estadístico pivote se puede establecer el intervalo donde el valor del pivote tiene probabilidad 1 - 𝝰 .
+
+
+IC: Método del pivote
+Se define un estadístico (pivote) que depende de la m.a. y del parámetro a estimar y cuya distribución es conocida (o aproximada a una conocida) y no depende del parámetro. 
+Se define el intervalo donde  los valores del  estadístico pivote tienen probabilidad 1 - 𝝰.
+Luego se despeja el parámetro, condicionado por los extremo del intervalo  con probabilidad (o nivel de confianza) 1 - 𝝰 . 
+
+Veamos un ejemplo sencillo para llevarlo a la práctica...
+
+Método del Pivote: Ejemplo
+Sea  X 1 , X 2 ,..., X n  una m.a. de una v.a. X~N(𝝻,𝞂2) ,  𝞂2 conocido. 
+Se quiere construir un IC para de nivel (1 - 𝞪),
+
+
+Notemos que               ~N(0,𝞂2/n) ,  su distribución ya no depende de  𝝻
+
+
+Y luego               ~N(0,1) ,  distribución conocida y no depende de ningún parámetro
+
+
+Pivote 
+
+Método del Pivote: Ejemplo
+Sea  X 1 , X 2 ,..., X n  una m.a. de una v.a. X~N(𝝻,𝞂2) ,  𝞂2 conocido. 
+Se quiere construir un IC para de nivel (1 - 𝞪),
+
+
+
+              ~N(0,1) ,								
+
+=  (1 - 𝞪)
+
+Método del Pivote: Ejemplo
+Sea  X 1 , X 2 ,..., X n  una m.a. de una v.a. X~N(𝝻,𝞂2) ,  𝞂2 conocido. 
+Se quiere construir un IC para de nivel (1 - 𝞪),
+
+
+
+              ~N(0,1) ,								
+
+Pivote 
+=  (1 - 𝞪)
+=  (1 - 𝞪)
+=  (1 - 𝞪)
+
+TCL- Intervalo de confianza asintótico
+ n grande, no se cual es la distribución
+Sea  X1, ...Xn m.a.  c/u con media  μ y varianza σ2. 
+
+
+  
+
+cuando el n grande el desvío muestral converge al desvío. puede reemplazarse del intervalo de confianza asintótico
+
+
+IC cuando clones son normales pero no se la varianza, t de Student
+
+IC cuando clones son normales pero no se la varianza, t de Student n-1 gl
+t
+-t
+
+IC para 𝝻 de una normal con 𝞂 desconocido
+
+IC para dif de medias μ1-μ2 
+Muestras apareadas:
+X1, X 2 ,..., X n  m.a. de una v.a. X~N(𝝻1,𝞂12)
+Y1, Y 2 ,..., Y n  m.a. de una v.a. Y~N(𝝻2,𝞂22)
+
+(X1,Y1), (X 2,Y2)   ..., (X n,Yn)    una m.a. de normal bivariada  N((𝝻1,𝝻1),(𝞂12, 𝞂22,𝛒))     
+
+Zi=Xi-Yi             Z1, Z 2 ,..., Z n  m.a. de una v.a. N(𝝻1-𝝻2,  𝞂12+ 𝞂22-2𝛒*(𝞂1 𝞂2))
+
+ como el caso de  Z=BRUTO-NETO.
+Z(i)= BRUTO(persona i)-NETO(persona i) p/ c/ persona i.
+
+Casos normales
+Si conozco la varianza, tengo un pivote Z
+
+Si no conozco la varianza tengo un pivote t
+
+si n es grande?
+
+Casos
+
+IC para dif de medias μ1-μ2 
+Supongamos tener muestras independientes
+
+X1, X 2 ,..., X n1  una m.a. de una v.a. X~N(𝝻1,𝞂2) 
+
+Y1, Y 2 ,..., Y n2  con distribución N(𝝻2,𝞂2), 
+
+Igual varianza distinto tamaño de muestra 
+
+
+
+
+IC para dif de medias μ1-μ2 
+Entonces el pivote tiene distribución t de student
+
+
+
+
+
+
+
+IC para dif de medias μ1-μ2 t de Welch
+Supongamos tener muestras no apareadas
+
+X1, X 2 ,..., X n1  una m.a. de una v.a. X~N(𝝻1,𝞂12) independiente de otra muestra
+
+Y1, Y 2 ,..., Y n2  con distribución N(𝝻2,𝞂22), con distinta  varianza 
+
+y distinto tamaño de muestra 
+
+
+
+
+IC para dif de medias μ1-μ2 t de Welch
+
+X1, X 2 ,..., X n1  una m.a. de una v.a. X~N(𝝻1,𝞂12) indep de
+Y1, Y 2 ,..., Y n2  una m.a. de una v.a. Y~N(𝝻2,𝞂22), distinto tam. (no apareadas)
+
+si Varianzas no son iguales y la cantidad de muestras no es igual, el pivote: 
+
+
+Grados de libertad
+
+IC para dif de medias μ1-μ2 
+
+
+
+
+Grados de libertad de la distribución t
+
+IC para 𝞂2 de una normal
+Supongamos que se quiere hallar un intervalo de confianza para 𝝈2 de una distribución normal.
+Sea  X1 , X2 ,..., X1n  una muestra aleatoria de una v.a. X, donde X~N(𝝁, 𝝈2).
+
+       
+      
+
+
+
+
+
+     Estimador		               	Pivote con distribución     	    conocida 
+
+
+IC para 𝞂2 
+Un fabricante de detergente líquido está interesado en la uniformidad de la máquina utilizada para llenar las botellas. 
+De manera específica, es deseable que la desviación estándar σ del proceso de llenado sea menor que 0.15 onzas de líquido
+Supongamos que la distribución del volumen de llenado es aproximadamente normal. 
+Al tomar una muestra aleatoria de 20 botellas, se obtiene una varianza muestral S2 =0.0153 . 
+Hallar un intervalo de confianza de nivel 0.95 para la verdadera varianza σ2 y con este un IC para el verdadero desvío σ del volumen de llenado.
+
+
+IC para 𝞂
+⇒ S=0,1237

@@ -1,0 +1,359 @@
+Análisis y Visualización de Datos
+DiploDatos 2026
+Toda la parte de visualizaciones de la materia está centrada alrededor de qué conceptos de estadística y probabilidad se benefician de visualizaciones y cómo comunicarlos adecuadamente.
+
+Pallete http://paletton.com/#uid=71Z0u0kketqasL5fO-fowqrrFla
+
+Profes
+Georgina Flesia
+
+Lic. en Matemática  FaMAF-UNC.
+Dra. en Matemática FaMAF-UNC.
+Trabajo en Ciencia de datos,  Procesamiento de Señales y Sistemasgeorgina.flesia@unc.edu.ar
+
+
+Karim Nemer
+Ing en Sistemas de Información UTN-FRC, Dra en Ingeniería, mención Electrónica UTN-FRCTrabajo en Inteligencia Artificial aplicado al procesamiento de imágenes satelitales
+karim.nemer@unc.edu.ar
+
+Estructura de la materia
+Clases virtuales sincrónicas, donde charlamos conceptos, definiciones y aplicaciones de los temas que abordamos
+
+
+
+
+Estructura de la materia
+Clases virtuales sincrónicas, donde charlamos conceptos, definiciones y aplicaciones de los temas que abordamos
+
+En cada clase dividimos el tiempo en una discusión de conceptos y en la aplicación de esos conceptos usando una notebook en Python.
+
+
+
+Estructura de la materia
+Clases virtuales sincrónicas, donde charlamos conceptos, definiciones y aplicaciones de los temas que abordamos
+
+En cada clase dividimos el tiempo en una discusión de conceptos y en la aplicación de esos conceptos usando una notebook en Python.
+
+¿Como se aprueba esta materia?
+
+
+
+Estructura de la materia
+Clases virtuales sincrónicas, donde charlamos conceptos, definiciones y aplicaciones de los temas que abordamos
+
+En cada clase dividimos el tiempo en una discusión de conceptos y en la aplicación de esos conceptos usando una notebook en Python.
+
+¿Como se aprueba esta materia?
+
+La materia tiene una tarea asociada dividida en dos partes: 
+Entregable Parte 1 : corresponde a los temas discutidos en las dos primeras clases
+Entregable Parte 2.: corresponde a los temas discutidos en las últimas dos clases.
+
+Se deben aprobar ambas partes para considerar aprobada la tarea. 
+
+IA
+El uso de inteligencia artificial no se puede prohibir.
+
+Sin embargo, el exceso de uso de IA se penaliza.
+
+Se supone que Uds pueden hacer los entregables solo con el material cubierto en clase. 
+
+Cada profesor de seguimiento usa su propio criterio para penalizar el exceso de IA. HABLEN CON SU PROFESOR
+
+
+
+
+IA
+El uso de inteligencia artificial no se puede prohibir.
+
+Sin embargo, el exceso de uso de IA se penaliza.
+
+Se supone que Uds pueden hacer los entregables solo con el material cubierto en clase. 
+
+Cada profesor de seguimiento usa su propio criterio para penalizar el exceso de IA. HABLEN CON SU PROFESOR
+
+
+¿Mi opinión personal?
+
+La IA es un recurso muy bueno para mejorar un trabajo. 
+
+Pero nadie aprende con IA, porque el aprendizaje es progresivo. 
+
+Les conviene hacer el esfuerzo de codificar sin IA, y a medida que vayan aprendiendo, usar el recurso para hacer gráficos más elaborados y  corregir errores generales. 
+
+Aula Virtual
+En el Aula virtual de la materia pueden encontrar las transparencias de clase, las notebooks de práctico y videos de apoyo divididos por día de dictado
+
+Por ejemplo : En la pestaña Clase 1 se encuentran los datos y las notebooks correspondientes a uso de Colab y probabilidad en Python. 
+
+
+
+Aula Virtual
+En el Aula virtual de la materia pueden encontrar las transparencias de clase, las notebooks de práctico y videos de apoyo divididos por día de dictado
+
+Por ejemplo : En la pestaña Clase 1 se encuentran los datos y las notebooks correspondientes a uso de Colab y probabilidad en Python. 
+Se pueden comunicar con nosotros vía Slack 
+Si todavía no tienen acceso al aula virtual, les vamos a facilitar el material por ese canal de slack.
+Es muy importante que terminen la inscripción y obtengan el email universitario y el acceso 
+
+
+Ciencia de Datos
+50 years of data science
+Data Science From 1963 To 2012
+
+Un científico de datos exitoso necesita ser capaz de volverse uno con los datos explorándolos y aplicando un análisis estadístico riguroso ... Pero los buenos científicos de datos también entienden lo que se necesita para implementar sistemas en producción, y están listos para ensuciarse las manos escribiendo código que limpie los datos o realice funciones centrales del sistema ...
+
+¿Qué es la Ciencia de Datos?
+Conjunto de disciplinas que utilizan métodos científicos para obtener conocimientos a partir de los datos dándoles un mayor valor.
+
+Para poder maximizar el aprendizaje durante esta materia, primero es importante tener un pantallazo general de lo que van a aprender durante toda la diplomatura y cómo es el trabajo de data scientists. De esta manera, podremos tener una idea de la utilidad de las herramientas que van a aprender durante este materia, y por que es crítico tener un entendimiento sólido de los conceptos de estadística y análisis de datos.
+
+Chatbots
+ Asesores de compras
+
+Procesamiento de lenguaje natural
+Reconocimiento Facial, Voz, Huellas
+
+Detección de enfermedades
+Cáncer basada en imágenes -
+Predicción de epidemias
+
+Recomendadores en base a comportamientos
+Netflix - Spotify - Amazon
+
+APLICACIONES
+Clasificación de emails Spam – Correo no deseado
+Estas son algunas de las aplicaciones que vamos 
+
+Personalización de Servicios bancarios
+
+
+Como hacer un clasificador de pliegos?
+Reconocimiento de patologías en imágenes 
+
+Chatbot-ANÁLISIS DE TURNOS MÉDICOS
+
+APLICACIONES
+Descifrando el futuro económico: inflación, recomendación de activos financieros
+
+Cambio climático- análisis de datos de emisión de gases
+
+
+Detección de sentimientos en foros
+Ansiedad, depresión, agresión
+Estas son algunas de las aplicaciones que vamos 
+
+AlphaFold
+AlphaFold, predicción de estructuras 3D de proteínas mediante IA
+
+
+
+
+
+
+
+https://www.youtube.com/watch?v=58XzFvZ8xVU
+
+
+Data Analyst
+Data Science
+Machine Learning
+Ejemplo: ¿Por qué no hay una respuesta positiva a una acción?  
+
+Explora, cura y analiza los datos para responder
+
+Usa su intuición y el experto de dominio
+Detecta patrones superficiales
+Como se trabaja
+Parte de una situación problemática
+Busca un producto de datos
+Guiado por interpretación de resultados
+Hace emerger patrones profundos
+Ejemplo: Predecir una acción a partir de datos históricos
+Busca optimizar una métrica de desempeño
+Guiado por la teoría de los modelos matemáticos
+Detecta patrones profundos
+
+Estos tres conceptos (análisis de datos, ciencia de datos y aprendizaje automático) no tienen definiciones que los separen completamente. Existen muchas áreas donde se superponen, e incluso podríamos hablar de que algunos engloban a los otros.
+Análisis de datos: podemos pensar que el análisis de datos es lo que se hacía antes de que las herramientas de ciencia de datos y machine learning estuvieran disponibles para todo el mundo. Se plantea una pregunta, por ejemplo, ¿por qué nuestros clientes están comprando menos? y se procede a un análisis manual para responderla. Esto no quiere decir que no se utilicen herramientas automáticas, muchas veces muy complejas, pero el análisis está guiado por la intuición del analista, que prueba o descarta una serie de hipótesis pre-existentes. Esto lleva a que tenga un poder de análisis limitado, y por eso decimos que detecta patrones superficiales. No quiere decir que el fenómeno tenga que ser simple, sino que la respuesta a nuestra pregunta puede encontrarse en la “superficie” de nuestros datos, o dependemos de que el analista pueda hacerlos surgir combinando otros datos a partir de su conocimiento de dominio.
+Aprendizaje automático (o machine learning): es una clase bastante particular de análisis de datos, que se basa en usar modelos matemáticos, generalmente muy complejos, para predecir o describir un conjunto de datos sin tener que explícitamente programar las instrucciones para ello. La interpretabilidad del modelo, en el sentido de descubrir los por qué de los fenómenos, muchas veces no es una prioridad. Las redes neuronales, uno de los métodos más populares, son cajas negras imposibles de interpretar, y aún así son ampliamente utilizadas. Por ejemplo, un tipo de pregunta a responder con machine learning es “cuánto va a gastar el cliente X durante el próximo mes?” Para ello, se crea un modelo, se entrena con datos de cuánto gastaron miles de clientes anteriormente, y se lo utiliza para predecir sobre cada cliente en particular. Dependiendo del modelo que se utilice, tal vez podemos saber qué características del cliente son utilizadas para estimar cuánto va a gastar, por ejemplo la edad, el género, el país de origen, el nivel de ingresos, etc. 
+La gran ventaja del machine learning es que el modelo hace todo el análisis de los datos de entrada por sí sólo y sin intervención de un analista, por lo tanto, pueden procesar muchos más datos que un humano y descubrir patrones mucho más complejos. O al menos esa es la promesa, pero veremos durante las últimas 3 materias obligatorias más las optativas que elijan, cómo utilizar adecuadamente estos modelos. Hay que tener en cuenta también que la capacidad de los modelos actuales es limitada, por lo cual es todavía necesario un paso previo de análisis de datos para limitar y reconfigurar los datos de entrada de manera que el modelo tenga más chances de hacer bien su trabajo.
+Ciencia de datos: la ciencia de datos es un término muy general, que engloba un gran conjunto de herramientas y técnicas utilizadas en el análisis automático o semiautomático de grandes conjuntos de datos. A eso tenemos que sumarle que muchas veces está siendo usada más para llamar la atención de posibles inversores que para definir el tipo de trabajo que se realiza. Por ello, es difícil responder qué es data science y qué no. Sin ir más lejos, la wikipedia lo define como una generalización de todas las técnicas disponibles, incluyendo el análisis de datos y el aprendizaje automático, e incluso llega a mencionarlo como un cuarto paradigma de la ciencia. Vamos a tratar de listar algunas diferencias entre la ciencia de datos y las otras dos áreas desde un punto de vista práctico:
+La ciencia de datos usa análisis y machine learning, pero muchas veces no profundiza en ellos. Por ejemplo, un machine learning engineer especializado en redes neuronales sabe hasta el último detalle de cómo funciona y podría desarrollar tipos nuevos de redes, mientras que un data scientist puede usar redes neuronales siguiendo alguna receta ya conocida, pero no necesariamente tener el conocimiento como para inventar recetas nuevas.
+La ciencia de datos sigue procesos analíticos y exploratorios. En la mayoría de los problemas reales (o sea, no en las competencias de Kaggle), las variables de interés están parcialmente definidas. Tenemos una idea aproximada de qué queremos encontrar, por ejemplo, “¿cómo hacer que los clientes gasten más dinero en nuestra plataforma?”. Antes de poder buscar un modelo que explique los datos, primero tenemos que entender qué datos queremos explicar, para qué, y cuáles son las métricas de impacto. Dentro de todo el proceso, probablemente haya una etapa de análisis de datos inicial para plantear hipótesis, una etapa de análisis automático para descubrir patrones, y finalmente una etapa de machine learning para generar el modelo más adecuado según lo que se aprendió en las etapas anteriores.
+
+Data Analyst
+Data Science
+Machine Learning
+Parte de preguntas concretas
+Busca explicar los datos para tomar decisiones
+Guiado por la intuición del analista
+Detecta patrones superficiales
+Parte de una situación problemática
+Busca un producto de datos
+Guiado por interpretación de resultados
+Hace emerger patrones profundos
+Como se trabaja
+Estos tres conceptos (análisis de datos, ciencia de datos y aprendizaje automático) no tienen definiciones que los separen completamente. Existen muchas áreas donde se superponen, e incluso podríamos hablar de que algunos engloban a los otros.
+Análisis de datos: podemos pensar que el análisis de datos es lo que se hacía antes de que las herramientas de ciencia de datos y machine learning estuvieran disponibles para todo el mundo. Se plantea una pregunta, por ejemplo, ¿por qué nuestros clientes están comprando menos? y se procede a un análisis manual para responderla. Esto no quiere decir que no se utilicen herramientas automáticas, muchas veces muy complejas, pero el análisis está guiado por la intuición del analista, que prueba o descarta una serie de hipótesis pre-existentes. Esto lleva a que tenga un poder de análisis limitado, y por eso decimos que detecta patrones superficiales. No quiere decir que el fenómeno tenga que ser simple, sino que la respuesta a nuestra pregunta puede encontrarse en la “superficie” de nuestros datos, o dependemos de que el analista pueda hacerlos surgir combinando otros datos a partir de su conocimiento de dominio.
+Aprendizaje automático (o machine learning): es una clase bastante particular de análisis de datos, que se basa en usar modelos matemáticos, generalmente muy complejos, para predecir o describir un conjunto de datos sin tener que explícitamente programar las instrucciones para ello. La interpretabilidad del modelo, en el sentido de descubrir los por qué de los fenómenos, muchas veces no es una prioridad. Las redes neuronales, uno de los métodos más populares, son cajas negras imposibles de interpretar, y aún así son ampliamente utilizadas. Por ejemplo, un tipo de pregunta a responder con machine learning es “cuánto va a gastar el cliente X durante el próximo mes?” Para ello, se crea un modelo, se entrena con datos de cuánto gastaron miles de clientes anteriormente, y se lo utiliza para predecir sobre cada cliente en particular. Dependiendo del modelo que se utilice, tal vez podemos saber qué características del cliente son utilizadas para estimar cuánto va a gastar, por ejemplo la edad, el género, el país de origen, el nivel de ingresos, etc. 
+La gran ventaja del machine learning es que el modelo hace todo el análisis de los datos de entrada por sí sólo y sin intervención de un analista, por lo tanto, pueden procesar muchos más datos que un humano y descubrir patrones mucho más complejos. O al menos esa es la promesa, pero veremos durante las últimas 3 materias obligatorias más las optativas que elijan, cómo utilizar adecuadamente estos modelos. Hay que tener en cuenta también que la capacidad de los modelos actuales es limitada, por lo cual es todavía necesario un paso previo de análisis de datos para limitar y reconfigurar los datos de entrada de manera que el modelo tenga más chances de hacer bien su trabajo.
+Ciencia de datos: la ciencia de datos es un término muy general, que engloba un gran conjunto de herramientas y técnicas utilizadas en el análisis automático o semiautomático de grandes conjuntos de datos. A eso tenemos que sumarle que muchas veces está siendo usada más para llamar la atención de posibles inversores que para definir el tipo de trabajo que se realiza. Por ello, es difícil responder qué es data science y qué no. Sin ir más lejos, la wikipedia lo define como una generalización de todas las técnicas disponibles, incluyendo el análisis de datos y el aprendizaje automático, e incluso llega a mencionarlo como un cuarto paradigma de la ciencia. Vamos a tratar de listar algunas diferencias entre la ciencia de datos y las otras dos áreas desde un punto de vista práctico:
+La ciencia de datos usa análisis y machine learning, pero muchas veces no profundiza en ellos. Por ejemplo, un machine learning engineer especializado en redes neuronales sabe hasta el último detalle de cómo funciona y podría desarrollar tipos nuevos de redes, mientras que un data scientist puede usar redes neuronales siguiendo alguna receta ya conocida, pero no necesariamente tener el conocimiento como para inventar recetas nuevas.
+La ciencia de datos sigue procesos analíticos y exploratorios. En la mayoría de los problemas reales (o sea, no en las competencias de Kaggle), las variables de interés están parcialmente definidas. Tenemos una idea aproximada de qué queremos encontrar, por ejemplo, “¿cómo hacer que los clientes gasten más dinero en nuestra plataforma?”. Antes de poder buscar un modelo que explique los datos, primero tenemos que entender qué datos queremos explicar, para qué, y cuáles son las métricas de impacto. Dentro de todo el proceso, probablemente haya una etapa de análisis de datos inicial para plantear hipótesis, una etapa de análisis automático para descubrir patrones, y finalmente una etapa de machine learning para generar el modelo más adecuado según lo que se aprendió en las etapas anteriores.
+
+Data Analyst
+Data Science
+Machine Learning
+Parte de preguntas concretas
+Busca explicar los datos para tomar decisiones
+Guiado por la intuición del analista
+Detecta patrones superficiales
+Parte de una situación problemática
+Busca un producto de datos
+Guiado por interpretación de resultados
+Hace emerger patrones profundos
+Parte de una tarea y un conjunto de datos
+Busca optimizar una métrica de desempeño
+Guiado por la teoría de los modelos
+Detecta patrones profundos
+
+Como se trabaja
+Estos tres conceptos (análisis de datos, ciencia de datos y aprendizaje automático) no tienen definiciones que los separen completamente. Existen muchas áreas donde se superponen, e incluso podríamos hablar de que algunos engloban a los otros.
+Análisis de datos: podemos pensar que el análisis de datos es lo que se hacía antes de que las herramientas de ciencia de datos y machine learning estuvieran disponibles para todo el mundo. Se plantea una pregunta, por ejemplo, ¿por qué nuestros clientes están comprando menos? y se procede a un análisis manual para responderla. Esto no quiere decir que no se utilicen herramientas automáticas, muchas veces muy complejas, pero el análisis está guiado por la intuición del analista, que prueba o descarta una serie de hipótesis pre-existentes. Esto lleva a que tenga un poder de análisis limitado, y por eso decimos que detecta patrones superficiales. No quiere decir que el fenómeno tenga que ser simple, sino que la respuesta a nuestra pregunta puede encontrarse en la “superficie” de nuestros datos, o dependemos de que el analista pueda hacerlos surgir combinando otros datos a partir de su conocimiento de dominio.
+Aprendizaje automático (o machine learning): es una clase bastante particular de análisis de datos, que se basa en usar modelos matemáticos, generalmente muy complejos, para predecir o describir un conjunto de datos sin tener que explícitamente programar las instrucciones para ello. La interpretabilidad del modelo, en el sentido de descubrir los por qué de los fenómenos, muchas veces no es una prioridad. Las redes neuronales, uno de los métodos más populares, son cajas negras imposibles de interpretar, y aún así son ampliamente utilizadas. Por ejemplo, un tipo de pregunta a responder con machine learning es “cuánto va a gastar el cliente X durante el próximo mes?” Para ello, se crea un modelo, se entrena con datos de cuánto gastaron miles de clientes anteriormente, y se lo utiliza para predecir sobre cada cliente en particular. Dependiendo del modelo que se utilice, tal vez podemos saber qué características del cliente son utilizadas para estimar cuánto va a gastar, por ejemplo la edad, el género, el país de origen, el nivel de ingresos, etc. 
+La gran ventaja del machine learning es que el modelo hace todo el análisis de los datos de entrada por sí sólo y sin intervención de un analista, por lo tanto, pueden procesar muchos más datos que un humano y descubrir patrones mucho más complejos. O al menos esa es la promesa, pero veremos durante las últimas 3 materias obligatorias más las optativas que elijan, cómo utilizar adecuadamente estos modelos. Hay que tener en cuenta también que la capacidad de los modelos actuales es limitada, por lo cual es todavía necesario un paso previo de análisis de datos para limitar y reconfigurar los datos de entrada de manera que el modelo tenga más chances de hacer bien su trabajo.
+Ciencia de datos: la ciencia de datos es un término muy general, que engloba un gran conjunto de herramientas y técnicas utilizadas en el análisis automático o semiautomático de grandes conjuntos de datos. A eso tenemos que sumarle que muchas veces está siendo usada más para llamar la atención de posibles inversores que para definir el tipo de trabajo que se realiza. Por ello, es difícil responder qué es data science y qué no. Sin ir más lejos, la wikipedia lo define como una generalización de todas las técnicas disponibles, incluyendo el análisis de datos y el aprendizaje automático, e incluso llega a mencionarlo como un cuarto paradigma de la ciencia. Vamos a tratar de listar algunas diferencias entre la ciencia de datos y las otras dos áreas desde un punto de vista práctico:
+La ciencia de datos usa análisis y machine learning, pero muchas veces no profundiza en ellos. Por ejemplo, un machine learning engineer especializado en redes neuronales sabe hasta el último detalle de cómo funciona y podría desarrollar tipos nuevos de redes, mientras que un data scientist puede usar redes neuronales siguiendo alguna receta ya conocida, pero no necesariamente tener el conocimiento como para inventar recetas nuevas.
+La ciencia de datos sigue procesos analíticos y exploratorios. En la mayoría de los problemas reales (o sea, no en las competencias de Kaggle), las variables de interés están parcialmente definidas. Tenemos una idea aproximada de qué queremos encontrar, por ejemplo, “¿cómo hacer que los clientes gasten más dinero en nuestra plataforma?”. Antes de poder buscar un modelo que explique los datos, primero tenemos que entender qué datos queremos explicar, para qué, y cuáles son las métricas de impacto. Dentro de todo el proceso, probablemente haya una etapa de análisis de datos inicial para plantear hipótesis, una etapa de análisis automático para descubrir patrones, y finalmente una etapa de machine learning para generar el modelo más adecuado según lo que se aprendió en las etapas anteriores.
+
+El ciclo sin fin
+01
+DEFINICIÓN DEL PROBLEMA DE NEGOCIOS
+05
+COMUNICACIÓN DE RESULTADOS
+02
+ANÁLISIS Y EXPLORACIÓN DE DATOS
+04
+MODELADO PREDICTIVO
+03
+INGENIERÍA DE CARACTERÍSTICAS
+Ciclo de un proyecto de Data Science
+Lo que encontraremos es que el data science es un ciclo que siempre puede tener más iteraciones, y que generalmente está limitada por el tiempo o por el dinero. Este gráfico resume este concepto de manera “idealizada”. Dentro de un proyecto de ciencia de datos, pasamos muchas veces por distintas etapas y utilizamos todas las herramientas que tengamos disponibles, desde modelos super sofisticados hasta tests de hipótesis estadística. Una vez que obtuvimos resultados, estos son evaluados y aplicados, dando origen a nuevas necesidades de negocios que vuelven a  disparar el ciclo. Otras veces, se recomienza simplemente por la necesidad de mantenerse competitivo utilizando las últimas herramientas disponibles, y las tecnologías en data science avanzan rápido.
+Otras materias también están fuertemente correlacionadas con las etapas 02 a 04 de este ciclo, y algunas visitan muchas partes. ¿Y qué pasa con la etapa 01? Esta la trabajarán durante las mentorías, donde tendrán un problema real para ejercitar el criterio que vayan aprendiendo a lo largo de las materias. Por eso, es indispensable que desarrollen un buen sistema de trabajo con su equipo y con su mentor.
+
+Durante esta materia, veremos conceptos involucrados en:
+Herramientas estadísticas y visualizaciones para la etapa 02.
+Herramientas estadísticas necesarias para interpretar los resultados de la etapa 04.
+Visualización y comunicación efectiva para la etapa 05.
+01
+DEFINICIÓN DEL PROBLEMA DE NEGOCIOS
+05
+COMUNICACIÓN DE RESULTADOS
+02
+ANÁLISIS Y EXPLORACIÓN DE DATOS
+04
+MODELADO PREDICTIVO
+03
+INGENIERÍA DE CARACTERÍSTICAS
+Ciclo de un proyecto de Data Science
+El ciclo sin fin
+Lo que encontraremos es que el data science es un ciclo que siempre puede tener más iteraciones, y que generalmente está limitada por el tiempo o por el dinero. Este gráfico resume este concepto de manera “idealizada”. Dentro de un proyecto de ciencia de datos, pasamos muchas veces por distintas etapas y utilizamos todas las herramientas que tengamos disponibles, desde modelos super sofisticados hasta tests de hipótesis estadística. Una vez que obtuvimos resultados, estos son evaluados y aplicados, dando origen a nuevas necesidades de negocios que vuelven a  disparar el ciclo. Otras veces, se recomienza simplemente por la necesidad de mantenerse competitivo utilizando las últimas herramientas disponibles, y las tecnologías en data science avanzan rápido.
+Otras materias también están fuertemente correlacionadas con las etapas 02 a 04 de este ciclo, y algunas visitan muchas partes. ¿Y qué pasa con la etapa 01? Esta la trabajarán durante las mentorías, donde tendrán un problema real para ejercitar el criterio que vayan aprendiendo a lo largo de las materias. Por eso, es indispensable que desarrollen un buen sistema de trabajo con su equipo y con su mentor.
+
+REALIDAD
+
+Sesgos en los datos
+¿Respondió “bananas”? ¿Por qué no mencionó el rollo de bolsas de plástico? ¿O el color de las bananas? Este ejemplo proviene del curso de formación de “AI Fairness” (Justicia en IA) de Google y demuestra que aunque las tres respuestas son técnicamente correctas, por alguna razón tenemos un sesgo para preferir una de ellas. No todas las personas compartirán ese sesgo; lo que percibimos y cómo respondemos está influenciado por nuestras normas. Si vive en un planeta donde todas las bananas son azules, puede responder “bananas amarillas” aquí. Si nunca antes había visto una banana, puede decir “estantes con cosas amarillas”. También correcto…
+
+Sesgos en los datos
+¿Respondió “bananas”? ¿Por qué no mencionó el rollo de bolsas de plástico? ¿O el color de las bananas? Este ejemplo proviene del curso de formación de “AI Fairness” (Justicia en IA) de Google y demuestra que aunque las tres respuestas son técnicamente correctas, por alguna razón tenemos un sesgo para preferir una de ellas. No todas las personas compartirán ese sesgo; lo que percibimos y cómo respondemos está influenciado por nuestras normas. Si vive en un planeta donde todas las bananas son azules, puede responder “bananas amarillas” aquí. Si nunca antes había visto una banana, puede decir “estantes con cosas amarillas”. También correcto…
+
+Sesgos en los datos
+El sesgo no proviene de algoritmos de IA, proviene de personas.
+
+
+De que se está hablando…
+¿Qué puedes hacer con ChatGPT?
+Esta herramienta es totalmente versátil, ya que puedes pedirle que te explique cualquier concepto, que escriba artículos o resúmenes de cualquier suceso histórico, o que invente poemas y chistes. Además, podrás pedir consejo sobre qué teléfono comprar, así como trivials, traducciones, definiciones, explicaciones, y todo lo que se te ocurra.
+Conversatorio sobre Inteligencia Artificial y ChatGPT- Laura Alonso Alemany
+https://www.youtube.com/watch?v=0R6Ysg4t_Sk&t=13s
+
+Habilidades a aprender durante esta materia
+Seleccionar y aplicar herramientas estadísticas adecuadas
+1
+Diseñar procesos de análisis de datos sistemáticos
+2
+3
+4
+5
+
+Habilidades a aprender durante esta materia
+Seleccionar y aplicar herramientas estadísticas adecuadas
+1
+Diseñar procesos de análisis de datos sistemáticos
+2
+Obtener resultados a partir de un conjunto de datos y contextualizarlos
+3
+Explicar resultados y conclusiones de forma correcta y efectiva
+4
+5
+
+Habilidades a aprender durante esta materia
+Seleccionar y aplicar herramientas estadísticas adecuadas
+1
+Diseñar procesos de análisis de datos sistemáticos
+2
+Obtener resultados a partir de un conjunto de datos y contextualizarlos
+3
+Explicar resultados y conclusiones de forma correcta y efectiva
+4
+Implementar pipelines de análisis de datos en Python
+5
+
+¿Qué pasa si usamos Machine Learning sin saber análisis de datos?
+No sabemos qué modelar, a menos que alguien más nos diga cómo.
+
+
+¿Qué pasa si usamos Machine Learning sin saber análisis de datos?
+No sabemos qué modelar, a menos que alguien más nos diga cómo.
+No podemos interpretar correctamente el impacto de sus resultados
+Impacto a largo plazo, provocados por sesgos, unfairness, filtrado de información
+Impacto en métricas de negocios, por ejemplo evaluado a través de test A/B 
+
+
+¿Qué pasa si usamos Machine Learning sin saber análisis de datos?
+No sabemos qué modelar, a menos que alguien más nos diga cómo.
+No podemos interpretar correctamente el impacto de sus resultados
+Impacto a largo plazo, provocados por sesgos, unfairness, filtrado de información
+Impacto en métricas de negocios, por ejemplo evaluado a través de test A/B
+Perdemos mucho tiempo en desarrollar modelos que no responden la pregunta correcta, y por lo tanto son menos accionables
+
+¿Qué sucede si hacemos Data Science sin entender Machine Learning?
+Estamos limitados a análisis simples. O usamos modelos sin saber cómo funcionan...
+
+
+¿Qué sucede si hacemos Data Science sin entender Machine Learning?
+Estamos limitados a análisis simples. O usamos modelos sin saber cómo funcionan...
+No entendemos qué tipo de restricciones imponen los modelos que elegimos, por ejemplo, modelos lineales, hiperplanos, etc.
+
+
+¿Qué sucede si hacemos Data Science sin entender Machine Learning?
+Estamos limitados a análisis simples. O usamos modelos sin saber cómo funcionan...
+No entendemos qué tipo de restricciones imponen los modelos que elegimos, por ejemplo, modelos lineales, hiperplanos, etc.
+Aplicamos modelos a conjuntos de datos para los cuales no son adecuados, por ejemplo, redes neuronales sin normalizar las columnas.
+
+
+¿Qué sucede si hacemos Data Science sin entender Machine Learning?
+Estamos limitados a análisis simples. O usamos modelos sin saber cómo funcionan...
+No entendemos qué tipo de restricciones imponen los modelos que elegimos, por ejemplo, modelos lineales, hiperplanos, etc.
+Aplicamos modelos a conjuntos de datos para los cuales no son adecuados, por ejemplo, redes neuronales sin normalizar las columnas.
+Perdemos mucho tiempo en optimizar los modelos, porque no sabemos cómo hacerlo.
+
+Material y Herramientas de trabajo
+Google colab → Para leer notebooks de python (00 Inicios en Python.ipynb)
+
+Aula Virtual → Nuestro depósito de datos y herramientas, restringido sólo a los alumnos de la Diplomatura
+
+Inciando…
+00 Inicios en Python.ipynb

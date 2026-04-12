@@ -1,0 +1,317 @@
+Análisis y Visualización de Datos
+Diplomatura Diplodatos 2026
+Toda la parte de visualizaciones de la materia está centrada alrededor de qué conceptos de estadística y probabilidad se benefician de visualizaciones y cómo comunicarlos adecuadamente.
+
+Pallete http://paletton.com/#uid=71Z0u0kketqasL5fO-fowqrrFla
+
+¿Más herramientas para describir el “comportamiento” de los datos de la columna del sueldo?
+Para poder empezar a trabajar, tenemos que enteder cuál es el concepto 
+
+Estadística Descriptiva
+
+Análisis de frecuencias
+¿Cuánto ocurre cada uno de los valores (o en intervalos) de un conj de datos?
+Medidas de tendencia central
+¿Cuál es el valor más representativo del conj. de datos?
+Medidas de dispersión
+¿Qué tan alejados están los datos de la tendencia central?
+Estadística Descriptiva
+Representa la información de una manera distinta para facilitar su interpretación, pero no permite realizar predicciones o inferencias
+
+Medidas de tendencia central
+una muestra de datos numéricos 
+x1, x2, ..xN 
+(de una columna en un DataFrame)
+La media muestral (aritmética) o promedio se calcula como:
+Existen otros tipos de medias, pero la más usada es la media aritmética
+
+Medidas de tendencia central
+x1, x2, ..xN numéricos
+
+La mediana se calcula como:
+Ordenar las realizaciones de menor a mayor
+Si N es impar, la mediana es el valor central:
+mediana=x(N+1)/2
+Si N es par, la mediana es el promedio de los dos valores centrales:  
+mediana=(xN/2+xN/2+1)/2
+La moda es el dato con mayor frecuencia, para numéricas intervalo modal depende del histograma
+
+Existen otros tipos de medias, pero la más usada es la media aritmética
+
+Medidas de tendencia central
+si ahora 
+x1, x2, ..xN
+categóricos 
+p/  xi = Xi(ω) ∈ {c1,..,ck}
+La moda es el dato con mayor frecuencia, el que más se repite
+Sólo hay más de una moda cuando el conteo de dos valores es igual.
+
+Moda
+Existen otros tipos de medias, pero la más usada es la media aritmética
+
+Medidas de posición
+
+x1, x2, ..xN numéricos
+
+
+El percentil-k es el valor xi tal que el k% de los valores de la muestra son menores a xi.
+No hay una única fórmula para calcular los percentiles, pero en general:
+Ordenar las realizaciones tal que xj≤xj+1
+Seleccionar el elemento de la serie en la posición: menor entero mayor o igual a  k*N/100.
+percentil 25 es el primer cuartil Q1
+percentil 50 el segundo cuartil Q2 (mediana)
+percentil 75 el tercer cuartil Q3
+
+Medidas de dispersión
+x1, x2, ..xN numéricos
+La varianza muestral mide la variación de los datos a través de la distancia cuadrada a la media muestral. 
+
+
+La desviación estándar es la raíz cuadrada de la varianza. Está en la misma unidad que los datos.
+El coeficiente de variación es la desviación estándar dividida la media muestral. Es comparable entre distintas v.a.
+
+
+Medidas de dispersión
+Datos numéricos
+x1, x2, ..xN 
+El rango y el rango intercuartílico miden en qué intervalo se encuentran un cierto porcentaje de los datos.
+Rango: 
+percentil-100 - percentil-0
+Rango intercuartílico:
+percentil-75 - percentil-25
+Q3 - Q1
+
+
+Usos de los percentiles y rangos
+En el caso de la mediana (percentil-50), medir la tendencia central
+Contextualizar el valor de un dato con respecto a otros
+Una persona de sexo femenino de 6 años mide 95cm
+Está en el 10% de personas con menor estatura del mismo grupo. [Curvas], se visualiza, para cada edad, los percentiles de la distribución condicional al grupo.
+Identificación y eliminación de valores extremos
+
+Boxplot
+
+Demo con Notebook 
+02 Datos y Modelos.ipynb
+
+Teoría, datos, experimentos, simulación... 
+¿Que es todo esto y cómo se combinan?
+
+
+Variable Aleatoria (discreta numérica) 
+X= cantidad de caras en 3 tiradas de moneda. 
+RX={ 0, 1, 2, 3 }
+ccc
+ccs
+scc
+scs
+csc
+css
+ssc
+sss
+Ω={ccc,ccs,csc,css,scc,scs,ssc,sss}
+X
+P(X=0)=⅛,  
+P(X=1)=⅜...
+Se quiere estimar la densidad (discreta o probabilidad puntual) de dicha variable aleatoria? ¿Cuál sería la probabilidad de que, en la muestra, haya 0 caras, una, etc, hasta 3. es decir cuánto vale P(X=k) para k=0, ..,3. Repitiendo el experimento una cierta cantidad de veces, podemos estimar la probabilidad con la proporción.
+
+Variable Aleatoria (repetición del experimento)
+X= cantidad de caras en 3 tiradas de moneda. 
+Proporción de resultados tal que X=k :
+Se quiere estimar la densidad (discreta o probabilidad puntual) de dicha variable aleatoria? ¿Cuál sería la probabilidad de que, en la muestra, haya 0 caras, una, etc, hasta 3. es decir cuánto vale P(X=k) para k=0, ..,3. Repitiendo el experimento una cierta cantidad de veces, podemos estimar la probabilidad con la proporción.
+
+Variable Aleatoria (repetición del experimento)
+ la Proporción de la muestra tal que X=k, estima la probabilidad P(X=k), p/ k=0,1,2,3 
+
+Variable Aleatoria (modelo matemático)
+X= cantidad de caras en 3 tiradas de moneda. p(k)=P(X=k)? 
+
+Ω={ccc,ccs,csc,css,scc,scs,ssc,sss},    #Ω=8=23
+
+p(0)=P(X=0)=1/8 
+p(1)=P(X=1)=3/8
+p(2)=P(X=2)=3/8
+p(3)=P(X=3)=1/8
+
+Notar que  la suma da 1,  ∑kp(k)=1=∑kP(X=k)
+Se quiere modelar la variable aleatoria cantidad de caras al lanzar una moneda 3 veces. ¿Cuál sería la densidad (discreta) de dicha variable aleatoria? ¿ Cuál sería la probabilidad de que, en la muestra, haya 0 caras? ¿Cuál sería la probabilidad de que haya una cara?, y así hasta 3. es decir, cuánto vale P(X=k) para k=0, ..,3. 
+
+Variable binomial 
+Sea X la v. a. discreta modela: cantidad de “éxitos” en una n-upla 
+P(X=k)= n!/(n-k)! k! pk (1-p)(n-k)    
+k=0,1,...,n
+p=probabilidad de “éxito”. 
+
+X∼B(n,p), ejemplos?
+
+Distribución binomial modela la probabilidad de la cantidad de éxitos o  situación de interés. En una n-upla donde p es la probabilidad de éxito o que se de la situación de interés. El que salga cara puede ser considerado un éxito. También el “éxito” puede ser que en una selección, con reposición, la persona elegida tenga rulos. La situación de interés (o “exito” ) puede ser que la persona sea de Capricornio. En la bibliografía se considera el no “exito” como fracaso que sería el complemento.  La probabilidad del fracaso, no éxito o complemento sería (1-p) , etc. p y n resultan parámetros de esta distribución y por eso podeos llamarla distribución paramétrica, define toda una familia de distribuciones binomiales parametrizadas por p y n.
+
+Reiteramos que el ejemplo anterior (el de las 3 monedas)  es un caso particular de Distribución Binomial, donde p=½ , probabilidad de salir cara y n=3
+
+
+Función de Distribución Acumulada 
+X discreta						X continua
+
+Función de densidad
+X discreta	
+X continua
+densidad discreta (probabilidad puntual)
+f(t)=P(X=t)
+FDA: F(t)=P(X≤t)
+
+densidad:
+f(t)=F’(t)
+F(t)=∫tf(x) dx
+
+FDA: F(t)=P(X≤t)
+
+En el caso de X variable aleatoria discreta, la función de densidad discreta también es llamada probabilidad puntual. Otra notación usual: p(k) = P(X=k), con k en un conjunto finito o infinito numerable (contable). Si puede extender la noción de densidad discreta para variables del tipo categórica que sería la probabilidad de ser asignada a una clase o categoría, pero no está definida la función de distribución acumulada pues las clases no tienen orden.
+
+Propiedades de función de densidad
+f(t)≥0 para todo t
+2) ∫f(t) dt = 1 para variables continuas y (entre -∞ y +∞)
+2) ∑f(t)=1 para variables discretas (para todos los valores)
+
+cualquier función que cumple con 1 y 2 es una función de densidad de alguna v. a.
+
+
+Distribución Uniforme
+X v.a. tiene distribución uniforme si su función densidad es
+ f(t)=1/(b-a) si a ≤ t ≤ b, 0 c.c.
+Notación X~U(a,b),  a<b parámetros
+
+
+Distribución Normal o Gaussiana
+X v.a. continua tiene distribución normal (Gaussiana) si su función de densidad es la siguiente: 
+
+Con μ∊R y σ2 ∊(0,∞)
+parámetros
+Notación X~N(μ,σ2)
+μ
+Modela la distribución de una variable numérica continua, con valores en toda la recta real más densa en el centro y menos densa hacia los extremos (infinitos). cumple las propiedades de cualquier función de densidad 
+
+Distribución Normal o Gaussiana
+X~N(0,σ2)
+
+si además σ2=1
+X~N(0,1), se dice 
+Normal Estándar
+Modela la distribución de una variable numérica continua, con valores en toda la recta real más densa en el centro y menos densa hacia los extremos (infinitos). cumple las propiedades de cualquier función de densidad 
+
+Distribución Exponencial (caso especial de Gamma)
+X v.a. tiene distribución 
+exponencial si su densidad es:
+Notación X~Exp(λ),  λ>0 parámetro
+suele utilizarse para modelar tiempo de espera
+
+Distribución Chi Cuadrado 
+Diremos la v.a. X tiene distribución Chi- cuadrado con k grados de libertad. Notación X~ 𝝌k2 si su función de densidad está dada por:
+
+
+
+Medidas estadísticas de una v.a. o de una densidad
+X v.a. numérica con densidad f 
+Media o Esperanza de X (Medida de posición): 
+μ=E(X)= ∫t f(t) dt ó  μ=E(X)=∑t f(t) ,promedio ponderado por la densidad (μ∈R)
+Varianza (Medidas de dispersión): 
+σ2 =Var(X)= E((X-μ)2)=∫(t-μ)2 f(t) dt ó  σ2=E((X-μ)2)=∑(t-μ)2 f(t) (σ2∈R+)
+En una va con densidad normal coinciden con los parámetros μy σ2 respectivamente
+
+Media
+
+Media Muestral   ∑i=1n xi /n, (promedio)  vs
+Media o Esperanza de una v.a. X, μ=E(X)= ∫t f(t) dt ó  μ=E(X)=∑t f(t)
+
+
+
+Mediana
+Se ordena la muestra de menor a mayor: x(1),...x(n) y se calcula...
+Mediana Muestral   vs
+Mediana de una v.a. X, o de su densidad es xe tal que P(X≤xe)=P(X≥xe)
+
+
+
+Moda
+Resultado (o intervalo) con mayor frecuencia en la muestra. vs
+Valor con mayor probabilidad o densidad xo tal que f(xo)≥f(x), p/ todo x
+Moda
+Medida más adecuada para datos categóricos (pues la Media y la Mediana  NO tienen sentido para datos categóricos)
+
+Comparación de Medidas
+https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Visualisation_mode_median_mean.svg/512px-Visualisation_mode_median_mean.svg.png
+Moda:
+
+
+Mediana:
+
+
+Media:
+Estos tres conceptos están definidos tanto para una muestra o conjunto de datos como para una función de densidad teórica. Ambos tipos de definiciones tienen las mismas propiedades.
+
+Otras Medidas, del modelo (de una v.a.)
+Dada una función de densidad f (de una v.a. X) se define:
+Desvío:  σ =(σ2)½=(Var(X))½    -Kurtosis: E((X-μ)4)/σ4  -Sesgo/Asimetría: E(X-μ)3/σ3
+
+Percentiles
+El percentil es una medida de posición. El p-ésimo percentil o percentil pх100% , es el xp tal que P(X≤xp)=p 
+
+
+
+
+
+link1					
+
+Algunas propiedades de v.a. (modelo) y su distribución
+Si X〜N(μ,σ2) y Z=(X-μ)/σ, entonces Z〜N(0,1)
+
+
+Si Z〜N(0,1), entonces Z2〜𝝌12 Chi cuadrado con 1 gl
+
+
+Datos vs modelos
+
+Medidas a partir de datos↔️Medidas muestrales
+Sean los n datos de una muestra: x1,...xn (observaciones de la v.a.)
+Media muestral (promedio): xM=∑i=1n xi /n=
+Varianza muestral : ∑i=1n (xi -xM)2/n
+
+Asimetría muestral
+
+Curtosis muestral
+
+
+Tendencia
+La tendencia habitual, si los datos están descritos en los términos de     y sX (desvío), es hacer aquellas típicas inferencias que sólo son ciertas si la distribución de los datos se ajusta bien a la distribución normal:
+●   ±sX supone el 68.5% aproximadamente de la población,
+●   ±2sX supone el 95% aproximadamente de la población
+●   ±3sX supone el 99.5% aproximadamente de la población
+
+
+
+Bondad de ajuste
+Resume la discrepancia entre los valores observados y los valores esperados en el modelo de estudio.
+Gráficos QQ ( Quantil muestral vs Quantil modelo)
+
+Dentro de los test más usados para normalidad: 
+
+Test de Kolmogorov-Smirnov (Test KS)
+
+(En próxima semana veremos Test de Hipótesis)
+
+
+
+En una frase:
+¿Cuánto cobran l@s programadores en Argentina?
+
+¿Respuestas?
+¿Qué pregunta respondimos en realidad?
+
+¿Cuánto cobran l@s programadores experimentados en Argentina?
+
+¿Afecta el nivel de estudios en el salario de l@s programador@s en Argentina? ¿Cómo? 
+Ejercicio 
+Seguir el proceso de análisis propuesto:
+Hipótesis
+Análisis de v.a.
+Experimento
+Comenzamos a hablar ahora de dos variables aleatorias: el salario y el nivel de estudios.

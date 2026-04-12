@@ -1,0 +1,275 @@
+Análisis y Visualización de Datos
+DiploDatos 2026
+
+Toda la parte de visualizaciones de la materia está centrada alrededor de qué conceptos de estadística y probabilidad se benefician de visualizaciones y cómo comunicarlos adecuadamente.
+
+Pallete http://paletton.com/#uid=71Z0u0kketqasL5fO-fowqrrFla
+
+Primero: ¿cuál es el problema?
+Existe una diferencia fundamental entre cómo aprendemos ciencia de datos y cómo lo aplicamos. Cuando hacemos un tutorial, o queremos practicar con un conjunto de datos, nos preguntamos ¿Qué podemos hacer con estos datos? En la práctica profesional usualmente ocurre lo contrario, surge una situación problemática o necesidad de negocios, y luego se busca un conjunto de datos apropiado para intentar dar una solución. (Apropiado muchas veces es sinónimo de “el único disponible”). 
+
+Si me dedico a la programación…
+¿Cuánto puedo cobrar?
+
+¿ Se podrá implementar un sistema que, dadas las características de una persona, devuelva el sueldo más probable?
+
+Encuesta Sysarmy
+Encuesta personal y voluntaria que busca relevar información sobre salarios y condiciones de trabajo de programadores, que se realiza anualmente.
+Usaremos sólo los datos provenientes de Argentina 2026
+Link a la página de los datos
+Análisis provistos por Openqube
+
+de Lucas Aimaretto
+Estadística
+Teoría de probabilidad
+“Ciencia del estado”
+Recolección y uso de datos en el gobierno de un estado
+Babilónicos (datos de cosechas), Egipcios (censos), Asirios, Chinos, Griegos, Incas, 
+Para curiosos, ver: https://es.slideshare.net/VicValero/historia-de-la-estadistica-67559583
+
+
+Descripción de datos
+Análisis de muestras
+Medición de relaciones
+Toma de decisiones
+Test de Hipótesis
+Inferencia
+Predicción
+
+Utilidad de la Estadística 
+Utilidad de la estadística como herramienta hoy en día. Se utiliza en la industria, negocios, en desarrollo tecnológico, en investigaciones en diversas áreas del conocimiento (medicina, economía, desarrollo social, etc.), tanto en el ámbito público como en el privado.
+
+¿Cuál es el concepto matemático que usamos para modelar la columna del sueldo?
+Para poder empezar a trabajar, tenemos que entender cuál es el concepto 
+
+Variable Aleatoria
+Una variable aleatoria (v.a.)  X es una función
+X: Ω ⇾ RX
+donde Ω es el universo (de posibilidades) y RX es un conjunto de valores que toma la variable.
+   Ω
+X
+RX
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+Una variable aleatoria (v.a.)  X es una función
+X: Ω ⇾ RX
+
+Ω es el universo 
+RX conjunto de valores que puede tomar la variable.
+Consideremos una v.a. X que modele la columna del sueldo, 
+En este caso Ω puede ser la población total de programadores en Argentina en 2023 y RX el conjunto de salarios posibles.
+
+   Ω
+X
+RX
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+Variable salary_monthly_NETO
+Para poder empezar a trabajar, tenemos que enteder cuál es el concepto 
+
+X v.a.
+X: Ω ⇾ RX
+Ω es el universo 
+RX (Rango) conj. de valores que puede tomar la variable .
+El Ω es el conjunto de estados posibles, concepto a veces ideal, universo (de posibilidades), puede pensarse como la población que vamos a estudiar. 
+Por ej.  
+Ω = {ω / ω  es una persona viva que trabaja en Argentina}
+Puede tener más de una definición:
+Ω = {ω / ω  es una persona viva que trabaja en Argentina como desarrollador/a}
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+X v.a.
+X: Ω ⇾ RX
+Ω es el universo 
+RX (Rango) conj. de valores que puede tomar la variable .
+
+
+El rango Rx es el conjunto de valores posibles del sueldo.
+Rx = ℝ  ? (conjunto de números reales)
+Rx = ℕ  ? (conjunto de números naturales)
+¿Cómo podemos calcular el rango Rx en la encuesta?
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+X v.a. salario mensual
+
+X: Ω ⇾ RX
+
+Ω es el universo 
+RX (Rango) conj. de valores que puede tomar la variable .
+ω = desarrollador
+X(ω) = 430000.0	
+X(ω) se denomina realización de la v.a. X
+ω
+Ω
+X(ω) = 430000.0
+X
+RX
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+Variable Aleatoria - Otros ejemplos simples
+Ω (espacio de estados, universo (de posibilidades), población que vamos a estudiar)
+X
+RX
+personas QUE VIVEN EN ARGENTINA 
+horas diarias que trabaja
+[0, 24)
+personas QUE VIVEN EN ARGENTINA 
+edades
+0… 130
+superficie del globo terráqueo
+altura al nivel del mar
+[-4000, 4000] o R
+personas
+provincia
+ Córdoba, ….
+
+Tipos de variables aleatorias
+Las variables aleatorias pueden ser de distinto tipo, de acuerdo a los valores presentes en el Rango y su interpretación.
+Numéricas
+Continuas
+Discretas (un conjunto finito o infinito numerable de valores posibles)
+Categóricas
+Ordinales
+
+La determinación de los tipos de datos/variable que estamos usando nos permite seleccionar las herramientas adecuadas para obtener información a partir de ellos
+
+Demo con Notebook 
+01 Probabilidad.ipynb
+Sección A 
+Datos 
+Distribución de los datos
+
+Hagamos una pregunta interesante:
+¿Tener más años de experiencia significa que se cobra más?
+Canasta básica total en diciembre de 2020: 17,542.89 (línea de pobreza). Fuente https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-43-149
+
+
+
+¿Cómo hacer este análisis?
+Diseñar el experimento
+Una vez que está definido qué medir, se seleccionan las herramientas para medirlo.
+Plantear una hipótesis
+Si no planteamos una hipótesis o “problema” primero, es difícil determinar qué pasos hay que seguir para poder hacer el análisis
+Identificar las variables
+Una vez que la hipótesis está definida, hay que determinar QUÉ hay que medir para poder comprobarla.
+Canasta básica total en diciembre de 2020: 17,542.89 (línea de pobreza). Fuente https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-43-149
+
+
+
+¿Cómo hacer este análisis?
+Diseñar el experimento
+????
+Plantear una hipótesis
+Tener más años de experiencia significa que se cobra más
+Identificar las variables
+Canasta básica total en diciembre de 2020: 17,542.89 (línea de pobreza). Fuente https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-43-149
+
+
+
+Teoría de probabilidad
+
+¿Probabilidad? - Interpretación axiomática
+P es una medida de Probabilidad en el espacio Ω si para cada subconjunto A de Ω , P(A) es un número tal que:
+0 ≤ P(A) ≤ 1
+P(Ω) = 1
+P(A U B) = P(A) + P(B), para A y B disjuntos (o excluyente)
+P(Ui Ai) = ∑i P(Ai) para A1, A2,... disjuntos
+A
+Ω
+A
+B
+Estas son propiedades que podemos asumir cuando asumimos que P es una medida de probabilidad
+
+¿Cómo se calcula?
+Si Ω tiene k elementos equiprobables (i.e. si ωi es un elemento de Ω, P({ωi}) = 1/k) 
+Si el conjunto A son los elementos en los que el fenómeno ocurre.
+Entonces la probabilidad de un conjunto A ⊂ Ω es la proporción A en Ω.
+https://plato.stanford.edu/entries/probability-interpret/
+
+
+Situaciones más complejas
+Si hay dos características a estudiar, entonces se modela el problema usando dos v.a. (columnas) por ej salary_monthly_NETO y profile_years_experience para crear conjuntos de eventos y comprobar si existe una relación entre ellos.
+Los conjuntos que se eligen son los que determinan el experimento
+A = { ωi : salary_monthly_NETO > promedio(salary_monthly_NETO) }
+B = { ωi : profile_years_experience > 5 }
+
+A = { ωi : salary_monthly_NETO > avg }
+B = { ωi : profile_years_experience > 5 }
+intersección: A & B,  A y B 
+La probabilidad conjunta de que ocurran ambos eventos al mismo tiempo se modela usando la intersección de los conjuntos:
+
+Situaciones más complejas
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+La probabilidad condicional de que el salario esté por encima del promedio, suponiendo que ocurre el evento de tener más de 5 años de experiencia, se calcula como:
+
+Situaciones más complejas
+A = { ωi : salary_monthly_NETO > avg }
+B = { ωi : profile_years_experience > 5 }
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+A y B se dicen conjuntos independientes si 
+
+
+
+Situaciones más complejas
+A = { ωi : salary_monthly_NETO > avg }
+B = { ωi : profile_years_experience > 5 }
+Notación: se anota a una variable aleatoria con letras mayúsculas X, Y, Z, W,..
+
+¿Si uno tiene más de 5 años de experiencia, la probabilidad de cobrar más que el promedio aumenta? ¿Estos eventos, son independientes?
+
+B- Probabilidad
+
+¿Son independientes o no?
+
+¿Si uno … (completar), la probabilidad de cobrar más que el promedio aumenta? ¿Estos eventos, son independientes?
+Ejercicio en la Ntb. 
+
+Teorema de Bayes
+Tiene muchas aplicaciones en la ciencia de datos, incluyendo el aprendizaje bayesiano, pero no profundizamos en este tema porque lo van a ver con mucho más detalle en materias siguientes, cuando vean el clasificador Naive Bayes.
+Un video con aplicaciones de búsqueda usando el teorema de Bayes: https://www.youtube.com/watch?v=82q3uYw6MuY (vean una, son todas iguales).
+
+Población y muestra
+Cuando recogemos los datos muchas veces es imposible relevar la característica de interés de todo el grupo entero (población) o universo, se examina una pequeña parte del grupo, llamada muestra.
+Se denotan los n datos de una muestra: x1,...xn (observaciones/realizaciones de la v.a. X)
+
+Muestras sesgadas?
+Al estimar la medida de probabilidad como una proporción, estamos asumiendo una muestra representativa del campo de aplicación.
+El proceso de selección de los eventos para un experimento determina las características de la muestra obtenida. 
+Muestras convenientes (los que “estaban a mano”)
+Muestras de respuestas voluntarias
+
+Población
+El grupo completo de estados Ω que se busca estudiar
+Muestra
+Un subconjunto de Ω elegido para un experimento particular
+¿Cuál es nuestra población?
+¿Cuál es nuestra muestra?
+NOTA: muestra no es lo mismo que sub-población. Una subpoblación es también un subconjunto de la población, pero no necesariamente se corresponde con los estados elegidos para un experimento. Por ejemplo, una sub-población del conjunto de programadores de la Argentina es el conjunto de programadores que trabajan en la provincia de Córdoba.
+
+Muestras sesgadas
+¿Qué sesgos tenemos en esta muestra?
+…
+¿Influyen en nuestra característica de estudio (el salario)?
+
+¿Cómo hacer un análisis?
+Diseñar el experimento
+Una vez que está definido qué medir, se seleccionan las herramientas para medirlo.
+Plantear una hipótesis
+Si no planteamos una hipótesis o “problema” primero, es difícil determinar qué pasos hay que seguir para poder hacer el análisis
+Identificar las variables
+Una vez que la hipótesis está definida, hay que determinar QUÉ hay que medir para poder comprobarla.
+Canasta básica total en diciembre de 2020: 17,542.89 (línea de pobreza). Fuente https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-43-149
+
+
+
+¿Cómo hacer un análisis?
+Diseñar el experimento
+????
+Plantear una hipótesis
+Tener más años de experiencia significa que se cobra más
+Identificar las variables
+Canasta básica total en diciembre de 2020: 17,542.89 (línea de pobreza). Fuente https://www.indec.gob.ar/indec/web/Nivel4-Tema-4-43-149
+
+

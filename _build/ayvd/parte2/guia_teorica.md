@@ -3,6 +3,19 @@
 > Todos los conceptos estadísticos y metodológicos necesarios para resolver
 > los Ejercicios 1, 2 y 3 del entregable parte 2, explicados en profundidad.
 
+## 📚 Material de referencia del curso
+
+Las 4 filminas de las clases 3 y 4, que corresponden a esta parte del entregable, están mirrorizadas localmente en [`_site/filminas/`](../../../_site/filminas/README.md):
+
+| Clase | Filmina | Archivo local | Cubre |
+|---|---|---|---|
+| **3** — Estadísticos y Estadística | Muestreo aleatorio, LGN, TCL, estadística inferencial | [`clase3_estadisticos_y_estadistica.pdf`](../../../_site/filminas/clase3_estadisticos_y_estadistica.pdf) | Secciones 1, 1.3 |
+| **3** — Estimación | Estimadores puntuales, sesgo, precisión, IC, método del pivote | [`clase3_estimacion.pdf`](../../../_site/filminas/clase3_estimacion.pdf) | Secciones 1.5, 2 |
+| **4** — Test de Hipótesis | H0, H1, errores I y II, p-valor, test t y Welch, Chi² | [`clase4_test_de_hipotesis.pdf`](../../../_site/filminas/clase4_test_de_hipotesis.pdf) | Secciones 3, 4 |
+| **4** — Visualización y Comunicación | Principios, encodings, sesgos de percepción, Tufte | [`clase4_visualizacion_y_comunicacion.pdf`](../../../_site/filminas/clase4_visualizacion_y_comunicacion.pdf) | Sección 5 |
+
+Toda la guía se apoya en estas 4 filminas. Las referencias específicas a una filmina aparecen marcadas con el símbolo 📘 en cada sección relevante.
+
 ---
 
 ## Índice
@@ -10,15 +23,18 @@
 1. [Población, muestra y estimadores](#1-población-muestra-y-estimadores)
    - 1.1 Parámetro vs estimador
    - 1.2 Distribución muestral
-   - 1.3 Teorema Central del Límite
-   - 1.4 Error estándar
-   - 1.5 Propiedades de los estimadores
+   - 1.3 Ley de los Grandes Números (LGN)
+   - 1.4 Teorema Central del Límite (TCL)
+   - 1.5 Error estándar
+   - 1.6 Propiedades de los estimadores (sesgo, precisión)
 2. [Estimación puntual e intervalar](#2-estimación-puntual-e-intervalar)
    - 2.1 Estimación puntual
    - 2.2 Intervalo de confianza
-   - 2.3 IC para la media
-   - 2.4 IC para la diferencia de medias
-   - 2.5 Interpretación correcta del IC
+   - 2.3 Método del pivote
+   - 2.4 IC para la media
+   - 2.5 IC para la diferencia de medias (apareadas, independientes, Welch)
+   - 2.6 IC para la varianza (Chi²)
+   - 2.7 Interpretación correcta del IC
 3. [Test de hipótesis](#3-test-de-hipótesis)
    - 3.1 Componentes del test
    - 3.2 Hipótesis nula y alternativa
@@ -28,6 +44,8 @@
    - 3.6 Decisión e interpretación
    - 3.7 Test t de Student
    - 3.8 Test de Welch
+   - 3.9 Z-test para proporciones
+   - 3.10 Test Chi² para independencia de categóricas
 4. [Errores y potencia del test](#4-errores-y-potencia-del-test)
    - 4.1 Error Tipo I (α)
    - 4.2 Error Tipo II (β)
@@ -36,10 +54,14 @@
    - 4.5 Tamaño de muestra necesario
 5. [Comunicación y visualización de resultados](#5-comunicación-y-visualización-de-resultados)
    - 5.1 Principios de comunicación efectiva
-   - 5.2 Elegir la visualización adecuada
-   - 5.3 Adaptar al público objetivo
-   - 5.4 Las tres audiencias del entregable
+   - 5.2 Sesgos cognitivos del observador
+   - 5.3 Ranking de encodings visuales (Cleveland-McGill)
+   - 5.4 Elegir la visualización adecuada
+   - 5.5 Principio de Tufte (proporción tinta/datos)
+   - 5.6 Adaptar al público objetivo
+   - 5.7 Las tres audiencias del entregable
 6. [Mapa de conceptos por ejercicio](#6-mapa-de-conceptos-por-ejercicio)
+7. [Lecturas recomendadas](#7-lecturas-recomendadas)
 
 ---
 
@@ -62,7 +84,26 @@ Si tomáramos muchas muestras de la misma población y calculáramos la media de
 ![Teorema Central del Límite](img/01_01_tcl_muestreo.png)
 *Fig. 1.1 — Izquierda: distribución de la población (asimétrica). Derecha: distribución de las medias muestrales de 500 muestras de n=200. A pesar de que la población no es normal, la distribución de medias se aproxima a una campana de Gauss (TCL).*
 
-### 1.3 Teorema Central del Límite (TCL)
+### 1.3 Ley de los Grandes Números (LGN)
+
+📘 *Filmina: clase 3 — Estadísticos y Estadística.*
+
+La LGN establece que cuando el tamaño de muestra crece, la **media muestral converge a la media poblacional**:
+
+$$\bar{X}_n = \frac{1}{n}\sum_{i=1}^{n} X_i \xrightarrow{n \to \infty} \mu$$
+
+Formalmente: dada una muestra aleatoria `X₁, X₂, ..., Xₙ` (clones i.i.d. de una misma variable con media `μ`), la media muestral converge en probabilidad al parámetro poblacional `μ`.
+
+**Importancia:**
+- Garantiza que, con muestras "suficientemente grandes", la media muestral es una buena aproximación de la media verdadera.
+- Es la base conceptual de la estimación puntual por media muestral: usamos `x̄` para estimar `μ` porque la LGN asegura que con `n` creciente el error tiende a cero.
+- **No dice nada sobre la forma** de la distribución de `x̄` para un `n` finito — eso lo aporta el TCL (sección siguiente).
+
+La LGN y el TCL son dos resultados complementarios: la LGN dice **hacia dónde converge** la media muestral (a `μ`), y el TCL dice **cómo es la forma de la distribución** de la media muestral (aproximadamente normal) para `n` grande.
+
+### 1.4 Teorema Central del Límite (TCL)
+
+📘 *Filmina: clase 3 — Estadísticos y Estadística.*
 
 El TCL es uno de los teoremas más importantes de la estadística:
 
@@ -75,7 +116,9 @@ $$\bar{X} \xrightarrow{d} N\left(\mu, \frac{\sigma^2}{n}\right)$$
 - Con n suficientemente grande (en la práctica, n ≥ 30 suele ser suficiente), la distribución de x̄ es aproximadamente normal.
 - Esto nos permite construir intervalos de confianza y hacer tests de hipótesis **sin asumir normalidad de los datos originales**.
 
-### 1.4 Error estándar
+La filmina lo ilustra con dos casos: la distribución uniforme y la exponencial, mostrando cómo la densidad de la media muestral *"crece en altura y decrece en dispersión si n crece"* y se vuelve acampanada aunque la población original no lo sea.
+
+### 1.5 Error estándar
 
 El **error estándar** (SE) mide cuánto varía el estimador de muestra en muestra:
 
@@ -88,15 +131,33 @@ $$SE(\bar{X}) = \frac{s}{\sqrt{n}}$$
 
 **En Python:** `se = df['salary_monthly_NETO'].std() / np.sqrt(len(df))`
 
-### 1.5 Propiedades de los estimadores
+### 1.6 Propiedades de los estimadores (sesgo, precisión)
+
+📘 *Filmina: clase 3 — Estimación.*
 
 Un buen estimador debe ser:
 
 | Propiedad | Significado | ¿La media muestral lo cumple? |
 |-----------|-------------|:----:|
 | **Insesgado** | En promedio, acierta al parámetro real. E(θ̂) = θ | ✅ Sí |
-| **Consistente** | Se acerca al parámetro real al aumentar n | ✅ Sí |
+| **Consistente** | Se acerca al parámetro real al aumentar n (LGN) | ✅ Sí |
 | **Eficiente** | Tiene la menor varianza posible entre los estimadores insesgados | ✅ Sí (bajo normalidad) |
+
+**Terminología clave** (directamente de la filmina):
+
+- **Sesgo ⇔ Exactitud:** un estimador es exacto si su valor esperado `E(θ̂)` coincide con `θ`. Un estimador insesgado es aquel cuyo sesgo es cero.
+- **Varianza ⇔ Precisión:** un estimador es preciso si su varianza es baja — es decir, sus valores varían poco entre muestras. Un estimador es *más eficiente que otro* si tiene menor varianza.
+
+Un estimador puede ser:
+
+| Exacto (sin sesgo) | Preciso (baja varianza) | Lectura |
+|:--:|:--:|---|
+| ✅ | ✅ | **Insesgado y eficiente** — ideal |
+| ✅ | ❌ | Insesgado pero disperso, necesita `n` grande |
+| ❌ | ✅ | Preciso pero sistemáticamente corrido — peligroso |
+| ❌ | ❌ | No sirve |
+
+La media muestral `x̄` es el ejemplo canónico de estimador **insesgado y eficiente** de `μ` bajo condiciones razonables.
 
 ![Estimador puntual](img/01_02_estimador_puntual.png)
 *Fig. 1.2 — 30 muestras distintas de la misma población. Cada punto azul es la media de una muestra (estimación puntual). La línea roja es el parámetro real μ. Las estimaciones fluctúan alrededor del valor verdadero: el estimador es insesgado pero impreciso.*
@@ -117,6 +178,8 @@ Un solo número que resume la brecha, pero **no dice nada sobre la incertidumbre
 
 ### 2.2 Intervalo de confianza (IC)
 
+📘 *Filmina: clase 3 — Estimación.*
+
 En vez de un solo número, damos un **rango de valores plausibles** para el parámetro, acompañado de un nivel de confianza.
 
 **Estructura general:**
@@ -128,38 +191,125 @@ Donde:
 - z_{α/2} = valor crítico de la distribución normal (1.96 para 95%)
 - SE = error estándar del estimador
 
+Un intervalo de confianza es un **intervalo aleatorio**: sus extremos son estadísticos `I(X₁,...,Xₙ)` y `S(X₁,...,Xₙ)` calculados sobre la muestra, y por lo tanto cambian con cada muestra. El **nivel de confianza `1 − α`** (habitualmente 95%) es la probabilidad de que el intervalo construido contenga al parámetro verdadero, calculada sobre la distribución de todas las muestras posibles.
+
 ![Intervalos de confianza](img/02_01_intervalos_confianza.png)
 *Fig. 2.1 — 25 intervalos de confianza al 95% construidos a partir de 25 muestras distintas. Los intervalos en verde contienen el parámetro real (línea punteada); los rojos no. En promedio, el 95% de los intervalos contienen el valor verdadero.*
 
-### 2.3 IC para la media
+### 2.3 Método del pivote
 
-$$IC_{1-\alpha}(\mu) = \bar{x} \pm z_{\alpha/2} \cdot \frac{s}{\sqrt{n}}$$
+📘 *Filmina: clase 3 — Estimación (muy enfatizado).*
 
-Para α = 0.05 (confianza 95%): z_{0.025} = 1.96
+El método del pivote es la técnica general para construir intervalos de confianza. Se basa en encontrar una **función pivote** `Q(X₁,...,Xₙ, θ)` que:
+
+1. Depende de los datos y del parámetro `θ` a estimar.
+2. Tiene una **distribución conocida que NO depende de θ** (por ejemplo, `N(0,1)`, `t_n−1`, `χ²_n−1`).
+
+**Pasos:**
+
+1. **Identificar el pivote** adecuado según el caso (ver tabla abajo).
+2. **Establecer el intervalo** de valores del pivote que tienen probabilidad `1 − α` bajo su distribución conocida (por ejemplo, `P(-z_{α/2} ≤ Z ≤ z_{α/2}) = 1 − α`).
+3. **Despejar el parámetro** dentro de la desigualdad, dejando `θ` solo en el medio. Los extremos del intervalo quedan en términos de estadísticos calculables sobre la muestra.
+
+**Pivotes más usados (de las filminas):**
+
+| Caso | Pivote | Distribución |
+|---|---|---|
+| Media de normal, σ² conocida | `(x̄ − μ) / (σ/√n)` | `N(0,1)` |
+| Media, n grande, σ² desconocida | `(x̄ − μ) / (s/√n)` | `N(0,1)` (asintótico por TCL) |
+| Media de normal, σ² desconocida, n chica | `(x̄ − μ) / (s/√n)` | `t_{n−1}` (Student) |
+| Varianza de normal | `(n−1)·s² / σ²` | `χ²_{n−1}` |
+| Diferencia de medias, varianzas iguales desconocidas | pivote `t` con varianza combinada | `t_{n₁+n₂−2}` |
+| Diferencia de medias, varianzas distintas (Welch) | pivote `t` con ajuste Welch-Satterthwaite | `t_ν` (ν aproximado) |
+
+Este es el **marco teórico único** bajo el cual se construyen todos los ICs concretos de las secciones siguientes.
+
+### 2.4 IC para la media
+
+📘 *Filmina: clase 3 — Estimación (ejemplo desarrollado).*
+
+**Caso 1 — σ² conocida:**
+
+$$IC_{1-\alpha}(\mu) = \bar{x} \pm z_{\alpha/2} \cdot \frac{\sigma}{\sqrt{n}}$$
+
+Pivote: `(x̄ − μ) / (σ/√n) ~ N(0,1)`. Este es el caso más simple y casi nunca se cumple en la práctica (uno raramente conoce σ² antes de medirla), pero sirve como punto de partida.
+
+**Caso 2 — σ² desconocida, n grande (asintótico por TCL):**
+
+$$IC_{1-\alpha}(\mu) \approx \bar{x} \pm z_{\alpha/2} \cdot \frac{s}{\sqrt{n}}$$
+
+Para α = 0.05 (confianza 95%): `z_{0.025} = 1.96`. Se reemplaza σ por el desvío muestral `s`, aprovechando que el TCL garantiza aproximación normal.
+
+**Caso 3 — σ² desconocida, n chica, población normal:**
+
+$$IC_{1-\alpha}(\mu) = \bar{x} \pm t_{n-1, \alpha/2} \cdot \frac{s}{\sqrt{n}}$$
+
+Pivote: `(x̄ − μ) / (s/√n) ~ t_{n−1}`. Se usa la distribución `t` de Student con `n−1` grados de libertad porque ahora estamos estimando dos cosas simultáneamente (`μ` y `σ²`), lo que introduce incertidumbre adicional. Para `n` grande, `t_{n−1} → N(0,1)` y el caso 3 converge al caso 2.
 
 **En Python:**
 ```python
 from scipy import stats
 mean = data.mean()
-se = data.std() / np.sqrt(len(data))
-ci_low = mean - 1.96 * se
+se = data.std(ddof=1) / np.sqrt(len(data))
+# Caso 2 (asintótico):
+ci_low  = mean - 1.96 * se
 ci_high = mean + 1.96 * se
+# Caso 3 (exacto con t):
+t_crit = stats.t.ppf(0.975, df=len(data)-1)
+ci_low  = mean - t_crit * se
+ci_high = mean + t_crit * se
 ```
 
-### 2.4 IC para la diferencia de medias
+### 2.5 IC para la diferencia de medias
 
-Este es el IC que pide el **Ejercicio 1** del entregable:
+📘 *Filmina: clase 3 — Estimación.*
 
-$$IC_{1-\alpha}(\mu_A - \mu_B) = (\bar{X}_A - \bar{X}_B) \pm z_{\alpha/2} \cdot SE_{diff}$$
+Este es el IC que pide el **Ejercicio 1** del entregable.
 
-Donde el error estándar de la diferencia es:
+#### Muestras apareadas
 
-$$SE_{diff} = \sqrt{\frac{s_A^2}{n_A} + \frac{s_B^2}{n_B}}$$
+Cuando cada observación `X_i` tiene su par natural `Y_i` (por ejemplo, BRUTO y NETO de la misma persona), se trabaja con la variable diferencia `Z_i = X_i − Y_i`:
+
+$$Z_1, Z_2, \ldots, Z_n \sim \text{m.a. de } N(\mu_1 - \mu_2, \sigma_1^2 + \sigma_2^2 - 2\rho\sigma_1\sigma_2)$$
+
+Y se construye el IC de `μ_Z = μ_1 − μ_2` como un IC de media ordinario sobre las `Z_i`.
+
+> **📘 Ejemplo literal de la filmina de clase 3:** *"como el caso de Z = BRUTO − NETO. Z(i) = BRUTO(persona i) − NETO(persona i) para cada persona i."*
+>
+> Esto conecta directamente con la columna derivada `DESCUENTOS = BRUTO − NETO` que usamos en el ejercicio 2b de la parte 1 (descriptivo). En la parte 2 se puede construir un IC para el descuento medio poblacional a partir de esa misma columna.
+
+#### Muestras independientes, igual varianza desconocida
+
+$$IC_{1-\alpha}(\mu_A - \mu_B) = (\bar{X}_A - \bar{X}_B) \pm t_{n_A + n_B - 2, \alpha/2} \cdot s_p \sqrt{\frac{1}{n_A} + \frac{1}{n_B}}$$
+
+Donde `s_p²` es la varianza combinada (pooled):
+
+$$s_p^2 = \frac{(n_A - 1)s_A^2 + (n_B - 1)s_B^2}{n_A + n_B - 2}$$
+
+#### Muestras independientes, varianzas distintas (Welch)
+
+$$IC_{1-\alpha}(\mu_A - \mu_B) = (\bar{X}_A - \bar{X}_B) \pm t_{\nu, \alpha/2} \cdot \sqrt{\frac{s_A^2}{n_A} + \frac{s_B^2}{n_B}}$$
+
+Con grados de libertad `ν` calculados mediante la aproximación de **Welch-Satterthwaite**. Es el caso más general y el recomendado por defecto cuando no se puede asumir igualdad de varianzas.
 
 ![IC diferencia de medias](img/02_02_ic_diferencia_medias.png)
 *Fig. 2.2 — Intervalo de confianza al 95% para la diferencia de medias salariales entre varones y mujeres. El rombo rojo es la estimación puntual. Si el IC no cruza el cero (línea gris), podemos decir que la diferencia es estadísticamente significativa.*
 
-### 2.5 Interpretación correcta del IC
+### 2.6 IC para la varianza (Chi²)
+
+📘 *Filmina: clase 3 — Estimación.*
+
+Para construir un IC de la varianza poblacional `σ²` de una población normal se usa el pivote:
+
+$$\frac{(n-1) \cdot s^2}{\sigma^2} \sim \chi^2_{n-1}$$
+
+Despejando:
+
+$$IC_{1-\alpha}(\sigma^2) = \left[ \frac{(n-1)s^2}{\chi^2_{n-1, 1-\alpha/2}},  \frac{(n-1)s^2}{\chi^2_{n-1, \alpha/2}} \right]$$
+
+Este IC es **asimétrico** (porque la distribución Chi² lo es) y aparece típicamente cuando se quiere controlar la variabilidad de un proceso, no su valor central. La filmina lo ilustra con el ejemplo de una máquina de llenado de botellas donde se requiere `σ < 0,15` onzas para asegurar uniformidad.
+
+### 2.7 Interpretación correcta del IC
 
 | Interpretación | ¿Correcta? |
 |---------------|:-----------:|
@@ -286,6 +436,73 @@ Los grados de libertad se calculan con la aproximación de Welch-Satterthwaite (
 ![Distribuciones de grupos](img/03_03_distribuciones_grupos.png)
 *Fig. 3.3 — Histogramas superpuestos de salarios de varones (azul) y mujeres (rosa) del dataset. Las líneas punteadas marcan las medias de cada grupo. La separación visual sugiere una diferencia, pero el test formal cuantifica si es estadísticamente significativa.*
 
+### 3.9 Z-test para proporciones
+
+📘 *Filmina: clase 4 — Test de Hipótesis.*
+
+Cuando la variable de interés es una proporción (fracción de éxitos `p` en `n` ensayos), el estadístico de prueba es:
+
+$$Z_{obs} = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1 - p_0)}{n}}}$$
+
+Donde:
+- `p̂` = proporción muestral observada
+- `p_0` = proporción hipotética bajo H₀
+- `n` = tamaño de muestra
+
+**Supuestos (rule of thumb):** `n > 30`, `n·p_0 ≥ 5` y `n·(1−p_0) ≥ 5`. Bajo estos supuestos la aproximación normal es razonable.
+
+**Test bilateral:** se rechaza H₀ si `|Z_obs| > z_{α/2}`, con p-valor `P(|Z| > |z_obs|)`.
+**Test unilateral (cola derecha):** se rechaza H₀ si `Z_obs > z_α`, con p-valor `P(Z > z_obs)`.
+
+**En Python:**
+```python
+from statsmodels.stats.proportion import proportions_ztest
+stat, pval = proportions_ztest(count=exitos, nobs=n, value=p0, alternative='two-sided')
+```
+
+### 3.10 Test Chi² para independencia de variables categóricas
+
+📘 *Filmina: clase 4 — Test de Hipótesis.*
+
+Cuando las dos variables en estudio son **categóricas**, no se puede aplicar un test de medias. El test apropiado es **Chi-cuadrado de independencia**, basado en una tabla de contingencia.
+
+**Hipótesis:**
+- **H₀:** las dos variables son independientes.
+- **H₁:** las dos variables están relacionadas (no son independientes).
+
+**Procedimiento:**
+
+1. Construir la **tabla de contingencia** con las frecuencias observadas `f_o(i,j)` — cantidad de casos que caen en cada celda `(i, j)`.
+2. Calcular las **frecuencias esperadas bajo independencia**:
+   $$f_e(i,j) = \frac{(\text{total fila } i) \cdot (\text{total col } j)}{\text{total general}}$$
+3. Calcular el estadístico Chi²:
+   $$\chi^2 = \sum_{i,j} \frac{(f_o(i,j) - f_e(i,j))^2}{f_e(i,j)}$$
+4. Comparar contra la distribución `χ²` con `(filas − 1) × (columnas − 1)` grados de libertad.
+5. Si `χ²_obs > χ²_{crit}` (o p-valor < α) → rechazar H₀.
+
+**Relación con el ejercicio 2c de la parte 1:** en parte 1 se usó un abordaje **descriptivo** para la independencia entre nivel de estudio y sueldo (comparar `P(A|B) vs P(A)` sin test). En parte 2, con el test Chi², la misma pregunta se puede responder con una decisión formal y un p-valor.
+
+> La filmina usa el ejemplo de 4 tratamientos médicos × 3 respuestas (peor, igual, mejor) para ilustrar el cálculo. Aplicado al dataset sysarmy, podríamos testear si `work_seniority` y `profile_gender` son independientes a partir de la tabla de contingencia 3 × K.
+
+**En Python:**
+```python
+from scipy.stats import chi2_contingency
+contingencia = pd.crosstab(df['work_seniority'], df['profile_gender'])
+chi2, pval, dof, expected = chi2_contingency(contingencia)
+```
+
+### 📚 Otros tests generales (fuera del alcance del entregable)
+
+La filmina de clase 4 menciona también otros tests del ecosistema inferencial que pueden ser útiles como referencia:
+
+| Test | ¿Para qué? |
+|---|---|
+| **Kolmogorov-Smirnov (K-S)** | Normalidad de los datos / ajuste a una distribución teórica |
+| **Homocedasticidad** (Levene, Bartlett) | Igualdad de varianzas entre grupos (supuesto de test t clásico) |
+| **Bondad de ajuste** | Verificar si los datos ajustan a un modelo teórico |
+
+No son parte central del entregable pero pueden aparecer como verificaciones auxiliares antes de aplicar un test t (por ejemplo, verificar normalidad con K-S antes de usar t de Student en lugar de Welch).
+
 ---
 
 ## 4. Errores y potencia del test
@@ -376,16 +593,74 @@ n_needed = tt_ind_solve_power(
 
 ## 5. Comunicación y visualización de resultados
 
+📘 *Filmina: clase 4 — Visualización y Comunicación.*
+
 El **Ejercicio 3** pide comunicar un resultado del análisis adaptado a una audiencia específica.
 
 ### 5.1 Principios de comunicación efectiva
+
+La filmina distingue dos usos distintos de la visualización:
+
+- **Exploración** (visualizaciones *para nosotros*): buscar patrones, entender los datos, iterar hipótesis. Puede ser densa, imperfecta, sobrecargada.
+- **Presentación** (visualizaciones *para otros*): comunicar una conclusión ya formada a una audiencia. Debe ser limpia, dirigida, y priorizar el mensaje.
+
+**Principios para presentación:**
 
 1. **Un mensaje central:** ¿cuál es la conclusión más importante? Reducirla a una oración.
 2. **Reducir el ruido:** eliminar todo lo que no aporte al mensaje.
 3. **Jerarquía visual:** lo más importante se ve primero.
 4. **Contexto necesario:** el receptor debe entender sin leer todo el informe.
 
-### 5.2 Elegir la visualización adecuada
+> **📘 Cita de la filmina:** *"The way we represent a thing affects the way we reason about a thing"* — la forma en que representamos algo afecta cómo razonamos sobre ese algo.
+
+**Características de una buena visualización (Alberto Cairo, citado en la filmina):**
+
+| Característica | Significado |
+|---|---|
+| **Honesta** | Representa datos correctos sin distorsionarlos |
+| **Funcional** | Permite que los datos se interpreten adecuadamente |
+| **Estética** | Diseño cuidado, atrae sin distraer |
+| **Esclarecedora** | Muestra patrones que de otro modo no serían visibles |
+| **Informativa** | Aporta más información que la suma de sus partes |
+
+### 5.2 Sesgos cognitivos del observador
+
+📘 *Filmina: clase 4 — Visualización y Comunicación.*
+
+Al diseñar visualizaciones, el creador debe ser consciente de que el cerebro del lector aplica **atajos cognitivos** que pueden generar conclusiones erróneas. La filmina identifica tres sesgos principales:
+
+| Sesgo | Definición | Ejemplo |
+|---|---|---|
+| **Patternicity bug** | Tendencia a encontrar patrones en cualquier conjunto de objetos, incluso cuando no los hay | "La cara en Marte" — el cerebro completa una cara sobre una roca al azar |
+| **Storytelling bug** | Tendencia a construir narrativas causales que expliquen los patrones percibidos | "Los programadores de Go ganan más porque Go es más difícil" cuando la realidad puede ser un confusor de seniority |
+| **Confirmation bug** | Tendencia a aceptar más fácilmente la información que refuerza creencias previas | Un lector convencido de que "en IT las mujeres ganan lo mismo que los hombres" no va a procesar igual un gráfico que muestra una brecha que uno que la contradiga |
+
+**Consecuencia para el diseño:** una visualización honesta debe **resistir activamente** estos sesgos del lector. Por ejemplo, si una correlación podría interpretarse causalmente, agregar explícitamente una nota recordando que *"correlación ≠ causalidad"* (la filmina cita a [Tyler Vigen, Spurious Correlations](https://tylervigen.com/spurious-correlations) como referencia canónica).
+
+### 5.3 Ranking de encodings visuales (Cleveland-McGill)
+
+📘 *Filmina: clase 4 — Visualización y Comunicación, basado en Cleveland y McGill (1984).*
+
+No todos los encodings visuales tienen la misma efectividad para que el lector **estime correctamente** una cantidad. Cleveland y McGill ordenaron los encodings según el error que un observador comete al intentar comparar cantidades:
+
+| Puesto | Encoding | Error |
+|:--:|---|---|
+| **1** | Posición en una escala común (ej. ejes X/Y) | Menor error |
+| 2 | Posición en escalas no alineadas | |
+| 3 | Largo (ej. barras) | |
+| 4 | Ángulo e inclinación (empate) | |
+| 5 | Área (ej. círculos de distinto tamaño) | |
+| 6 | Volumen, densidad, saturación de color (empate) | |
+| **7** | Tonalidad cromática (rojo vs azul) | Mayor error |
+
+**Consecuencia práctica:**
+
+- Para comparaciones precisas, usar **posición** (scatter, bar chart con eje común). Es el encoding más confiable.
+- Los **pie charts** usan ángulo (puesto 4) y además requieren que el lector compare arcos entre sí — de ahí el famoso *"the horror of pie charts"* de la filmina. Solo son aceptables con pocas categorías (< 5) y diferencias grandes.
+- Los **gráficos 3D** son trampas habituales: el volumen (puesto 6) es de los peores encodings y además introduce distorsión de perspectiva.
+- El **color** (tonalidad) es el peor encoding para comparación cuantitativa — usarlo para **categoría**, no para magnitud.
+
+### 5.4 Elegir la visualización adecuada
 
 | Querés mostrar... | Usá... | NO usés... |
 |-------------------|--------|-----------|
@@ -401,7 +676,28 @@ El **Ejercicio 3** pide comunicar un resultado del análisis adaptado a una audi
 ![Bueno vs malo](img/05_02_bueno_vs_malo.png)
 *Fig. 5.2 — Izquierda: un pie chart que no comunica la brecha salarial (mala elección). Derecha: un boxplot comparativo que muestra distribución, centro y dispersión de ambos grupos (buena elección). La visualización correcta depende del mensaje.*
 
-### 5.3 Adaptar al público objetivo
+### 5.5 Principio de Tufte (proporción tinta/datos)
+
+📘 *Filmina: clase 4 — Visualización y Comunicación, citando a Edward Tufte.*
+
+Edward Tufte propuso un principio de diseño fundamental: **maximizar la proporción "tinta/datos"**. Esto significa que cada elemento visual del gráfico debe contribuir a la comunicación del dato, y todo lo que no aporta debe eliminarse. La filmina lo resume en 5 reglas:
+
+1. **La prioridad es mostrar los datos** — no decorar, no impresionar estéticamente.
+2. **Maximizar la proporción datos/tinta** — toda la tinta debe usarse para transmitir información.
+3. **Eliminar la tinta no destinada a datos** — grillas densas, bordes, sombras, 3D gratuito.
+4. **Eliminar la tinta redundante** — no repetir la misma información con encodings distintos sin razón.
+5. **Revisar y editar** — iterar el diseño como se itera un texto.
+
+El término *"chartjunk"* (basura visual) lo acuñó Tufte para referirse a todos los adornos innecesarios que saturan los gráficos de Excel por defecto: fondos con gradiente, efectos de sombra, bordes gruesos, leyendas redundantes, etc.
+
+**Consecuencia práctica para el entregable:**
+
+- Los gráficos del informe del entregable (tanto parte 1 como parte 2) **deben preferir lo limpio sobre lo recargado**.
+- Fondo blanco o gris muy claro, ejes finos, grilla discreta, tipografía legible.
+- Color como **portador de categoría** (no de decoración), y solo cuando aporta información.
+- Evitar leyendas flotantes, sombras, gradientes, 3D, pie charts con más de 5 categorías.
+
+### 5.6 Adaptar al público objetivo
 
 | Audiencia | Nivel técnico | Énfasis en... |
 |-----------|:------------:|---------------|
@@ -409,7 +705,7 @@ El **Ejercicio 3** pide comunicar un resultado del análisis adaptado a una audi
 | Publicación científica | Alto | Rigor, significancia, limitaciones, metodología |
 | Tweet / LinkedIn | Muy bajo | Un solo dato impactante, visual en segundos |
 
-### 5.4 Las tres audiencias del entregable
+### 5.7 Las tres audiencias del entregable
 
 **Opción 1 — Artículo de difusión (ONG):**
 - Lenguaje simple, sin jerga estadística.
@@ -453,3 +749,43 @@ El **Ejercicio 3** pide comunicar un resultado del análisis adaptado a una audi
 | Principios de comunicación | | | ✅ |
 | Elección de visualización | | | ✅ |
 | Adaptación al público | | | ✅ |
+| Sesgos cognitivos del observador | | | ✅ |
+| Ranking de encodings (Cleveland-McGill) | | | ✅ |
+| Principio de Tufte (tinta/datos) | | | ✅ |
+| Test Chi² de independencia | | ✅ | |
+| Z-test para proporciones | | ✅ | |
+| IC para varianza (Chi²) | ✅ | | |
+| Método del pivote | ✅ | ✅ | |
+
+---
+
+## 7. Lecturas recomendadas
+
+### 📘 Filminas del curso (prioridad máxima)
+
+Las 4 filminas de las clases 3 y 4 están mirrorizadas localmente en [`_site/filminas/`](../../../_site/filminas/). Se recomienda leerlas en este orden antes y durante la resolución del entregable:
+
+| # | Filmina | Archivo local | Enfoque |
+|:--:|---|---|---|
+| 1 | Estadísticos y Estadística | [`clase3_estadisticos_y_estadistica.pdf`](../../../_site/filminas/clase3_estadisticos_y_estadistica.pdf) | Muestreo, LGN, TCL — fundamentos para entender todo lo que sigue |
+| 2 | Estimación | [`clase3_estimacion.pdf`](../../../_site/filminas/clase3_estimacion.pdf) | Estimadores, IC, método del pivote — base para el ejercicio 1 |
+| 3 | Test de Hipótesis | [`clase4_test_de_hipotesis.pdf`](../../../_site/filminas/clase4_test_de_hipotesis.pdf) | Tests, errores, Welch, Chi² — base para el ejercicio 2 |
+| 4 | Visualización y Comunicación | [`clase4_visualizacion_y_comunicacion.pdf`](../../../_site/filminas/clase4_visualizacion_y_comunicacion.pdf) | Encodings, Tufte, sesgos, audiencias — base para el ejercicio 3 |
+
+También disponibles en formato texto (`.txt`) en el mismo directorio, útiles para búsqueda rápida por palabras clave.
+
+### 📓 Notebooks del curso
+
+Las notebooks del curso están en [`AnalisisyVisualizacion/notebooks/`](../../../AnalisisyVisualizacion/notebooks/):
+
+- **`04_Estadisticos.ipynb`** — demo práctica de los conceptos de la filmina "Estadísticos y Estadística"
+- **`05_Test_de_Hipotesis.ipynb`** — demo práctica de los tests de hipótesis, incluyendo t de Student, Welch y Chi²
+
+### 📚 Bibliografía citada en las filminas
+
+- **Tufte, E.** — *"The Visual Display of Quantitative Information"* — principio de la proporción tinta/datos, crítica al chartjunk
+- **Huff, D. (1954)** — *"How to Lie with Statistics"* — clásico sobre manipulaciones visuales y estadísticas (citado literalmente en la filmina de visualización)
+- **Cairo, A.** — *"The Truthful Art: Data, Charts, and Maps for Communication"* — características de una visualización honesta y funcional
+- **Cleveland, W. S., & McGill, R. (1984)** — *"Graphical Perception: Theory, Experimentation, and Application..."* — estudio fundamental del ranking de encodings visuales
+- **Nussbaumer Knaflic, C.** — *"Storytelling with Data"* — comunicación de resultados para distintas audiencias
+- **Tyler Vigen** — [Spurious Correlations](https://tylervigen.com/spurious-correlations) — colección canónica de correlaciones absurdas, útil para recordar que correlación ≠ causalidad

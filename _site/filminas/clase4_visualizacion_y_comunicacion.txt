@@ -1,0 +1,325 @@
+Análisis y Visualización de Datos
+Diplomatura Diplodatos  2026
+
+Visualización y comunicación
+Al crear su tablero, no solo pida comentarios a sus colegas de datos. Obtenga la perspectiva de sus usuarios finales.
+
+Visualización y comunicación
+Crédito:  El arte de Medir
+
+Crédito:  El arte de Medir
+
+Crédito:  El arte de Medir
+
+Exploración vs presentación
+Data insights: a visualization (Gregor Aisch)
+select information to show
+visualise
+Uso de la visualización de datos para encontrar información en los datos
+
+
+Exploración
+Visualizaciones para nosotros
+
+“The way we represent a thing affects the way we reason about a thing”
+(La forma en que representamos una cosa afecta la forma en que razonamos sobre una cosa)
+https://medium.com/nightingale/we-live-in-a-world-of-funnels-4f2d5c841d47
+
+
+En este caso, la información es prácticamente imposible de procesar por un humano sin la ayuda de herramientas externas.
+
+Es muy difícil, tanto para alguien que sabe qué es esta tabla como para alguien que no, sacar alguna conclusión de ella. Este ejemplo en particular muestra parcialmente una de las 6 tablas de experimentos realizadas para publicar un paper. Tenemos que agregar esa información para poder hacerla legible, y sobre todo para poder entender el significado de estos resultados.
+
+Una visualización realza los patrones en particular que queremos ver. 
+Estos son dos ejemplos de gráficos que se extrajeron de los resultados. En este caso, notar que la tabla muestra resultados para los cursos 1, 6, 16 y 21, aunque el conjunto de resultados graficado incluye 38 cursos, separados en 3 categorías según su tamaño. En ese sentido, el gráfico contiene mucha más información que la tabla.
+El gráfico de la izquierda muestra relaciones entre las distintas métricas para un mismo modelo, mientras que el de la derecha compara los resultados de los mejores modelos utilizando una sola métrica. Un aspecto importante de estos ejemplos es que, para poder encontrar patrones claros, debemos dejar afuera mucha información y concentrarnos sólo en los aspectos importantes. Esto es claro cuando compramos la claridad del mensaje del gráfico pairplot (izquierda) con el gráfico boxplot (derecha). El segundo está pensado para ser incluído en una publicación, mientras que el primero fue utilizado solamente por los investigadores durante el diseño de experimentos.
+
+https://www.cedricscherer.com/2021/06/06/visualizing-distributions-with-raincloud-plots-and-how-to-create-them-with-ggplot2/
+
+Sesgos en la percepción
+¿Qué pensamos cuando no nos paramos a pensar?
+
+Patternicity bug!
+Tendencia a encontrar patrones en los objetos y a percibir el todo como algo más que la suma de sus partes.
+Ahora, ¿por qué esto es importante? Porque lo hacemos inconscientemente! Muchas veces no nos damos cuenta, y extraemos conclusiones basadas en esta percepción sin tener en cuenta si el patrón es real o no. Esto da origen a algo que Alberto Cairo llama “patternicity” bug, y es la tendencia a encontrar patrones, independientemente de las causas que puedan generar estos patrones. 
+
+
+The face of mars
+
+Correlación no es causalidad
+https://www.tylervigen.com/spurious-correlations
+
+Storytelling bug!
+Tendencia a encontrar racionalizaciones que expliquen la presencia de patrones en los objetos
+
+Confirmation bug!
+Tendencia a creer (más) verdadera la información que sustenta nuestras creencias ya existentes.
+
+Presentación
+Visualizaciones para otros
+
+VISUALIZACIÓN Y COMUNICACIÓN
+
+Como mentir en estadística 
+«El lenguaje secreto de las estadísticas, tan atractivo, se emplea como arma sensacionalista, o para inflar, confundir o simplificar en exceso»
+Autor DARRELL HUFF (libro publicado por primera vez en 1954)
+
+MENTIR CON LA ESCALA
+El PSE-EE arrasó en el País Vasco en las elecciones generales del 2008, con respecto al PNV y especialmente con respecto al PP.
+
+MENTIR CON LA ESCALA
+Las ventas de esta empresa han experimentado un crecimiento espectacular en el último año.
+
+MENTIR CON LA ESCALA
+
+MENTIR CON GRÁFICOS 3D
+Las ventas del iPhone de Apple en el mercado de smartphones estadounidense están marchando fantásticamente.
+Steve Jobs ha utilizado un gráfico circular, su primer error, porque son una pésima herramienta de comunicación de información. Nunca uses gráficos circulares, sustitúyelos por barras. En segundo lugar, lo ha rotado y luego girado hacia nosotros, de manera que se produzca la sensación de que la porción de Apple es mucho más grande de lo que en realidad es. En tercer lugar, ha puesto deliberadamente el sector “Otros” en posición opuesta al de Apple, para que gracias al giro su tamaño disminuya. Se trata de una torticera y deliberada manipulación de los datos para hacerles contar una historia falsa. Compárese con la impresión que produce el gráfico de barras de la derecha.
+
+MENTIR CON GRÁFICOS 3D
+En un informe de noticias transmitido por televisión de FOX en una carrera presidencial de 2012, se mostró un Gráfico circular que parece apagado como se muestra a continuación:
+
+MENTIR CON EL ÁREA DE LOS GRÁFICOS
+España está creciendo económicamente al mismo ritmo que otros países europeos.
+En este caso, se ha usado un gráfico apilado en el que da la impresión de que España sigue la marcha de los otros países, cuando en realidad ¡no ha cambiado en toda la serie! El gráfico de líneas de la derecha cuenta la historia verdadera de cómo ha sido la evolución de los distintos países.
+
+MENTIR CON EL AGRUPAMIENTO DE DATOS
+
+MENTIR CON EL AGRUPAMIENTO DE DATOS
+
+VISUALIZACIÓN Y COMUNICACIÓN
+
+Optimizar el proceso de comunicación
+
+Generar un mensaje que se decodifique rápida y fielmente
+
+
+Características de una buena visualización
+Honesta: representa datos que son correctos.
+Funcional: representa datos para que puedan ser interpretados adecuadamente.
+Estética
+Esclarecedora: Debe mostrar patrones que no serían fácilmente percibidos usando otros medios.
+Informativo
+
+?
+
+Encodings visuales
+Mapeo datos                            elementos visuales
+La codificación visual se refiere al proceso mediante el cual recordamos imágenes visuales. Por ejemplo, si se le presenta una lista de palabras, cada una de las cuales se muestra durante un segundo, podrá recordar si hubo una palabra escrita en mayúsculas o si hubo una palabra escrita en cursiva. La información codificada visualmente es muy fugaz y tiende a olvidarse muy fácilmente. Por lo general, podemos recordar mejor la información que escuchamos o la que es relevante para nosotros.
+
+¿Qué son los elementos visuales?
+Second Pillar of Mapping Data to Visualizations: Visual Encoding
+slope = inclinación
+
+¿Cómo elegir los elementos visuales?
+Principio de la consistencia: las propiedades de la imagen deben corresponderse con las propiedades de los datos.
+The lie factor (el factor mentira)
+Principio del ordenamiento por importancia: la información más importe debe ser codificada de la forma más eficiente posible.
+¿Cuál es la información más importante?
+¿Cuáles son los encodings más efectivos?
+
+
+No todos los elementos visuales son igual de efectivos
+
+¿Cómo medimos el error?
+Distintos encodings nos permiten estimar mejor o peor la diferencia entre dos cantidades
+William S. Cleveland and Robert McGill, Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods, 1984
+http://flowingdata.com/2010/03/20/graphical-perception-learn-the-fundamentals-first/
+Cuando nosotros (los diseñadores) visualizamos datos, codificamos la información cuantitativa en forma, color, posición, etc. Luego, los espectadores tienen que decodificar esa información. Cleveland y McGill estudiaron lo que las personas pueden decodificar con mayor precisión y los clasificaron en la siguiente lista.
+Unas filminas que lo explican muy bien, pero que no tenemos tiempo de ver https://courses.cs.washington.edu/courses/cse442/17au/lectures/CSE442-VisualEncoding.pdf
+
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación (empate)
+Área
+Volumen, densidad y saturación de color (empate)
+Tonalidad cromática 
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación 
+Área
+Volumen, densidad y saturación de color 
+Tonalidad cromática 
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación 
+Área
+Volumen, densidad y saturación de color 
+Tonalidad cromática 
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación 
+Área
+Volumen, densidad y saturación de color 
+Tonalidad cromática 
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación (empate)
+Área
+Volumen, densidad y saturación de color (empate)
+Tonalidad cromática 
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación 
+Área
+Volumen, densidad y saturación de color 
+Tonalidad cromática 
+
+¿Cómo medimos el error?
+Posición en una escala común
+Posición en escalas no alineadas
+Largo
+Ángulo e inclinación 
+Área
+Volumen, densidad y saturación de color 
+Tonalidad cromática 
+
+Encodings de acuerdo al tipo de datos
+El largo de las barras está utilizado para codificar una variable categórica, lo cual sugiere una jerarquía de valores.
+Además, es difícil comparar los distintos países entre sí.
+
+The Truthful Art: Data, Charts and Maps for Communication
+The horror of pie charts
+Personalmente creo que la mayor desventaja que tienen es que la gente los utiliza de manera incorrecta, pero que pueden ser útiles con las modificaciones adecuadas. Por ejemplo, se pueden agregar las cantidades correspondientes a cada porción. En general, se debe mantener la cantidad de categorías (en las que uno desea que el usuario se concentre) menor a 5, y deben tener proporciones significativamente distintas.
+
+
+
+
+Gráficos complejos
+
+Agregando más variables
+Cada nueva variable que agregamos necesita un nuevo encoding.
+En seaborn la estructura es ligeramente distinta
+catplot
+Otras librerías como Plotly permiten gráficos más complejos e interactivos
+
+Agregando más variables
+Cada nueva variable que agregamos necesita un nuevo encoding.
+En seaborn la estructura es ligeramente distinta
+catplot
+Otras librerías como Plotly/d3 permiten gráficos más complejos e interactivos
+GapMinder
+
+Gráficos más difíciles de leer
+Visualizaciones menos intuitivas pero más informativas
+Transformaciones complejas a los datos
+https://ourworldindata.org/ocean-plastics
+https://ourworldindata.org/ocean-plastics
+
+Gráficos más difíciles de leer
+Visualizaciones menos intuitivas pero más informativas
+Transformaciones complejas a los datos
+Tipos de gráficos poco comunes
+https://plotly.com/python/funnel-charts/
+https://ourworldindata.org/ocean-plastics
+
+Gráficos más difíciles de leer
+Visualizaciones menos intuitivas pero más informativas
+Transformaciones complejas a los datos
+Tipos de gráficos poco comunes
+Sólo para expertos de dominio
+https://ourworldindata.org/ocean-plastics
+
+Buenas prácticas de visualización
+para maximizar la efectividad de la comunicación
+Ahora vamos a ver algunas “buenas prácticas de visualización” que son más generales que la aplicación de encodings.
+
+Tamaño del texto
+Visibilidad de elementos contra el fondo
+Método de presentación
+Proyector: tiene baja resolución. Usar colores brillantes (ni oscuros ni pasteles).
+Papel: ¿color o blanco y negro? No hay posibilidad de zoom.
+Pantalla digital: distintas resoluciones y dispositivos. Distintos métodos de interacción.
+Básicos a tener en cuenta
+
+Chartjunk - Less is more
+
+Edward Tufte: maximizar proporción tinta-datos
+1. La prioridad es mostrar los datos
+2. Maximizar la proporción datos a tinta (toda la “tinta” se usa para datos)
+3. Eliminar la tinta no destinada a datos
+4. Eliminar la tinta redundante
+5. Revisar y editar
+
+Ejemplo
+¡Solamente una pequeña cantidad de elementos visuales son relevantes!
+Visualizing Node-Link Graphs
+
+Ejemplo
+Todos los elementos visuales son relevantes con respecto a la información transmitida
+En esta visualización, vemos que la imagen “agregada” está aportando valor al entendimiento de al visualización
+
+Las barras son imposibles de leer
+Las grillas no sirven para nada
+Las etiquetas verticales son difíciles de leer
+El eje z, que representa años, va al revés.
+Ejemplo
+A design problem - perceptual edge
+
+Las barras son imposibles de leer
+Las grillas no sirven para nada
+Las etiquetas verticales son difíciles de leer
+El eje z, que representa años, va al revés.
+Ejemplo
+A design problem - perceptual edge
+
+Primero, que quede bien en blanco y negro
+
+Propiedades de los encodings con color
+No tienen orden
+Nos basamos en convenciones que pueden no reproducirse:
+Rojo-azul, rosa-celeste para masculino y femenino
+Celeste para el océano, verde para la pradera, marrón para la montaña
+No todos los percibimos iguales (daltonismo)
+Evocan emociones inconscientes (o subconscientes)
+El color es algo que transmite emoción y le da tono a una visualización.
+
+El color es algo que transmite emoción y le da tono a una visualización.
+
+Paletas de colores y daltonismo
+Daltonismo:
+Coblis: pueden subir una imagen y comprobar cómo la vería una persona daltónica.
+Usar paletas colorblind safe que vienen en las librerías de visualización
+Estética:
+Coolors: Fácil de usar para conseguir combinaciones rápidas.
+Paletton: Más completa pero requiere un poco más de conocimiento de colores.
+
+Refuerzo a través de encodings dobles
+En este ejemplo, el encoding de color refuerza las pérdidas sin desbalancear el gráfico.
+A design problem - perceptual edge (1)
+
+EN RESUMEN… PROBLEMAS EN LA VISUALIZACIONES DE DATOS
+1. Abusar de los colores y cantidad de datos a mostrar
+2. Uso indebido de los gráficos de torta
+3. Poca claridad visual
+4. Diseño deficiente
+5. Datos incorrectos
+
+RECOMENDACIONES PARA LA VISUALIZACIONES DE DATOS
+1.   Tener claros los objetivos
+2.   Elegir el gráfico adecuado
+3.   El uso del color para facilitar la comprensión y la percepción
+4.   Elegir con cuidado los datos
+5.   Data Storytelling
+
+¿Jura decir(se) la verdad, toda la verdad y nada más que la verdad?
+
+¿Preguntas?

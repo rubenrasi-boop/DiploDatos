@@ -1,0 +1,114 @@
+Análisis y Visualización de Datos
+Diplomatura Diplodatos 2026
+
+Teoría para aplicar
+
+Muestreo aleatorio
+Cuando recogemos los datos muchas veces es imposible relevar la característica de interés de todo el grupo o universo, se examina una pequeña parte, llamada muestra.
+
+Población 		 Muestra
+
+
+
+
+
+La muestra debe ser representativa de la población
+
+
+
+Muestra aleatoria
+Al medir una característica en una muestra, se consideran los datos  x1, x2,..., xn obtenidos como realizaciones de variables aleatorias X1, X2,..., Xn  
+
+Este conjunto de variables se llama muestra aleatoria (m.a.). Porqué?
+Si los objetos son elegidos al azar
+Las variables son independientes
+Las distribuciones son iguales
+Esto es, repito el experimento muchas veces
+
+
+Muestra aleatoria - Teoría
+Una sucesión de v.a. X1, X2,..., Xn se dice muestra aleatoria (m.a.) si son v. a. independientes e idénticamente distribuidas (i.i.d.). 
+“Clones” de una misma X
+
+Es usada para datos categóricos
+
+Muestra aleatoria - Teoría
+A partir de los clones, podemos calcular estadísticos, que también son variables aleatorias con distribución propia. 
+Como por ejemplo el estadístico Media Muestral:
+Es usada para datos categóricos
+
+Algunas propiedades teóricas: Muestra aleatoria
+Si X1, X2,..., Xn m.a. (v.a.i.i.d.) tal que Xi〜N(μ,σ2), entonces:-  X1+ X2+...+Xn〜N(nμ,nσ2)-                            〜N(μ,σ2/n)
+Si Z1, Z2,..., Zn m.a. tal que Zi〜N(0,1), entonces: 
+
+Es usada para datos categóricos
+
+LGN: Ley de los Grandes Números
+Dada. X1, ...Xn m.a.  c/u con media  μ  (“clones” de la misma variable con distribución cualquiera pero con esperanza E(X1)= μ, media poblacional )
+
+
+  
+
+
+TCL: Teorema Central del Límite
+Sea  X1, ...Xn m.a.  c/u con media  μ y varianza σ2. (“clones” de la misma variable con distribución cualquiera pero con media μ y varianza σ2 )
+
+
+  
+
+
+TCL: Teorema Central del Límite
+La densidad de la v.a. media muestral parece acampanada p/ n grande, aprox. normal, cualquiera sea la distribución en la población;
+
+La densidad de la media muestral crece en altura y decrece en dispersión si n crece.
+
+La media de la distribución del promedio muestral es igual a la media de la población 
+La varianza de la distribución de la media muestral es menor que la varianza de la población;
+
+
+
+TCL: Teorema Central del Límite
+Xi ∼ Uniforme
+
+TCL: Teorema Central del Límite
+Xi ∼ exponencial
+
+¿Que pasa si no tengo distribuciones normales? ¿Y si tengo pocos clones?
+Existen estimadores y procedimientos no paramétricos.
+Esto es, no me baso en la forma analítica de la distribución
+
+Estadística Inferencial
+
+Inferencia Estadística
+Métodos utilizados para tomar decisiones o para obtener conclusiones sobre una población (usa modelos y parámetros generalmente). 
+
+Estos métodos utilizan la información contenida en una muestra de la población.
+
+Permiten inferir el comportamiento de la población con un riesgo medible en términos de probabilidad de error.
+
+
+Inferencia Estadística
+Si nos ubicamos dentro de la estadística paramétrica: 
+
+Se considera una característica de interés de la población (𝛀).
+ Se supone que la característica está modelada por una variable aleatoria X con distribución “conocida” y paramétrica f𝛳(x)=f(x,𝛳). (ej  𝛳=(μ,𝞂2) en Normal)
+Se considera una muestra aleatoria (m.a.) X1, ...Xn, con la misma distribución (paramétrica) que X.
+
+
+
+
+
+
+Inferencia Estadística
+Incluye dos grandes áreas:
+
+estimación de parámetros (p/estadística paramétrica)
+pruebas de hipótesis
+
+
+
+
+
+
+Demo con Notebook 
+04 Estadísticos.ipynb

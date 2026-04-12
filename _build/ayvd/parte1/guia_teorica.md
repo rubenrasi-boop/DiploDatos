@@ -24,8 +24,8 @@
    - 3.4 Gráfico de barras (variables categóricas)
    - 3.5 KDE (Kernel Density Estimation)
 4. [Limpieza y preparación de datos](#4-limpieza-y-preparación-de-datos)
-   - 4.1 Valores faltantes (NaN)
-   - 4.2 Detección de outliers
+   - 4.1 Valores faltantes (NaN) — incluye NaN con significado semántico
+   - 4.2 Detección de outliers — incluye IQR estratificado por subpoblación
    - 4.3 Selección de sub-población
    - 4.4 Justificación de decisiones
 5. [Ejercicio 1: Análisis descriptivo comparativo](#5-ejercicio-1-análisis-descriptivo-comparativo)
@@ -38,6 +38,7 @@
    - 6.2 Coeficiente de correlación de Pearson
    - 6.3 Coeficiente de correlación de Spearman
    - 6.4 Matriz de correlación
+   - 6.5 Columnas derivadas para evaluar redundancia
 7. [Densidad de probabilidad](#7-densidad-de-probabilidad)
    - 7.1 Densidad marginal
    - 7.2 Densidad conjunta
@@ -389,6 +390,25 @@ sns.kdeplot(data=df, x='salary_monthly_NETO', hue='language')
 
 **En el entregable:** `salary_monthly_NETO` tiene 4.5% de NaN. Lo razonable es eliminar esas filas para el análisis de salarios.
 
+#### 🎯 Caso especial: NaN con significado semántico
+
+No todos los `NaN` significan "dato faltante". A veces son la forma canónica del dataset para codificar una **ausencia declarada** que tiene un significado concreto. Conviene verificar antes de descartar.
+
+**Ejemplo del entregable:** en la columna `salary_in_usd` hay 3.356 `NaN`. Si uno los tratara como "dato faltante", pensaría en descartarlos o imputarlos. Pero al cruzarlos con la columna booleana `sueldo_dolarizado` del propio dataset se descubre que:
+
+```
+NaN en salary_in_usd      ≡      sueldo_dolarizado = False
+(3.356 filas)                    (3.356 filas)
+coincidencia exacta
+```
+
+Es decir, el dataset ya codifica implícitamente que "`NaN` en `salary_in_usd`" significa **"el respondente no declaró ninguna forma de dolarización, cobra 100% en pesos argentinos"**. No es dato faltante: es un estado específico de la variable que simplemente se codificó mediante la ausencia de las otras tres opciones.
+
+**Regla práctica:** antes de asumir que un conjunto grande de `NaN` en una columna categórica es "dato faltante", revisar si existe otra columna (booleana, derivada o redundante) que confirme o contradiga la interpretación. En el ejemplo anterior, tratar esos `NaN` como "dato faltante" y descartarlos habría eliminado arbitrariamente el **68% del dataset** — el grupo más numeroso — sin razón válida.
+
+**Cómo reportarlo en el informe:**
+Conviene documentar explícitamente la interpretación asumida y la evidencia que la respalda. En el entregable la etiqueta `Cobro en pesos (NaN)` se usa en lugar de algo como "(sin declarar)" justamente para hacer transparente que la interpretación es deliberada, no una suposición tácita.
+
 ### 4.2 Detección de outliers
 
 **¿Qué es un outlier?** Un valor que se aleja significativamente del patrón general de los datos. Puede ser:
@@ -409,6 +429,37 @@ Límite superior = Q3 + 1.5 × IQR
 Todo valor fuera de estos límites se considera outlier.
 
 **¿Por qué 1.5?** Es una convención propuesta por John Tukey. Si los datos fueran perfectamente normales, este criterio capturaría el 99.3% de los datos. En la práctica, es un buen balance entre ser demasiado permisivo y demasiado estricto.
+
+##### IQR estratificado por subpoblación
+
+Cuando el dataset contiene **subpoblaciones con centros y escalas naturalmente distintas** (por ejemplo, sueldos en pesos vs sueldos en dólares), aplicar la regla `1,5·IQR` de forma global puede llevar a resultados engañosos. El IQR calculado sobre la población combinada queda arrastrado por la mezcla, y los límites resultantes pueden ser:
+
+- **Demasiado amplios** para la subpoblación de menor escala (deja pasar valores que son claramente extremos dentro de su propio grupo).
+- **Demasiado estrechos** para la subpoblación de mayor escala (marca como atípicos valores que son normales dentro de su propio grupo).
+
+**Solución:** calcular `Q1`, `Q3` e `IQR` **por separado dentro de cada subpoblación** y aplicar la regla de Tukey independientemente. Cada observación queda evaluada contra el rango natural de su propio grupo, no contra una mezcla.
+
+**Ejemplo del entregable (filtro F4):** en el dataset sysarmy hay tres subpoblaciones según la moneda efectiva del sueldo:
+
+| Grupo | Mediana | Q1 | Q3 | IQR | Límite superior |
+|---|---:|---:|---:|---:|---:|
+| ARS | ~2,5 M | ~1,7 M | ~3,5 M | ~1,8 M | ~6,2 M |
+| USD parcial | ~3,1 M | ~2,1 M | ~4,5 M | ~2,4 M | ~8,1 M |
+| USD total | ~5,0 M | ~3,0 M | ~7,0 M | ~4,0 M | ~13,0 M |
+
+Un cálculo combinado daría un único límite cercano a `~6,8 M`, que sería simultáneamente demasiado amplio para el grupo ARS (deja pasar sueldos de 6,5 M que son claramente atípicos para pesos puros) y demasiado estrecho para USD total (elimina sueldos de 8 M que son perfectamente normales para ese grupo). La estratificación resuelve el problema usando la propia distribución de referencia de cada subpoblación.
+
+**Código:**
+```python
+def mascara_iqr_por_grupo(df, col, grupo):
+    mask = pd.Series(False, index=df.index)
+    for _, sub in df.groupby(grupo):
+        q1, q3 = sub[col].quantile([0.25, 0.75])
+        iqr = q3 - q1
+        lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+        mask.loc[sub.index] = sub[col].between(lo, hi)
+    return mask
+```
 
 #### Método del Z-score
 
@@ -455,7 +506,9 @@ Cada decisión de limpieza debe estar **explícitamente justificada** en el info
 
 ## 5. Ejercicio 1: Análisis descriptivo comparativo
 
-El objetivo es comparar salarios **entre grupos** (lenguajes de programación). El enunciado pide elegir UNA de tres opciones. Acá explicamos las tres.
+El objetivo es comparar salarios **entre grupos** (lenguajes de programación). El enunciado pide elegir UNA de tres opciones metodológicas. Acá explicamos las tres.
+
+> **💡 Nota sobre la combinación de opciones.** La consigna dice literalmente *"Elegir UNA de las siguientes opciones"*, pero en la práctica las opciones **A (comparar distribuciones con visualizaciones)** y **B (comparar medidas descriptivas)** son complementarias: la visualización responde la pregunta principal y las medidas descriptivas la respaldan cuantitativamente. Cuando se combinan, **es importante declararlo explícitamente** al inicio del informe para evitar ambigüedad frente a un corrector. Combinar A y B sin aclararlo puede interpretarse como no haber tomado una decisión metodológica; declararlo transforma la combinación en una decisión consciente y defendible.
 
 ### 5.1 Comparación de distribuciones
 
@@ -612,6 +665,11 @@ En vez de medir la correlación lineal entre los valores, mide la correlación e
 
 **En Python:** `df['salary_monthly_BRUTO'].corr(df['salary_monthly_NETO'], method='spearman')`
 
+> **📘 Según la filmina de clase 03 (*Varias Variables*):**
+> *"Para (X, Y) par de v.a., [usar Spearman] si no sabemos si su distribución conjunta es Normal o tenemos pocos datos. O si la(s) variable(s) son del tipo ordinal."*
+>
+> Los sueldos del dataset sysarmy son **claramente no-normales** (distribución sesgada a la derecha, con cola larga), por lo que Spearman es la elección más adecuada desde el punto de vista de la filmina. En el entregable se reportan **ambas correlaciones** (Pearson y Spearman) para la comparación Bruto ↔ Neto, para mostrar que ambas llegan al mismo diagnóstico cuando la relación es casi lineal y fuerte. Para la matriz de correlación entre las tres numéricas del ejercicio 2a se usa Pearson (por coherencia con el notebook 03 del curso, que utiliza `np.corrcoef`), aunque Spearman sería igualmente defendible.
+
 ### 6.4 Matriz de correlación
 
 Cuando tenés muchas variables numéricas, calculás la correlación entre **todos los pares** y la organizás en una matriz. Se visualiza como un **heatmap** con colores.
@@ -630,6 +688,23 @@ sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0)
 
 ![Heatmap de correlación](img/06_02_heatmap_correlacion.png)
 *Fig. 6.3 — Matriz de correlación de Pearson entre variables numéricas del dataset. Los colores cálidos (rojo) indican correlación positiva; los fríos (azul) negativa. Se destaca la correlación casi perfecta entre bruto y neto (0.97) y la correlación moderada entre años de experiencia y edad.*
+
+### 6.5 Columnas derivadas para evaluar redundancia
+
+Cuando dos variables tienen correlación muy alta (por ejemplo, `|r| > 0,9`), conviene complementar la correlación con el análisis de la **columna derivada** que las relaciona. Dos variables casi colineales no solo "se mueven juntas": su diferencia o cociente suele tener una estructura propia informativa.
+
+**Técnica tomada del práctico de la clase 03:** ante una alta correlación entre dos variables `X` e `Y`, construir la columna derivada `Z = X − Y` (o `Z = X / Y`, según el caso) y estudiar su distribución con estadísticos descriptivos e histogramas. Si `Z` tiene una distribución estrecha y centrada, `X` e `Y` son efectivamente **redundantes** para el análisis y una de las dos podría quitarse del formulario sin pérdida sustancial.
+
+**Ejemplo del entregable (ejercicio 2b):** para estudiar la relación entre sueldo BRUTO y sueldo NETO se construye:
+
+```python
+bn['descuentos']     = bn['salary_monthly_BRUTO'] - bn['salary_monthly_NETO']
+bn['descuentos_pct'] = 100 * bn['descuentos'] / bn['salary_monthly_BRUTO']
+```
+
+Y se reporta el resumen descriptivo de ambas columnas. Si los descuentos relativos caen consistentemente en un rango estrecho (por ejemplo, entre 15% y 19%), eso implica que `NETO ≈ 0,82 × BRUTO` con poca variación, y la información de BRUTO queda **descriptivamente redundante** con NETO. Esto responde la pregunta implícita *"¿conviene quitar BRUTO del formulario para simplificarlo?"* con respaldo empírico y sin necesidad de herramientas inferenciales.
+
+**Ventaja del abordaje:** no solo se responde la pregunta de asociación con un coeficiente (Pearson/Spearman), sino que se caracteriza **qué queda cuando se elimina la parte compartida entre las dos variables**. La columna derivada es la "sobra" que permanece después de la relación lineal — si la sobra es pequeña y estable, la redundancia queda confirmada.
 
 ---
 
@@ -698,9 +773,33 @@ $$f(Y | X) = f(Y)$$
 1. **Visualmente:** comparar las distribuciones condicionales. Si son iguales, sugiere independencia.
 2. **Numéricamente:** comparar medias, medianas y desvíos entre subgrupos.
 3. **Correlación:** si r ≈ 0, no hay relación lineal (pero podría haber relación no lineal).
-4. **Tests formales:** Chi-cuadrado, Mann-Whitney, Kolmogorov-Smirnov (esto es para la Parte 2 del entregable, no la Parte 1).
+4. **Comparación de probabilidades condicionales** (abordaje de la clase 01, ver abajo).
+5. **Tests formales:** Chi-cuadrado, Mann-Whitney, Kolmogorov-Smirnov (esto es para la Parte 2 del entregable, no la Parte 1).
 
 **Importante:** correlación = 0 **NO implica** independencia. La independencia implica correlación = 0, pero no al revés. Puede haber relación no lineal con correlación nula.
+
+#### Abordaje descriptivo: `P(A|B)` vs `P(A)` (clase 01)
+
+La filmina de clase 01 (*Probabilidad*) define formalmente la independencia de dos conjuntos `A` y `B` como:
+
+$$P(A | B) = P(A)  \iff  P(A \cap B) = P(A) \cdot P(B)$$
+
+Y propone un abordaje **puramente descriptivo** (sin test inferencial) para evaluar independencia en una muestra concreta: calcular `P(A)` marginal y `P(A|B)` condicional, y comparar. Si ambas probabilidades son parecidas, la muestra es compatible con independencia; si son muy distintas, hay evidencia descriptiva de asociación.
+
+**Receta de aplicación** (esta es la que se usa en el ejercicio 2c del entregable):
+
+1. Definir un **evento `A`** basado en la variable numérica de interés. Por ejemplo, `A = "sueldo NETO mayor que la mediana global"`.
+2. Definir **eventos `B_i`** basados en las subpoblaciones de la variable categórica. Por ejemplo, `B_1 = "nivel de estudio = Universitario"`, `B_2 = "nivel de estudio = Terciario"`.
+3. Calcular `P(A)` sobre toda la muestra.
+4. Calcular `P(A | B_i)` para cada subpoblación usando la definición frecuentista:
+   $$P(A \mid B_i) = \frac{\text{observaciones en } A \cap B_i}{\text{observaciones en } B_i}$$
+5. Calcular la **distancia descriptiva** `|P(A|B_i) − P(A)|` para cada subpoblación.
+
+**Interpretación:**
+- Si todas las distancias son cercanas a cero → la muestra es compatible con independencia entre las dos variables.
+- Si alguna distancia es apreciablemente distinta de cero → en la muestra, la variable categórica **sí aporta información** sobre la variable numérica. No son independientes.
+
+**Este abordaje NO realiza un test de independencia.** No produce un p-valor ni una región de rechazo. Es una herramienta puramente descriptiva que compara probabilidades empíricas. La conclusión se formula en términos de *"en esta muestra, la distancia es de X"*, sin extrapolar a la población general. Un test formal (Chi-cuadrado) es material de la parte 2 del entregable.
 
 **Ejemplo del dataset:** ¿Son independientes el salario y el nivel de estudio? Si al separar por nivel de estudio las distribuciones de salario son muy similares, entonces son aproximadamente independientes. Si los universitarios ganan sistemáticamente más, no son independientes.
 

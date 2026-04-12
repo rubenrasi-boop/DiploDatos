@@ -1,0 +1,213 @@
+Análisis y Visualización de Datos
+Diplomatura Diplodatos 2026
+
+Toda la parte de visualizaciones de la materia está centrada alrededor de qué conceptos de estadística y probabilidad se benefician de visualizaciones y cómo comunicarlos adecuadamente.
+
+Pallete http://paletton.com/#uid=71Z0u0kketqasL5fO-fowqrrFla
+
+Para pensar… 
+
+Varias Variables
+En un mismo experimento o análisis podemos tomar en cuenta varios aspectos o medidas relevantes a la vez, así como combinación de situaciones, etc. 
+
+Sean X: Ω⇾R e Y: Ω⇾R  variables aleatorias.
+función de densidad/probabilidad conjunta:
+
+              	p/ X e Y v.a. continuas, densidad, y 
+
+                                          	p/discretas, prob. o densidad puntual 
+
+
+
+Notación: P(X=x,Y=y)=P((X=x)∩(Y=y)). la coma significa intersección 
+En un mismo experimento o análisis podemos tomar en cuenta varios aspectos o medidas relevantes, cómo consideramos esa situación en la teoría?
+Esta definición es extendible a diferentes tipos de variables y pueden considerarse, en conjunto, tipos diferentes .
+
+Notación: la coma significa intersección P(X=x,Y=y)=P((X=x)∩(Y=y)).
+
+Varias Variables -> una variable
+X: Ω⇾R e Y: Ω⇾R  variables aleatorias con función de densidad o probabilidad conjunta f(x,y). 
+Las densidades marginales  son:
+
+						p/ X discreta 
+
+
+						p/ Y discreta 
+
+
+p/ modelos continuos se usa integral
+  	
+
+En un mismo experimento o análisis podemos tomar en cuenta varios aspectos o medidas relevantes, cómo consideramos esa situación en la teoría?
+Esta definición es extensible a más variables y pueden considerarse, en conjunto, tipos diferentes a la vez.
+
+Notación: la coma significa intersección P(X=x,Y=y)=P((X=x)∩(Y=y)).
+
+Varias Variables
+X: Ω⇾R e Y: Ω⇾R  variables aleatorias con función de densidad o probabilidad conjunta f(x,y). 
+Las densidades condicionales:
+
+						
+
+						
+Esta definición es extensible a más variables 
+
+Percentiles
+Los percentiles de crecimiento son percentiles de distribuciones condicionadas por edad. Ver Hospital Garrahan
+Los percentiles de crecimiento son medidas estadísticas (tablas o gráficas) que comparan el peso, talla o perímetro cefálico de un niño con otros de su misma edad y sexo. 
+Indican el porcentaje de niños que se encuentran por debajo de esa medida; por ejemplo, el percentil 25 significa que el 25% de los niños pesan o miden menos, y el 75% más.
+
+Varias Variables: propiedades
+X: Ω⇾R e Y: Ω⇾R  variables aleatorias 
+
+Se pueden combinar v.a. numéricas. Por ejemplo, se puede definir la v.a. suma:  X+Y: Ω⇾R es una nueva v.a.  
+
+(X+Y)(ω)=X(ω)+Y(ω) p/c/ ω∊Ω. 
+
+Y así con cualquier combinación de dos o más variables. como  X-Y, X/Y2, log(X.Y), etc. 
+Observemos que se cumple que: 
+
+E(X+Y)=E(X)+E(Y),  E(X-Y)=E(X)-E(Y), (media de la suma…, media de la resta..)
+
+
+
+
+Varias Variables, numéricas
+X: Ω⇾R e Y: Ω⇾R  variables aleatorias 
+
+Var(X+Y)=Var(X)+Var(Y)-Cov(X,Y).  
+
+Se define la Covarianza y el Coeficiente de Correlación entre X e Y: 
+
+                           Cov (X,Y)=E{(X-μX)(Y-μY)}, 
+
+para  μX=E(X) y μY=E(Y).       Si σ12=Var(X) y σ12=Var(Y)
+ 
+                                           
+
+En un mismo experimento o análisis podemos tomar en cuenta varios aspectos o medidas relevantes, cómo consideramos esa situación en la teoría?
+Esta definición es extensible a más variables y pueden considerarse, en conjunto, tipos diferentes a la vez.
+
+Notación: la coma significa intersección P(X=x,Y=y)=P((X=x)∩(Y=y)).
+
+Covarianza en gráficos
+SXY>0
+SXY< 0
+
+Independencia entre Variables
+X e Y  v.a.  se dicen independientes si 
+
+
+
+( X1,X2, …,Xn es una muestra aleatoria si son v.a. independientes: e idénticamente  distribuidas (clones))
+
+
+
+
+
+
+
+
+En un mismo experimento o análisis podemos tomar en cuenta varios aspectos o medidas relevantes, cuando estos aspectos están relacionados o son independientes entre si.
+
+Diremos que do o más variables son independientes si su porbabilidad o densidad conjunta es el producto de las marginales. o bien, para variables discretas principalmente, cuando la probabilidad de la intersección es el producto de las probabilidades.
+
+Varias Variables: independencia
+X: Ω⇾R e Y: Ω⇾R  variables aleatorias 
+
+Si X e Y son independientes ENTONCES  se cumple:
+
+E(X.Y)=E(X).E(Y),
+
+Cov(X,Y)=0
+
+⍴=Corr(X,Y)=0
+
+Var(X+Y)=Var(X)+Var(Y).  
+
+P(X=x, Y=y)=P(X=x). P(Y=y) ,
+
+P(X=x|Y=y)=P(X=x) ,
+
+
+
+
+En un mismo experimento o análisis podemos tomar en cuenta varios aspectos o medidas relevantes, cómo consideramos esa situación en la teoría?
+Esta definición es extensible a más variables y pueden considerarse, en conjunto, tipos diferentes a la vez.
+
+Notación: la coma significa intersección P(X=x,Y=y)=P((X=x)∩(Y=y)).
+
+Ejemplo: distribución Normal bivariada
+Diremos que el par (X, Y) de  v.a.  tiene distribución normal bivariada si función de densidad conjunta es:
+
+
+f(x,y)=
+μ1= E(X),   μ2= E(Y) ,  σ12= Var(X),  σ22= Var(Y), 
+
+Ejemplo: distribución Normal bivariada
+X e Y  v.a.  con distribución normal bivariada
+ 
+independientes ⇔ 
+
+f(x,y)=
+f(x,y)
+=0
+
+Datos simulados con distribución Normal bivariada
+
+Asociación de Variables
+Para variables Categóricas: tablas de contingencia
+
+
+
+
+
+Para variables Numéricas: Covarianza y Correlación, p/asociación lineal
+
+Covarianza y Correlación
+Si Covxy> 0, la correlación (“alineación”) es directa.
+•Si Covxy< 0, la correlación (“alineación”) es inversa
+
+
+El valor del índice de correlación r= ρ varía en el intervalo [-1,1], 
+
+Correlación en gráficos
+
+Interpretación
+●Si r = 1, existe una correlación positiva perfecta. El índice indica una dependencia total entre las dos variables denominada relación directa: cuando una de ellas aumenta, la otra también lo hace en proporción constante.
+●Si 0 < r < 1, existe una correlación positiva.
+●Si r = 0, no existe relación lineal. Pero esto no necesariamente implica que las variables son independientes: pueden existir todavía relaciones no lineales entre las dos variables.
+●Si -1 < r < 0, existe una correlación negativa.
+●Si r = -1, existe una correlación negativa perfecta. El índice indica una dependencia total entre las dos variables llamada relación inversa: cuando una de ellas aumenta, la otra disminuye en proporción constante.
+
+
+Coeficiente de correlación lineal. Spearman
+O Coeficiente de Spearman
+
+Para ( X , Y )  par de v.a. Si no sabemos si su distribución conj. es Normal o tenemos pocos datos. O si la/s variable/s son del tipo ordinal.
+
+
+analíticamente tiene un cálculo tedioso
+
+
+Coeficiente de correlación lineal. Tau de Kendall
+O Coeficiente de Correlación por Rangos de Kendall 
+Medida de asociación no paramétrica utilizada para variables cualitativas ordinales o de razón (numéricas). Estas variables son distribuidas en categorías con varios niveles que cumplen un orden, por ejemplo, muy bajo, bajo, medio, alto y muy alto.
+Sólo se puede aplicar a partir de tablas cuadradas.
+Las variables utilizadas deben ser de nivel ordinal, intervalo o razón 
+Su resultado debe encontrarse en el rango de -1 a 1.
+Tiene sentido su aplicación, si las variables objeto de estudio no poseen una distribución poblacional conjunta normal
+
+
+
+Cuidado!
+Recuerden que la correlación no implica causalidad. Por ejemplo, si las ventas de helados están correlacionadas positivamente con los ataques de los tiburones a los nadadores, eso no significa que el consumo de helados de alguna manera hace que los tiburones ataquen. Otra variable, como el clima cálido, puede provocar un aumento tanto en las ventas de helados como en las visitas a las playas.
+
+
+Correlación versus causalidad
+La correlación no es causal y otra variable inadvertida puede estar influyendo en los resultados.
+
+https://tylervigen.com/spurious-correlations
+
+
+Notebook 03 Varias Variables.ipynb
