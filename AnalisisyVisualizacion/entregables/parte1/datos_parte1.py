@@ -1874,7 +1874,7 @@ mediana_por_exp = mediana_por_exp[mediana_por_exp['count'] >= 5]
 ax.plot(
     mediana_por_exp['profile_years_experience'],
     mediana_por_exp['median'] / 1e6,
-    color='#2E3440', linewidth=1.8, marker='o', markersize=4,
+    color='#5E6472', linewidth=1.5, marker='o', markersize=3.5,
     label='Mediana por año (n ≥ 5)',
     zorder=3,
 )
