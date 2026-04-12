@@ -32,6 +32,7 @@ Uso:
 
 from __future__ import annotations
 
+import colorsys
 import math
 import sys
 from pathlib import Path
@@ -66,6 +67,30 @@ PALETA = ['#5B8DEF', '#6BBF80', '#E8A04F', '#C96C6C',
 COLOR_ARS = '#5B8DEF'
 COLOR_USD_PARCIAL = '#E8A04F'
 COLOR_USD_TOTAL = '#6BBF80'
+
+
+def tonalidad_oscura(color_hex: str, factor: float = 0.42) -> str:
+    """Devuelve una versión más oscura del color de entrada reduciendo
+    el lightness en el espacio HLS. Se usa para los puntos individuales
+    del violin plot (G2), de modo que:
+      - contrasten contra el propio relleno del violin (que tiene
+        opacidad ~0.40 y por tanto es claro),
+      - contrasten contra el fondo blanco para los atípicos que caen
+        fuera del violin,
+      - mantengan la identidad de color del lenguaje (misma tonalidad,
+        distinto brillo).
+    """
+    rgb = tuple(int(color_hex.lstrip('#')[i:i+2], 16) / 255
+                for i in (0, 2, 4))
+    h, l, s = colorsys.rgb_to_hls(*rgb)
+    l_nueva = max(0.0, l * (1 - factor))
+    r, g, b = colorsys.hls_to_rgb(h, l_nueva, s)
+    return '#{:02x}{:02x}{:02x}'.format(
+        int(round(r * 255)), int(round(g * 255)), int(round(b * 255))
+    )
+
+
+PALETA_OSCURA = [tonalidad_oscura(c) for c in PALETA]
 
 
 # ============================================================
@@ -780,28 +805,82 @@ for s in ('top', 'right'):
 ruta_g1 = guardar(fig, 'G1_ranking_mediana.png', 'G1')
 
 
-# --- G2  Distribución por lenguaje (diagrama de caja) --------
-fig, ax = plt.subplots(figsize=(10, 9))
-datos_box = [df_rank.loc[df_rank['lenguaje'] == l,
-                         'salary_monthly_NETO'].values / 1e6
-             for l in orden_lenguajes]
-bp = ax.boxplot(
-    datos_box, vert=False, patch_artist=True,
-    showmeans=True, meanline=True,
-    medianprops=dict(color='#2E3440', linewidth=1.2),
-    meanprops=dict(color='#C96C6C', linestyle='--', linewidth=1),
-    flierprops=dict(marker='o', markersize=3,
-                    markerfacecolor='#8C99AD',
-                    markeredgecolor='none', alpha=0.5),
-    whiskerprops=dict(color='#8C99AD'),
-    capprops=dict(color='#8C99AD'),
+# --- G2  Violin plot por lenguaje con tres capas coexistiendo ---
+# Se combinan tres capas visuales sobre el mismo eje para que la
+# densidad se comprenda claramente:
+#   1) Violin  → estimación KDE de la densidad del sueldo por lenguaje
+#   2) Box     → interno al violin, con Q1, mediana y Q3
+#   3) Puntos  → TODAS las observaciones (no solo las atípicas), con
+#                jitter vertical para revelar la densidad real donde
+#                el KDE la suaviza.
+fig, ax = plt.subplots(figsize=(11, 11))
+datos_por_lang = [df_rank.loc[df_rank['lenguaje'] == l,
+                              'salary_monthly_NETO'].values / 1e6
+                  for l in orden_lenguajes]
+
+positions = np.arange(1, len(orden_lenguajes) + 1)
+
+# 1) Violin plot (densidad KDE) — capa de fondo
+vp = ax.violinplot(
+    datos_por_lang,
+    positions=positions,
+    vert=False,
+    widths=0.82,
+    showmeans=False,
+    showmedians=False,
+    showextrema=False,
 )
-for i, (patch, lang) in enumerate(zip(bp['boxes'], orden_lenguajes)):
+for i, body in enumerate(vp['bodies']):
     color = PALETA[i % len(PALETA)]
-    es_estable = estables_dict[lang]
-    patch.set_facecolor(color)
-    patch.set_alpha(0.55 if es_estable else 0.22)
-    patch.set_edgecolor(color)
+    body.set_facecolor(color)
+    body.set_alpha(0.42)
+    body.set_edgecolor(color)
+    body.set_linewidth(0.8)
+    body.set_zorder(1)
+
+# 2) Capa de puntos: TODOS los sueldos individuales con jitter vertical.
+# Usa la paleta oscura (tonalidad_oscura) para que los puntos contrasten
+# tanto contra el violin (que tiene opacidad ~0.42) como contra el
+# fondo blanco donde caen los atípicos.
+rng = np.random.default_rng(seed=42)
+for i, vals in enumerate(datos_por_lang):
+    if len(vals) == 0:
+        continue
+    color_punto = PALETA_OSCURA[i % len(PALETA_OSCURA)]
+    y_jitter = positions[i] + rng.uniform(-0.28, 0.28, size=len(vals))
+    ax.scatter(
+        vals, y_jitter,
+        s=11, alpha=0.50,
+        color=color_punto,
+        edgecolor='white', linewidth=0.25,
+        zorder=2,
+    )
+
+# 3) Boxplot interno, angosto, RELLENO TRANSPARENTE con borde oscuro
+#    — capa superior: las líneas del box quedan por delante de los
+#    puntos gracias al zorder=4 (puntos en zorder=2).
+bp = ax.boxplot(
+    datos_por_lang,
+    positions=positions,
+    vert=False,
+    widths=0.22,
+    patch_artist=True,
+    showfliers=False,  # los fliers ya están en la capa de puntos
+    medianprops=dict(color='#2E3440', linewidth=1.8),
+    boxprops=dict(facecolor='none', edgecolor='#2E3440',
+                  linewidth=1.3),
+    whiskerprops=dict(color='#2E3440', linewidth=1.3),
+    capprops=dict(color='#2E3440', linewidth=1.3),
+    zorder=4,
+)
+# zorder explícito sobre cada elemento del boxplot para asegurar que
+# queden por delante del violin (1) y de los puntos (2).
+for element_list in (bp['boxes'], bp['medians'],
+                     bp['whiskers'], bp['caps']):
+    for elem in element_list:
+        elem.set_zorder(4)
+
+ax.set_yticks(positions)
 ax.set_yticklabels([etiqueta_lenguaje(l) for l in orden_lenguajes])
 ax.invert_yaxis()
 ax.set_xlabel('Sueldo NETO (millones de ARS)')
@@ -809,7 +888,7 @@ ax.set_title('Distribución de sueldos NETO por lenguaje',
              fontsize=13, pad=14, loc='left')
 for s in ('top', 'right'):
     ax.spines[s].set_visible(False)
-ruta_g2 = guardar(fig, 'G2_boxplot_lenguajes.png', 'G2')
+ruta_g2 = guardar(fig, 'G2_violin_lenguajes.png', 'G2')
 
 
 # --- G3  Mediana por lenguaje y grupo de moneda --------------
@@ -878,7 +957,7 @@ ruta_g4 = guardar(fig, 'G4_frecuencia_vs_mediana.png', 'G4')
 graficos_generados = pd.DataFrame({
     'gráfico': [
         'G1 - Ranking por mediana',
-        'G2 - Distribución por lenguaje (diagrama de caja)',
+        'G2 - Distribución por lenguaje (violin + box + atípicos)',
         'G3 - Mediana por lenguaje y grupo de moneda',
         'G4 - Frecuencia vs sueldo mediano',
     ],

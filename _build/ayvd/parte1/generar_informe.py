@@ -25,6 +25,7 @@ Uso:
 
 from __future__ import annotations
 
+import colorsys
 import math
 from pathlib import Path
 from typing import List, Dict
@@ -61,6 +62,23 @@ COLOR_BASE = '#5B8DEF'
 COLOR_GRID = '#E6E8EF'
 COLOR_TEXTO = '#2E3440'
 BG_PLOT = '#FAFBFC'
+
+
+def tonalidad_oscura(color_hex: str, factor: float = 0.42) -> str:
+    """Versión más oscura del color (reduce lightness en HLS).
+    Se usa para los puntos del violin plot G2 para que contrasten
+    contra el violin semi-transparente y el fondo blanco."""
+    rgb = tuple(int(color_hex.lstrip('#')[i:i+2], 16) / 255
+                for i in (0, 2, 4))
+    h, l, s = colorsys.rgb_to_hls(*rgb)
+    l_nueva = max(0.0, l * (1 - factor))
+    r, g, b = colorsys.hls_to_rgb(h, l_nueva, s)
+    return '#{:02x}{:02x}{:02x}'.format(
+        int(round(r * 255)), int(round(g * 255)), int(round(b * 255))
+    )
+
+
+PALETA_OSCURA = [tonalidad_oscura(c) for c in PALETA]
 
 
 def titulo(texto: str) -> None:
@@ -444,27 +462,87 @@ fig_rank.add_annotation(
     font=dict(size=10, color='#5E6472'), xanchor='left',
 )
 
-# G2 — Distribución por lenguaje (diagrama de caja horizontal).
-# Los lenguajes marcados se dibujan con opacidad reducida.
+# G2 — Violin plot horizontal por lenguaje con tres capas visuales
+# coexistiendo en el mismo eje:
+#   1) Violin    → densidad (KDE) completa del sueldo por lenguaje
+#   2) Puntos    → TODAS las observaciones, con jitter vertical
+#   3) Box       → Q1, mediana y Q3, relleno transparente y borde
+#                  oscuro — dibujado en un trace SEPARADO go.Box
+#                  después del violin para que sus líneas queden
+#                  POR DELANTE de los puntos (en una sola trace
+#                  go.Violin, Plotly dibuja los puntos encima del
+#                  box interno, que es lo contrario de lo que
+#                  queremos).
 fig_box = go.Figure()
+
+# Capa 1+2: violin con puntos (sin box interno)
+# Los puntos usan la paleta oscura (tonalidad_oscura) para contrastar
+# con el relleno claro del violin y con el fondo blanco donde caen
+# los atípicos, manteniendo la identidad de color de cada lenguaje.
 for i, lang in enumerate(orden_lenguajes):
     vals = df_rank[df_rank['lenguaje'] == lang]['salary_monthly_NETO'] / 1e6
     color = PALETA[i % len(PALETA)]
+    color_punto = PALETA_OSCURA[i % len(PALETA_OSCURA)]
     es_estable = estables[lang]
-    fig_box.add_trace(go.Box(
+    name = lang if es_estable else f'{lang} *'
+    fig_box.add_trace(go.Violin(
         x=vals,
-        name=lang if es_estable else f'{lang} *',
+        name=name,
         orientation='h',
-        marker=dict(color=color),
         line=dict(width=1.2, color=color),
         fillcolor=color,
-        opacity=0.55 if es_estable else 0.25,
-        boxmean=True,
+        opacity=0.40 if es_estable else 0.20,
+
+        # Box interno del violin DESACTIVADO — se dibuja aparte para
+        # controlar el z-order.
+        box_visible=False,
+
+        # TODOS los puntos individuales, no solo atípicos, en
+        # tonalidad más oscura para que contrasten.
+        points='all',
+        pointpos=0,
+        jitter=0.55,
+        marker=dict(
+            color=color_punto,
+            size=5,
+            opacity=0.55,
+            line=dict(color='white', width=0.3),
+        ),
+
+        meanline_visible=False,
+        spanmode='hard',
+        hoveron='violins+points',
+        scalemode='width',
+        showlegend=False,
     ))
-fig_box.update_layout(showlegend=False, yaxis=dict(autorange='reversed'))
+
+# Capa 3: box como trace separado go.Box, dibujado DESPUÉS del violin
+# (y por lo tanto con z-order superior). Relleno transparente y borde
+# oscuro para que sus líneas queden por delante de los puntos.
+for i, lang in enumerate(orden_lenguajes):
+    vals = df_rank[df_rank['lenguaje'] == lang]['salary_monthly_NETO'] / 1e6
+    es_estable = estables[lang]
+    name = lang if es_estable else f'{lang} *'
+    fig_box.add_trace(go.Box(
+        x=vals,
+        name=name,
+        orientation='h',
+        boxpoints=False,  # los puntos ya están en el violin
+        fillcolor='rgba(0,0,0,0)',  # transparente
+        line=dict(color='#2E3440', width=1.5),
+        width=0.32,
+        hoverinfo='skip',
+        showlegend=False,
+    ))
+
+fig_box.update_layout(
+    yaxis=dict(autorange='reversed'),
+    violingap=0.12,
+    boxgap=0.68,
+)
 layout_claro(fig_box,
              'Distribución de sueldos NETO por lenguaje',
-             alto=max(420, 34 * len(orden_lenguajes) + 140))
+             alto=max(550, 46 * len(orden_lenguajes) + 160))
 fig_box.update_xaxes(title='Sueldo NETO (millones de ARS)')
 fig_box.update_yaxes(title='')
 
