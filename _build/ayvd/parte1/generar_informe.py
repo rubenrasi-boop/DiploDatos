@@ -295,36 +295,38 @@ df_rank = df_long[df_long['lenguaje'].isin(lenguajes_mostrables)].copy()
 
 
 # ============================================================
-# 1.6  Resumen por lenguaje y dispersión relativa de la mediana
+# 1.6  Coeficiente de variación robusto (clase 02)
 # ============================================================
-# Indicador descriptivo que combina la dispersión del 50 % central
-# (IQR), el tamaño de muestra (n) y el valor de la mediana:
+# Extensión robusta del coeficiente de variación definido en la
+# filmina de clase 02 ("std/mean, comparable entre distintas v.a.").
+# Reemplazando std por IQR y mean por mediana:
 #
-#   disp_i  =  100 · IQR_i / ( √n_i · mediana_i )      (en %)
+#   CV_robusto_i  =  100 · IQR_i / mediana_i    [%]
 #
-# A mayor dispersión o menor n, mayor es disp_i. Se utiliza como
-# indicador puramente descriptivo: no supone una distribución ni
-# realiza inferencia.
+# Se utiliza como indicador descriptivo de la dispersión relativa
+# del 50 % central respecto al valor central, adaptado a
+# distribuciones asimétricas como los sueldos.
 #
-# Criterio de estabilidad (sin umbrales arbitrarios):
-#   un lenguaje se marca como "dispersión alta" si
-#       disp_i  >  2 · mediana(disp)
-# sobre el conjunto de lenguajes mostrados. El umbral se recalibra
-# solo con cada corrida porque depende del propio conjunto.
+# Umbral por la regla de Tukey 1,5·IQR (clase 02) aplicada sobre la
+# distribución de CV robusto del propio conjunto de lenguajes:
+#
+#   lenguaje marcado  ⇔  CV_robusto_i  >  Q3(CV) + 1,5 · IQR(CV)
+#
+# Ambos elementos (CV y regla 1,5·IQR) son citables directamente de
+# clase 02 sin introducir herramientas de parte 2.
 
 def resumen_robusto(serie: pd.Series) -> pd.Series:
     q1, mediana, q3 = serie.quantile([.25, .5, .75])
     n = int(serie.count())
     iqr = q3 - q1
-    disp_pct = (100 * iqr / (math.sqrt(n) * mediana)
-                if n > 0 and mediana else np.nan)
+    cv_robusto = 100 * iqr / mediana if mediana else np.nan
     return pd.Series({
         'n': n,
         'mediana': mediana,
         'q1': q1,
         'q3': q3,
         'iqr': iqr,
-        'disp_pct': disp_pct,
+        'cv_robusto': cv_robusto,
     })
 
 
@@ -334,20 +336,24 @@ resumen_global = (
     .sort_values('mediana', ascending=False)
 )
 
-disp_mediana = resumen_global['disp_pct'].median()
-UMBRAL_DISP = 2 * disp_mediana
-resumen_global['estable'] = resumen_global['disp_pct'] <= UMBRAL_DISP
+# Umbral Tukey sobre la distribución de CV robusto del conjunto
+cv_q1_set = resumen_global['cv_robusto'].quantile(.25)
+cv_q3_set = resumen_global['cv_robusto'].quantile(.75)
+cv_iqr_set = cv_q3_set - cv_q1_set
+UMBRAL_CV = cv_q3_set + 1.5 * cv_iqr_set
+resumen_global['estable'] = resumen_global['cv_robusto'] <= UMBRAL_CV
 
-titulo('1.6  Resumen por lenguaje y dispersión relativa de la mediana')
-print(f'dispersión relativa mediana del conjunto: {disp_mediana:.2f} %')
-print(f'umbral (2 × mediana):                     {UMBRAL_DISP:.2f} %')
-print(f'lenguajes marcados:                       '
+titulo('1.6  Resumen por lenguaje y CV robusto')
+print(f'Q1 CV del conjunto:          {cv_q1_set:.2f} %')
+print(f'Q3 CV del conjunto:          {cv_q3_set:.2f} %')
+print(f'umbral Tukey (Q3 + 1,5·IQR): {UMBRAL_CV:.2f} %')
+print(f'lenguajes marcados:          '
       f'{(~resumen_global["estable"]).sum()}\n')
 
 vista = resumen_global.copy()
 for c in ('mediana', 'q1', 'q3', 'iqr'):
     vista[c] = '$ ' + (vista[c] / 1e6).round(2).astype(str) + ' M'
-vista['disp_pct'] = vista['disp_pct'].round(2).astype(str) + ' %'
+vista['cv_robusto'] = vista['cv_robusto'].round(2).astype(str) + ' %'
 vista['estable'] = vista['estable'].map({True: 'sí', False: 'no'})
 print(vista.to_string())
 
@@ -410,10 +416,10 @@ fig_rank = go.Figure(go.Bar(
         line=dict(color='white', width=1),
         opacity=opacidades,
     ),
-    text=[f'$ {v/1e6:.2f} M  (n={int(n)}, disp. {d:.1f} %)'
-          for v, n, d in zip(resumen_global['mediana'],
+    text=[f'$ {v/1e6:.2f} M  (n={int(n)}, CV {cv:.0f} %)'
+          for v, n, cv in zip(resumen_global['mediana'],
                               resumen_global['n'],
-                              resumen_global['disp_pct'])],
+                              resumen_global['cv_robusto'])],
     textposition='outside',
     hovertemplate=('<b>%{y}</b><br>'
                    'Mediana: $ %{x:.2f} M ARS<extra></extra>'),
@@ -425,9 +431,15 @@ layout_claro(fig_rank,
 fig_rank.update_xaxes(title='Sueldo NETO mediano (millones de ARS)',
                       range=[0, max_mediana_m * 1.55])
 fig_rank.update_yaxes(title='')
+_n_marcados_g1 = int((~resumen_global['estable']).sum())
+if _n_marcados_g1 > 0:
+    _anot_g1 = (f'*  CV robusto (IQR/mediana) atípico en el ranking: '
+                f'supera {UMBRAL_CV:.0f} % (regla Tukey 1,5·IQR)')
+else:
+    _anot_g1 = (f'Criterio aplicado: CV robusto (IQR/mediana) con umbral '
+                f'Tukey = {UMBRAL_CV:.0f} %. Ningún lenguaje supera el umbral.')
 fig_rank.add_annotation(
-    text=(f'*  dispersión relativa de la mediana superior a '
-          f'{UMBRAL_DISP:.1f} % (2 × la mediana del conjunto)'),
+    text=_anot_g1,
     xref='paper', yref='paper', x=0, y=-0.08, showarrow=False,
     font=dict(size=10, color='#5E6472'), xanchor='left',
 )
@@ -532,7 +544,7 @@ conclusiones = [
     f'{premio_top:.0f} % por encima de la mediana del conjunto de '
     f'lenguajes analizados.',
 
-    'El análisis preliminar de la variable sueldo confirma que la columna '
+    'El análisis preliminar de la variable sueldo aparenta que la columna '
     'salary_monthly_NETO contiene el total pesificado del sueldo para todos '
     'los respondentes, lo que habilita un ranking único sobre una variable '
     'coherente.',
@@ -543,10 +555,16 @@ conclusiones = [
     'Parte del premio observado para algunos lenguajes proviene de la '
     'proporción de sueldos dolarizados en esa población.',
 
-    f'{len(marcados)} lenguajes quedan marcados porque su dispersión '
-    f'relativa de la mediana supera el doble de la dispersión relativa '
-    f'mediana del conjunto. Sus posiciones en el ranking deben leerse '
-    f'con reserva.',
+    (f'Aplicando el criterio del coeficiente de variación robusto '
+     f'(IQR/mediana) con umbral Tukey sobre el conjunto de lenguajes, '
+     f'{len(marcados)} lenguajes del ranking quedan marcados como atípicos '
+     f'en dispersión. '
+     + ('El conjunto es homogéneo en términos de dispersión relativa: '
+        'todos los lenguajes tienen una variabilidad interna comparable '
+        'dentro del rango esperable del ranking.'
+        if len(marcados) == 0 else
+        'Sus posiciones en el ranking deben leerse con reserva porque la '
+        'mediana no es representativa del 50 % central.')),
 ]
 
 titulo('1.8  Conclusiones')
@@ -1025,19 +1043,22 @@ def df_moneda_html() -> str:
 def df_global_html() -> str:
     d = resumen_global.copy()
     d.insert(0, '#', range(1, len(d) + 1))
-    d = d[['#', 'n', 'mediana', 'q1', 'q3', 'iqr', 'disp_pct', 'estable']]
+    d = d[['#', 'n', 'mediana', 'q1', 'q3', 'iqr', 'cv_robusto', 'estable']]
     d = d.rename(columns={
         'mediana': 'mediana', 'q1': 'Q1', 'q3': 'Q3',
-        'iqr': 'IQR', 'disp_pct': 'dispersión rel.',
+        'iqr': 'IQR', 'cv_robusto': 'CV robusto',
     })
     d['estable'] = d['estable'].map({True: 'sí', False: 'no'})
+    # n es entero por naturaleza: se castea para evitar el ".0" de pandas
+    d['n'] = d['n'].astype(int)
     fmt_m = lambda v: f'$ {v/1e6:.2f} M'
     fmt = {
-        'mediana':         fmt_m,
-        'Q1':              fmt_m,
-        'Q3':              fmt_m,
-        'IQR':             fmt_m,
-        'dispersión rel.': lambda v: f'{v:.1f} %',
+        'n':          lambda v: f'{int(v)}',
+        'mediana':    fmt_m,
+        'Q1':         fmt_m,
+        'Q3':         fmt_m,
+        'IQR':        fmt_m,
+        'CV robusto': lambda v: f'{v:.0f} %',
     }
     return d.to_html(classes='datos', border=0, formatters=fmt)
 
@@ -1048,6 +1069,17 @@ html = f"""<!doctype html>
 <meta charset="utf-8">
 <title>AyVD Parte 1 — Ejercicio 1</title>
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<!-- KaTeX para renderizar fórmulas matemáticas como en markdown -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {{
+    delimiters: [
+      {{left: '$$', right: '$$', display: true}},
+      {{left: '$',  right: '$',  display: false}}
+    ],
+    throwOnError: false
+  }});"></script>
 <style>
   :root {{
     --bg:#FAFBFC; --card:#FFFFFF; --border:#E6E8EF;
@@ -1140,11 +1172,14 @@ html = f"""<!doctype html>
     font-size:1.4rem; font-weight:700; margin-top:4px; color:#3A63A8;
   }}
   .formula {{
-    background:var(--soft); border:1px dashed #C5CEDF; border-radius:8px;
+    background:var(--soft); border-left:3px solid var(--accent);
+    border-radius:0 6px 6px 0;
     padding:14px 18px; margin:14px 0;
-    font-family:"JetBrains Mono",Consolas,monospace;
-    font-size:.92rem; color:#2E3440;
+    text-align:center;
+    color:#2E3440;
+    overflow-x:auto;
   }}
+  .formula .katex {{ font-size:1.05em; }}
 </style>
 </head>
 <body>
@@ -1284,39 +1319,39 @@ html = f"""<!doctype html>
     Este umbral <b>no es un filtro sobre los datos</b>. Ninguna observación
     se descarta del conjunto; es una exclusión de visualización. Los
     lenguajes excluidos permanecen en <code>df_long</code> y pueden
-    utilizarse en otros análisis. El criterio fino que identifica los
-    lenguajes con ranking inestable es el de dispersión relativa definido
-    en la sección 1.6.
+    utilizarse en otros análisis. El criterio descriptivo complementario
+    que caracteriza la dispersión interna de cada lenguaje es el
+    coeficiente de variación robusto definido en la sección 1.6.
   </div>
 </div>
 
 <div class="card">
-  <h3>1.6  Dispersión relativa de la mediana y criterio de estabilidad</h3>
+  <h3>1.6  Coeficiente de variación robusto por lenguaje</h3>
   <p>Para cada lenguaje del ranking se calcula, además de la mediana y
-  los cuartiles, un indicador descriptivo que combina la dispersión del
-  50&nbsp;% central (IQR) con el tamaño de muestra (n) y el propio valor
-  de la mediana. Permite distinguir lenguajes cuya posición en el
-  ranking es relativamente estable de aquellos cuya mediana depende en
-  buena medida de pocos datos o de una distribución muy dispersa.</p>
-  <p>La fórmula del indicador es:</p>
-  <div class="formula">disp<sub>i</sub>  =  100 · IQR<sub>i</sub> / ( √n<sub>i</sub> · mediana<sub>i</sub> )   [%]</div>
-  <p>Un lenguaje se marca con <b>dispersión alta</b> cuando su indicador
-  supera el doble del indicador mediano del conjunto de lenguajes
-  mostrados:</p>
-  <div class="formula">lenguaje marcado  ⇔  disp<sub>i</sub>  >  2 · mediana(disp)</div>
-  <div class="nota">
-    El criterio está enteramente derivado de los datos: no depende de un
-    umbral de <code>n</code> fijado a priori. Se calcula a partir de la
-    dispersión (IQR), el tamaño de muestra (n) y el propio valor de la
-    mediana de cada lenguaje, y se compara contra el mismo conjunto de
-    lenguajes en estudio. Si la encuesta cambiara de año, el criterio se
-    recalibra automáticamente.
+  los cuartiles, el <b>coeficiente de variación robusto</b>, definido como:</p>
+
+  <div class="formula">
+    $$\\text{{CV robusto}}_i = \\dfrac{{\\text{{IQR}}_i}}{{\\text{{mediana}}_i}} \\times 100\\,\\%$$
   </div>
-  <p>Con los datos actuales:</p>
+
+  <p>Este indicador mide la dispersión relativa del 50&nbsp;% central
+  respecto al valor central: a mayor CV, más heterogéneo es el grupo
+  de respondentes dentro del lenguaje.</p>
+
+  <p>Se marca un lenguaje como atípico cuando su CV supera la regla
+  clásica de Tukey (1,5&nbsp;·&nbsp;IQR) aplicada sobre la distribución
+  de CV del propio ranking:</p>
+
+  <div class="formula">
+    $$\\text{{lenguaje marcado}} \\iff \\text{{CV robusto}}_i > Q_3(\\text{{CV}}) + 1{{,}}5 \\cdot \\text{{IQR}}(\\text{{CV}})$$
+  </div>
+
+  <p>Tanto el CV como la regla 1,5·IQR provienen directamente del
+  material de clase 02.</p>
+
   <ul>
-    <li>Dispersión relativa mediana del conjunto: <b>{disp_mediana:.2f} %</b></li>
-    <li>Umbral (2 × mediana): <b>{UMBRAL_DISP:.2f} %</b></li>
-    <li>Lenguajes marcados: <b>{len(marcados)}</b></li>
+    <li>Umbral Tukey sobre el CV del conjunto: <b>{UMBRAL_CV:.0f} %</b></li>
+    <li>Lenguajes marcados como atípicos: <b>{len(marcados)}</b> {'(ningún lenguaje supera el umbral — el conjunto del ranking es homogéneo en dispersión relativa)' if len(marcados) == 0 else ''}</li>
   </ul>
   {df_global_html()}
 </div>
@@ -1457,7 +1492,7 @@ html = f"""<!doctype html>
   <h3>¿Son independientes el nivel de estudio y el sueldo NETO?</h3>
   <p>El marco teórico se toma de la clase 01 (probabilidad condicional).
   Dos eventos A y B son independientes si y sólo si</p>
-  <div class="formula">P(A | B) = P(A)</div>
+  <div class="formula">$$P(A \\mid B) = P(A)$$</div>
   <p>Definimos:</p>
   <ul>
     <li><b>A</b> = evento <i>"sueldo NETO mayor que la mediana global"</i> (umbral calculado sobre el conjunto con estudios declarados).</li>
