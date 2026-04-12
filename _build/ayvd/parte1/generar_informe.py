@@ -262,6 +262,24 @@ df = aplicar_filtro(
     mascara_iqr_por_grupo(df, 'salary_monthly_NETO', 'moneda_grupo'),
 )
 
+
+# F5 — piso de sueldo implausible
+PISO_SUELDO_MINIMO = 300_000  # ARS mensuales, orden del SMVM argentino
+df = aplicar_filtro(
+    df,
+    'F5 - piso de sueldo implausible (300.000 ARS)',
+    'Se descartan respondentes con sueldo NETO inferior a 300.000 ARS '
+    'mensuales. Este umbral es del orden del Salario Mínimo Vital y '
+    'Móvil (SMVM) argentino, por debajo del cual un sueldo de tiempo '
+    'completo en el sector IT resulta implausible y casi con certeza '
+    'corresponde a un error de carga del formulario o una lectura '
+    'errónea de la unidad. La regla IQR del F4 no captura estos '
+    'valores porque el límite inferior Q1 − 1,5·IQR del grupo ARS '
+    'puede caer en valores muy bajos o incluso negativos, y no opera '
+    'como piso efectivo.',
+    df['salary_monthly_NETO'] >= PISO_SUELDO_MINIMO,
+)
+
 N_FINAL = len(df)
 df_filtros = pd.DataFrame(filtros_aplicados)
 
@@ -518,7 +536,9 @@ for i, lang in enumerate(orden_lenguajes):
 
 # Capa 3: box como trace separado go.Box, dibujado DESPUÉS del violin
 # (y por lo tanto con z-order superior). Relleno transparente y borde
-# oscuro para que sus líneas queden por delante de los puntos.
+# gris oscuro (suave pero contrastante, equivalente al contraste de
+# los puntos contra el violin).
+COLOR_BOX_G2 = '#5E6472'  # gris pizarra
 for i, lang in enumerate(orden_lenguajes):
     vals = df_rank[df_rank['lenguaje'] == lang]['salary_monthly_NETO'] / 1e6
     es_estable = estables[lang]
@@ -527,9 +547,9 @@ for i, lang in enumerate(orden_lenguajes):
         x=vals,
         name=name,
         orientation='h',
-        boxpoints=False,  # los puntos ya están en el violin
-        fillcolor='rgba(0,0,0,0)',  # transparente
-        line=dict(color='#2E3440', width=1.5),
+        boxpoints=False,
+        fillcolor='rgba(0,0,0,0)',
+        line=dict(color=COLOR_BOX_G2, width=1.5),
         width=0.32,
         hoverinfo='skip',
         showlegend=False,
@@ -662,7 +682,16 @@ VARS_NUMERICAS = ['salary_monthly_NETO',
                   'profile_years_experience',
                   'profile_age']
 VARS_CATEGORICAS = ['work_seniority', 'profile_gender']
-GENEROS_PRINCIPALES = ['Hombre Cis', 'Mujer Cis']
+
+# Grupos analíticos de género: Hombre Cis, Mujer Cis y una agrupación
+# "Diversidades" que reúne las categorías con baja cobertura muestral
+# individual (No binarie, Trans, Queer, Agénero, Prefiero no decir).
+GENEROS_CIS = ['Hombre Cis', 'Mujer Cis']
+CATEGORIAS_DIVERSIDADES = [
+    'No binarie', 'Trans', 'Queer', 'Agénero', 'Prefiero no decir',
+]
+GRUPOS_GENERO = ['Hombre Cis', 'Mujer Cis', 'Diversidades']
+
 ORDEN_ESTUDIOS = [
     'Secundario',
     'Terciario',
@@ -768,6 +797,45 @@ for nivel in SUBPOB_SELECCIONADAS:
     }
 tabla_medidas_subpob = pd.DataFrame(medidas_subpob).T
 
+
+def _fmt_ars(v):
+    return f'$ {v:,.0f}'.replace(',', '.')
+
+
+def _fmt_int(v):
+    return f'{int(v)}'
+
+
+# Tablas HTML con formato correcto: $ sólo en columnas monetarias,
+# enteros sin decimal en las columnas de conteo.
+describe_estudios_html = describe_estudios.to_html(
+    classes='datos', border=0,
+    formatters={
+        'n':       _fmt_int,
+        'mediana': _fmt_ars,
+        'q1':      _fmt_ars,
+        'q3':      _fmt_ars,
+    },
+)
+
+# Para la tabla de medidas por subpoblación: $ en todas las columnas
+# monetarias (media, mediana, std, Q1, Q3, IQR) y entero en 'n'.
+# La columna std tiene unidades de ARS (es el desvío estándar de un
+# monto en pesos), por lo que también lleva el símbolo $.
+tabla_medidas_subpob_html = tabla_medidas_subpob.to_html(
+    classes='datos', border=0,
+    formatters={
+        'n':       _fmt_int,
+        'media':   _fmt_ars,
+        'mediana': _fmt_ars,
+        'std':     _fmt_ars,
+        'Q1':      _fmt_ars,
+        'Q3':      _fmt_ars,
+        'IQR':     _fmt_ars,
+    },
+)
+
+
 # Análisis de independencia vía probabilidad condicional (clase 01)
 #   A = sueldo NETO > mediana global del subset con estudios declarados
 #   B_i = nivel de estudio = subpoblación seleccionada i
@@ -803,27 +871,41 @@ seniority_stats = (
     .round(0)
 )
 
-df_gender = df[df['profile_gender'].isin(GENEROS_PRINCIPALES)].copy()
+def clasificar_genero_analitico(valor):
+    if valor in GENEROS_CIS:
+        return valor
+    if pd.isna(valor):
+        return None
+    return 'Diversidades'
+
+
+df_gender = df.copy()
+df_gender['genero_grupo'] = df_gender['profile_gender'].apply(
+    clasificar_genero_analitico)
+df_gender = df_gender[df_gender['genero_grupo'].notna()].copy()
+
 gender_stats = (
-    df_gender.groupby('profile_gender')['salary_monthly_NETO']
+    df_gender.groupby('genero_grupo')['salary_monthly_NETO']
     .agg(n='count', mediana='median',
          q1=lambda x: x.quantile(.25),
          q3=lambda x: x.quantile(.75))
-    .reindex(GENEROS_PRINCIPALES)
+    .reindex(GRUPOS_GENERO)
     .round(0)
 )
 
 med_hombre = gender_stats.loc['Hombre Cis', 'mediana']
 med_mujer = gender_stats.loc['Mujer Cis', 'mediana']
-brecha_ratio = med_mujer / med_hombre
+med_diversidades = gender_stats.loc['Diversidades', 'mediana']
+ratio_mujer = med_mujer / med_hombre
+ratio_diversidades = med_diversidades / med_hombre
 
 titulo('2.d  Seniority y género')
 print('por seniority:')
 print(seniority_stats.to_string())
-print('\npor género (restringido a Hombre Cis y Mujer Cis):')
+print('\npor grupo de género (con "Diversidades" agrupando minorías):')
 print(gender_stats.to_string())
-print(f'\nbrecha relativa a favor de Hombre Cis: '
-      f'{100*(1-brecha_ratio):.1f} %')
+print(f'\nbrecha Mujer Cis vs Hombre Cis:   {100*(1-ratio_mujer):.1f} %')
+print(f'brecha Diversidades vs Hombre Cis: {100*(1-ratio_diversidades):.1f} %')
 
 
 # ============================================================
@@ -831,36 +913,44 @@ print(f'\nbrecha relativa a favor de Hombre Cis: '
 # ============================================================
 
 # --- G5  Histogramas de las 3 numéricas (subplots 1x3) ---
+# Edad (años) acotada a [15, 80] porque es edad humana en contexto
+# laboral. Nº de bins calibrado por variable para mayor granularidad.
 fig_g5 = make_subplots(rows=1, cols=3,
                        subplot_titles=(
                            'Sueldo NETO (millones de ARS)',
                            'Años de experiencia',
                            'Edad (años)'))
 fig_g5.add_trace(go.Histogram(
-    x=df['salary_monthly_NETO'] / 1e6, nbinsx=30,
+    x=df['salary_monthly_NETO'] / 1e6, nbinsx=50,
     marker_color='#5B8DEF', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=1)
 fig_g5.add_trace(go.Histogram(
-    x=df['profile_years_experience'], nbinsx=30,
+    x=df['profile_years_experience'], nbinsx=40,
     marker_color='#6BBF80', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=2)
 fig_g5.add_trace(go.Histogram(
-    x=df['profile_age'], nbinsx=30,
+    x=df['profile_age'], nbinsx=50,
+    xbins=dict(start=15, end=80, size=1.3),
     marker_color='#E8A04F', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=3)
 layout_claro(fig_g5,
              'Distribución marginal de las 3 variables numéricas',
              alto=360)
 fig_g5.update_yaxes(title='frecuencia', row=1, col=1)
+fig_g5.update_xaxes(range=[15, 80], row=1, col=3)
 
 
 # --- G6  Heatmap de correlación (Pearson, coherente con clase 03) ---
+# Eje Y invertido para que la diagonal de 1 quede ascendente
+# (abajo-izquierda a arriba-derecha), más natural para lectura
+# matemática occidental.
+corr_pearson_flip = corr_pearson.iloc[::-1]
 fig_g6 = go.Figure(go.Heatmap(
-    z=corr_pearson.values,
-    x=corr_pearson.columns, y=corr_pearson.index,
+    z=corr_pearson_flip.values,
+    x=corr_pearson_flip.columns, y=corr_pearson_flip.index,
     colorscale=[[0, '#C96C6C'], [0.5, '#F5F7FB'], [1, '#3A63A8']],
     zmin=-1, zmax=1,
-    text=corr_pearson.round(2).values,
+    text=corr_pearson_flip.round(2).values,
     texttemplate='%{text}',
     textfont=dict(size=13, color='#2E3440'),
     colorbar=dict(title='r Pearson'),
@@ -881,7 +971,7 @@ fig_g7.add_trace(go.Bar(
     marker_line=dict(color='white', width=1),
     showlegend=False,
 ), row=1, col=1)
-colores_gender_bar = ['#5B8DEF' if g in GENEROS_PRINCIPALES else '#BFC4D3'
+colores_gender_bar = ['#5B8DEF' if g in GENEROS_CIS else '#BFC4D3'
                       for g in gender_counts.index]
 fig_g7.add_trace(go.Bar(
     x=gender_counts.index, y=gender_counts.values,
@@ -964,7 +1054,10 @@ fig_g9.update_yaxes(title='densidad')
 fig_g9.update_xaxes(title='Sueldo NETO (millones de ARS)')
 
 
-# --- G10  Scatter exp vs sueldo con color = seniority ---
+# --- G10  Scatter exp vs sueldo con color = seniority + mediana por año ---
+# La línea negra conecta la mediana del sueldo para cada año entero
+# de experiencia, como una "mediana móvil" descriptiva de la
+# tendencia central.
 fig_g10 = go.Figure()
 col_seniority = {'Junior': '#6BBF80',
                  'Semi-Senior': '#E8A04F',
@@ -980,6 +1073,26 @@ for nivel in ['Junior', 'Semi-Senior', 'Senior']:
         name=f'{nivel} (n={len(sub)})',
         hovertemplate=('Exp: %{x} años<br>NETO: %{y:.2f} M<extra></extra>'),
     ))
+
+# Línea de mediana por año de experiencia
+mediana_por_exp_g10 = (
+    df.groupby('profile_years_experience')['salary_monthly_NETO']
+    .agg(['median', 'count'])
+    .reset_index()
+)
+mediana_por_exp_g10 = mediana_por_exp_g10[mediana_por_exp_g10['count'] >= 5]
+fig_g10.add_trace(go.Scatter(
+    x=mediana_por_exp_g10['profile_years_experience'],
+    y=mediana_por_exp_g10['median'] / 1e6,
+    mode='lines+markers',
+    line=dict(color='#2E3440', width=2.2),
+    marker=dict(size=5, color='#2E3440'),
+    name='Mediana por año (n ≥ 5)',
+    hovertemplate=(
+        'Año: %{x}<br>Mediana: $ %{y:.2f} M<extra></extra>'
+    ),
+))
+
 layout_claro(fig_g10,
              'Experiencia vs sueldo NETO, condicionado por seniority',
              alto=500)
@@ -987,22 +1100,26 @@ fig_g10.update_xaxes(title='Años de experiencia')
 fig_g10.update_yaxes(title='Sueldo NETO (millones de ARS)')
 
 
-# --- G11  Scatter exp vs sueldo con color = género ---
+# --- G11  Scatter exp vs sueldo con color = grupo de género ---
 fig_g11 = go.Figure()
-col_gender = {'Hombre Cis': '#5B8DEF', 'Mujer Cis': '#C96C6C'}
-for g in GENEROS_PRINCIPALES:
-    sub = df_gender[df_gender['profile_gender'] == g]
+col_gender = {
+    'Hombre Cis':   '#5B8DEF',
+    'Mujer Cis':    '#C96C6C',
+    'Diversidades': '#9673C0',
+}
+for g in GRUPOS_GENERO:
+    sub = df_gender[df_gender['genero_grupo'] == g]
     fig_g11.add_trace(go.Scatter(
         x=sub['profile_years_experience'],
         y=sub['salary_monthly_NETO'] / 1e6,
         mode='markers',
-        marker=dict(size=6, color=col_gender[g], opacity=0.45,
+        marker=dict(size=6, color=col_gender[g], opacity=0.55,
                     line=dict(width=0)),
         name=f'{g} (n={len(sub)})',
         hovertemplate=('Exp: %{x} años<br>NETO: %{y:.2f} M<extra></extra>'),
     ))
 layout_claro(fig_g11,
-             'Experiencia vs sueldo NETO, condicionado por género',
+             'Experiencia vs sueldo NETO, condicionado por grupo de género',
              alto=500)
 fig_g11.update_xaxes(title='Años de experiencia')
 fig_g11.update_yaxes(title='Sueldo NETO (millones de ARS)')
@@ -1058,12 +1175,33 @@ conclusiones_ej2 = [
 
     f'Dentro de cada nivel de seniority la relación experiencia ↔ '
     f'sueldo se mantiene creciente en los datos observados (G10). '
-    f'Entre las subpoblaciones "Hombre Cis" y "Mujer Cis" se registra, '
-    f'en esta muestra, una diferencia relativa del '
-    f'{100*(1-brecha_ratio):.1f} % a favor de Hombre Cis (G11). Una '
-    f'afirmación sólida sobre una brecha poblacional requeriría un '
+    f'Entre los tres grupos analíticos de género considerados se '
+    f'registra, en esta muestra, una brecha relativa de '
+    f'{100*(1-ratio_mujer):.1f} % para Mujer Cis respecto de Hombre '
+    f'Cis y de {100*(1-ratio_diversidades):.1f} % para el grupo '
+    f'Diversidades respecto del mismo grupo de referencia (G11). Una '
+    f'afirmación sólida sobre brechas poblacionales requeriría un '
     f'análisis multivariado y herramientas inferenciales que exceden '
     f'el alcance de esta parte.',
+
+    # Cierre: pregunta general del ejercicio 2 respondida a modo de
+    # síntesis de lo visto en los sub-ejercicios.
+    f'Respondiendo la pregunta general del ejercicio 2 ("¿qué '
+    f'herramientas prácticas y teóricas son útiles para explorar la '
+    f'base, descubrir patrones y asociaciones?"), el desarrollo de '
+    f'los cuatro sub-ejercicios muestra un conjunto mínimo y '
+    f'defendible compuesto por: histogramas y diagramas de caja '
+    f'para describir distribuciones marginales, coeficientes de '
+    f'correlación (Pearson y Spearman) y matrices de correlación '
+    f'para medir asociaciones entre numéricas, columnas derivadas '
+    f'(como DESCUENTOS = BRUTO − NETO) para caracterizar '
+    f'redundancia entre variables, tablas de contingencia para '
+    f'pares categóricos, comparación de probabilidades marginales '
+    f'y condicionales P(A) vs P(A|B) para el análisis de '
+    f'independencia y scatterplots con hue categórico para la '
+    f'densidad conjunta condicional. Todas estas herramientas son '
+    f'estrictamente descriptivas y suficientes para responder las '
+    f'preguntas planteadas en esta parte del entregable.',
 ]
 
 titulo('Conclusiones del ejercicio 2')
@@ -1274,22 +1412,20 @@ html = f"""<!doctype html>
 
 <div class="card">
   <h3>1.0  Enfoque adoptado</h3>
-  <p>La consigna del ejercicio 1 permite elegir <b>una</b> de las
-  siguientes opciones metodológicas:</p>
-  <ol type="A">
-    <li>Comparar distribuciones de sueldo por lenguaje con visualizaciones.</li>
-    <li>Comparar medidas de estadística descriptiva por lenguaje.</li>
-    <li>Comparar probabilidades.</li>
-  </ol>
-  <p>En este trabajo se utilizan <b>las opciones A y B en conjunto</b>:
-  la visualización (A) responde la pregunta principal y las medidas
-  descriptivas (B) la respaldan cuantitativamente. La decisión se
-  declara explícitamente para evitar ambigüedad.</p>
+  <p>Para responder la pregunta hay tres caminos metodológicos
+  razonables: comparar las distribuciones de sueldo por lenguaje con
+  visualizaciones, comparar medidas de estadística descriptiva por
+  lenguaje, o comparar probabilidades condicionales. En este trabajo
+  se combinan los dos primeros enfoques: la visualización responde
+  la pregunta principal de forma intuitiva y las medidas descriptivas
+  la respaldan cuantitativamente. Se deja constancia explícita de la
+  combinación para evitar ambigüedad sobre qué enfoque alimenta cada
+  conclusión.</p>
   <div class="nota">
     Todas las observaciones que siguen deben leerse como propiedades
     <b>de la muestra analizada</b>, bajo los filtros aplicados. No se
-    realizan inferencias a la población general ni tests estadísticos
-    (herramientas que corresponden a la parte 2 del entregable).
+    realizan inferencias a la población general ni tests estadísticos;
+    esas herramientas se abordan en otra etapa del trabajo.
   </div>
 </div>
 
@@ -1493,10 +1629,19 @@ html = f"""<!doctype html>
 <h3 style="margin-top:32px">2.b  Asociación: sueldo BRUTO vs sueldo NETO</h3>
 
 <div class="card">
-  <p>Se evalúa la asociación entre el sueldo BRUTO declarado y el sueldo
-  NETO. La técnica adoptada sigue el práctico de la clase 03: además de
-  medir la correlación, se construye una columna derivada
-  <code>DESCUENTOS = BRUTO − NETO</code> y se analiza su distribución.</p>
+  <p>Se estudia la asociación entre el sueldo BRUTO declarado y el
+  sueldo NETO. Más allá de medir la correlación entre ambas series,
+  se construye una <b>columna derivada</b>
+  <code>DESCUENTOS = BRUTO − NETO</code> cuya distribución permite
+  caracterizar cuánto margen queda entre las dos variables una vez
+  descontada la parte lineal.</p>
+  <p>Las <b>observaciones válidas</b> para este análisis son aquellas
+  del conjunto filtrado (sección 1.3, con los cinco filtros F1 a F5
+  ya aplicados) que además cumplen dos condiciones adicionales:
+  ambos valores de sueldo están presentes (no <code>NaN</code>) y
+  ambos son estrictamente positivos. El resultado final es un
+  subconjunto de {len(bn)} respondentes sobre los que se calculan los
+  estadísticos que siguen.</p>
   <div class="resumen">
     <div class="metric"><div class="label">Observaciones válidas</div><div class="value">{len(bn)}</div></div>
     <div class="metric"><div class="label">Correlación Pearson</div><div class="value">{p_bn:.3f}</div></div>
@@ -1505,7 +1650,7 @@ html = f"""<!doctype html>
   </div>
   <p>La recta ajustada por mínimos cuadrados tiene pendiente muestral
   <b>{coef_reg[0]:.3f}</b> (ARS netos observados por cada ARS bruto) y
-  ordenada al origen <b>{coef_reg[1]:,.0f}</b> ARS. En esta muestra el
+  ordenada al origen <b>$ {coef_reg[1]:,.0f}</b>. En esta muestra el
   descuento relativo mediano es del <b>{desc_pct_mediano:.2f} %</b>,
   con un rango intercuartil entre <b>{desc_pct_q1:.2f} %</b> y
   <b>{desc_pct_q3:.2f} %</b>.</p>
@@ -1514,26 +1659,29 @@ html = f"""<!doctype html>
 <div class="chart">{fig_div(fig_g8)}<div class="chart-id">G8</div></div>
 
 <div class="card">
-  <h3>Respuesta a la pregunta implícita: ¿conviene quitar la columna BRUTO?</h3>
-  <p>La consigna adelanta: <i>"Necesitamos decidir si sacar o no la
-  columna de salario bruto. Para hacer la encuesta más simple."</i></p>
-  <p>Dado que en esta muestra y bajo los filtros aplicados:</p>
+  <h3>¿Conviene quitar la columna BRUTO del formulario?</h3>
+  <p>Una de las preguntas que motiva este sub-ejercicio es si la
+  encuesta sysarmy podría simplificarse eliminando la columna de
+  sueldo bruto, que actualmente duplica información que parece
+  derivable del sueldo neto. Los datos de esta muestra dan una
+  respuesta razonablemente clara:</p>
   <ul>
     <li>Las correlaciones muestrales Pearson ({p_bn:.3f}) y Spearman
     ({s_bn:.3f}) son muy cercanas a 1.</li>
-    <li>El ratio NETO/BRUTO muestra una estructura estable
-    (IQR del descuento relativo entre {desc_pct_q1:.2f} % y
-    {desc_pct_q3:.2f} %).</li>
-    <li>Conocido NETO, el valor esperado de BRUTO se puede recuperar
-    aplicando esta estructura, con un margen descriptivo acotado.</li>
+    <li>El ratio NETO/BRUTO muestra una estructura estable, con el
+    50 % central del descuento relativo ubicado entre el
+    {desc_pct_q1:.2f} % y el {desc_pct_q3:.2f} %.</li>
+    <li>Conocido el NETO, el valor esperado del BRUTO se puede
+    recuperar aplicando esta estructura con un margen descriptivo
+    acotado.</li>
   </ul>
-  <p>Se puede afirmar, <b>en términos descriptivos y a efectos del
-  análisis realizado</b>, que la columna BRUTO aporta información
-  altamente redundante respecto de NETO y podría removerse del
-  formulario sin pérdida sustancial para este tipo de análisis. Esta
+  <p><b>En términos descriptivos y a efectos de este tipo de
+  análisis</b>, la columna BRUTO aporta información altamente
+  redundante respecto de NETO y podría omitirse del formulario sin
+  pérdida sustancial para las preguntas que se exploran acá. La
   observación se limita a la muestra considerada; un diseño final de
   encuesta debería además considerar otros usos de la columna BRUTO
-  no evaluados aquí.</p>
+  no evaluados en este trabajo.</p>
 </div>
 
 <h3 style="margin-top:32px">2.c  Densidad condicional: sueldo según nivel de estudio</h3>
@@ -1546,22 +1694,21 @@ html = f"""<!doctype html>
   alcance descriptivo de este análisis.</p>
   <p>Como vista general se muestra primero el describe por nivel de
   estudio:</p>
-  {describe_estudios.to_html(classes='datos', border=0, float_format=lambda v: f'{v:,.0f}'.replace(',', '.'))}
+  {describe_estudios_html}
 </div>
 
 <div class="card">
-  <h3>Selección de dos subpoblaciones numerosas</h3>
-  <p>La consigna pide: <i>"Separe la población según el nivel de
-  estudio (elija dos subpoblaciones numerosas) y grafique de manera
-  comparativa ambos histogramas..."</i></p>
-  <p>Se seleccionan las dos subpoblaciones con mayor cantidad de
-  observaciones declaradas:</p>
+  <h3>Comparación de dos subpoblaciones numerosas</h3>
+  <p>Para evitar que la comparación quede dominada por los niveles
+  con pocos respondentes (donde las medianas son inestables), el
+  análisis condicional se enfoca en las dos subpoblaciones con mayor
+  cantidad de observaciones declaradas:</p>
   <ul>
     <li><code>{SUBPOB_SELECCIONADAS[0]}</code> — n = {medidas_subpob[SUBPOB_SELECCIONADAS[0]]['n']}</li>
     <li><code>{SUBPOB_SELECCIONADAS[1]}</code> — n = {medidas_subpob[SUBPOB_SELECCIONADAS[1]]['n']}</li>
   </ul>
-  <p>Medidas de centralización y dispersión por subpoblación (en ARS):</p>
-  {tabla_medidas_subpob.to_html(classes='datos', border=0, float_format=lambda v: f'$ {v:,.0f}'.replace(',', '.'))}
+  <p>Medidas de centralización y dispersión por subpoblación:</p>
+  {tabla_medidas_subpob_html}
 </div>
 
 <div class="chart">{fig_div(fig_g9)}<div class="chart-id">G9</div></div>
@@ -1599,44 +1746,54 @@ html = f"""<!doctype html>
   </div>
 </div>
 
-<h3 style="margin-top:32px">2.d  Densidad conjunta condicional: experiencia vs sueldo con hue</h3>
+<h3 style="margin-top:32px">2.d  Densidad conjunta condicional: experiencia vs sueldo por categoría</h3>
 
 <div class="card">
-  <p>La consigna pide <b>dos variables numéricas y una variable
-  categórica</b>. Se adopta como variable categórica principal
-  <code>work_seniority</code> (G10), por estar directamente vinculada
-  al ejercicio 1. Como <b>análisis extendido</b>, se incluye también
-  <code>profile_gender</code> (G11), restringido a las dos categorías
-  principales por razones de cobertura muestral. Se declara
-  explícitamente que el segundo gráfico va más allá del mínimo
-  solicitado por la consigna.</p>
-  <p>Se explora cómo cambia la relación entre años de experiencia y
-  sueldo NETO al condicionar por cada factor.</p>
+  <p>Se estudia cómo se comporta la relación entre <b>años de
+  experiencia</b> y <b>sueldo NETO</b> al condicionar por dos factores
+  categóricos distintos: el nivel de seniority declarado (G10) y el
+  grupo de género (G11). El primero está directamente vinculado a la
+  progresión profesional del respondente; el segundo permite examinar
+  si existen brechas sistemáticas entre grupos de identidad de género
+  dentro de cada tramo de experiencia. Aunque el análisis más básico
+  podría hacerse con una sola variable categórica, la segunda se
+  incluye como análisis complementario porque aporta una dimensión
+  distinta y relevante para el tipo de preguntas que este trabajo
+  explora.</p>
   <div class="resumen">
-    <div class="metric"><div class="label">Mediana Junior</div><div class="value">{seniority_stats.loc['Junior','mediana']/1e6:.2f} M</div></div>
-    <div class="metric"><div class="label">Mediana Semi-Senior</div><div class="value">{seniority_stats.loc['Semi-Senior','mediana']/1e6:.2f} M</div></div>
-    <div class="metric"><div class="label">Mediana Senior</div><div class="value">{seniority_stats.loc['Senior','mediana']/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Junior</div><div class="value">$ {seniority_stats.loc['Junior','mediana']/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Semi-Senior</div><div class="value">$ {seniority_stats.loc['Semi-Senior','mediana']/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Senior</div><div class="value">$ {seniority_stats.loc['Senior','mediana']/1e6:.2f} M</div></div>
   </div>
 </div>
 
 <div class="chart">{fig_div(fig_g10)}<div class="chart-id">G10</div></div>
 
 <div class="card">
-  <p>Para el análisis por género se restringe a las dos categorías con
-  muestra suficiente: <b>Hombre Cis</b> y <b>Mujer Cis</b>. El resto de
-  categorías (No binarie, Trans, Queer, Agénero, Prefiero no decir)
-  suman menos de 55 observaciones cada una, lo que impide producir
-  inferencias estables por grupo. Su exclusión se declara explícitamente
-  y el análisis se limita a la comparación binaria.</p>
+  <p>El análisis por género se realiza sobre <b>tres grupos analíticos</b>:
+  <code>Hombre Cis</code> y <code>Mujer Cis</code>, que son los valores
+  literales más numerosos del formulario, y una agrupación llamada
+  <b>Diversidades</b> que reúne las categorías <code>No binarie</code>,
+  <code>Trans</code>, <code>Queer</code>, <code>Agénero</code> y
+  <code>Prefiero no decir</code>. Cada una de estas últimas tiene baja
+  cobertura muestral individual (menos de 55 observaciones), pero
+  agrupadas bajo una sola etiqueta alcanzan un tamaño suficiente para
+  estadísticos descriptivos básicos, y la agrupación permite que estas
+  identidades estén representadas en el análisis en lugar de quedar
+  excluidas.</p>
   <div class="resumen">
-    <div class="metric"><div class="label">Mediana Hombre Cis</div><div class="value">{med_hombre/1e6:.2f} M</div></div>
-    <div class="metric"><div class="label">Mediana Mujer Cis</div><div class="value">{med_mujer/1e6:.2f} M</div></div>
-    <div class="metric"><div class="label">Ratio Mujer / Hombre</div><div class="value">{brecha_ratio:.3f}</div></div>
-    <div class="metric"><div class="label">Brecha relativa</div><div class="value">{100*(1-brecha_ratio):.1f} %</div></div>
+    <div class="metric"><div class="label">Mediana Hombre Cis</div><div class="value">$ {med_hombre/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Mujer Cis</div><div class="value">$ {med_mujer/1e6:.2f} M</div></div>
+    <div class="metric"><div class="label">Mediana Diversidades</div><div class="value">$ {med_diversidades/1e6:.2f} M</div></div>
   </div>
-  <p>La brecha relativa es la diferencia porcentual de la mediana de
-  Mujer Cis respecto a la mediana de Hombre Cis. Un valor positivo
-  indica que los hombres cis reportan sueldos medianos más altos.</p>
+  <div class="resumen">
+    <div class="metric"><div class="label">Brecha Mujer Cis vs Hombre Cis</div><div class="value">{100*(1-ratio_mujer):.1f} %</div></div>
+    <div class="metric"><div class="label">Brecha Diversidades vs Hombre Cis</div><div class="value">{100*(1-ratio_diversidades):.1f} %</div></div>
+  </div>
+  <p>Las brechas relativas se calculan tomando la mediana de
+  <code>Hombre Cis</code> como referencia. Un valor positivo indica
+  que la mediana del grupo comparado está por debajo de la del
+  grupo de referencia.</p>
 </div>
 
 <div class="chart">{fig_div(fig_g11)}<div class="chart-id">G11</div></div>
