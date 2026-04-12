@@ -334,6 +334,18 @@ def aplicar_filtro(dataframe: pd.DataFrame, nombre: str,
     nuevo = dataframe[mascara].copy()
     n_despues = len(nuevo)
     recorte = n_antes - n_despues
+    # Kurtosis (Fisher, excess) del sueldo NETO después del filtro.
+    # Sirve para monitorear la forma de la distribución a medida que
+    # se aplican los filtros: si la kurtosis se mantiene relativamente
+    # estable, el filtro no está alterando significativamente la
+    # estructura de las colas. Una caída pronunciada indica que el
+    # filtro está removiendo masa en las colas (por ejemplo F4 y F5).
+    kurt = None
+    if 'salary_monthly_NETO' in nuevo.columns and len(nuevo) > 3:
+        try:
+            kurt = round(float(nuevo['salary_monthly_NETO'].kurt()), 2)
+        except Exception:
+            kurt = None
     registro_filtros.append({
         'filtro': nombre,
         'motivo': motivo,
@@ -341,8 +353,17 @@ def aplicar_filtro(dataframe: pd.DataFrame, nombre: str,
         'n_despues': n_despues,
         'recorte': recorte,
         'pct': round(100 * recorte / n_antes, 2) if n_antes else 0,
+        'kurtosis_NETO': kurt,
     })
     return nuevo
+
+
+# Kurtosis basal del sueldo NETO (sin ningún filtro aplicado).
+# Se calcula sobre las observaciones que tienen un valor válido, para
+# poder contrastar contra la kurtosis posterior a cada filtro.
+kurtosis_inicial = round(
+    float(df['salary_monthly_NETO'].dropna().kurt()), 2
+)
 
 
 # F1 — filas sin lenguaje o sin sueldo NETO
@@ -445,6 +466,18 @@ N_FINAL = len(df)
 df_filtros = pd.DataFrame(registro_filtros)
 
 mostrar('1.3.a  Secuencia completa de filtros', df_filtros)
+
+print(f'\n  Kurtosis inicial del sueldo NETO (sin filtrar): '
+      f'{kurtosis_inicial:.2f}')
+print('  La kurtosis (Fisher, excess) mide el peso relativo de las colas')
+print('  de la distribución. Un valor cercano a 0 corresponde a una')
+print('  distribución normal; valores positivos altos indican colas')
+print('  pesadas (más observaciones extremas). La columna "kurtosis_NETO"')
+print('  de la tabla anterior muestra cómo evoluciona este estadístico')
+print('  tras cada filtro. Se espera que F1, F2 y F3 (que no filtran')
+print('  directamente por sueldo) la preserven aproximadamente, y que')
+print('  F4 y F5 (que sí la filtran) la reduzcan al eliminar masa de')
+print('  las colas.')
 
 composicion_final = df['moneda_grupo'].value_counts().to_frame('n')
 composicion_final['pct'] = (100 * composicion_final['n'] / N_FINAL).round(2)
@@ -702,6 +735,50 @@ for c in ('mediana', 'q1', 'q3'):
     resumen_por_grupo[c] = resumen_por_grupo[c].round(0)
 mostrar('1.6.d  Resumen por grupo de moneda × lenguaje '
         '(todos los pares presentes)', resumen_por_grupo)
+
+
+# ============================================================
+# 1.6.e  Sueldo NETO según cantidad de lenguajes declarados
+# ============================================================
+# Breve análisis complementario: ¿tiene relación saber más lenguajes
+# con cobrar más? Se computa a nivel persona (sobre df, NO sobre el
+# desanidado) la cantidad de lenguajes declarados por cada respondente
+# y se resume el sueldo NETO por cada valor de ese conteo.
+
+df['n_lenguajes'] = (
+    df['tools_programming_languages']
+    .fillna('')
+    .str.split(',')
+    .apply(lambda lst: sum(1 for l in lst if l.strip()))
+)
+
+resumen_n_lang = (
+    df[df['n_lenguajes'] >= 1]
+    .groupby('n_lenguajes')['salary_monthly_NETO']
+    .agg(n='count', mediana='median',
+         q1=lambda x: x.quantile(.25),
+         q3=lambda x: x.quantile(.75))
+    .reset_index()
+    .sort_values('n_lenguajes')
+)
+resumen_n_lang['n'] = resumen_n_lang['n'].astype(int)
+for c in ('mediana', 'q1', 'q3'):
+    resumen_n_lang[c] = resumen_n_lang[c].round(0)
+mostrar('1.6.e  Sueldo NETO según cantidad de lenguajes declarados',
+        resumen_n_lang)
+
+corr_n_lang_pearson = df[['n_lenguajes', 'salary_monthly_NETO']].corr(
+    method='pearson').iloc[0, 1]
+corr_n_lang_spearman = df[['n_lenguajes', 'salary_monthly_NETO']].corr(
+    method='spearman').iloc[0, 1]
+print(f'\n  Correlación Pearson  (n_lenguajes, NETO): '
+      f'{corr_n_lang_pearson:.3f}')
+print(f'  Correlación Spearman (n_lenguajes, NETO): '
+      f'{corr_n_lang_spearman:.3f}')
+print('  Lectura descriptiva: en esta muestra, la cantidad de lenguajes')
+print('  declarados aparenta tener una asociación débil con el sueldo')
+print('  NETO; saber más lenguajes no se traduce linealmente en un')
+print('  sueldo mayor.')
 
 
 # ============================================================
@@ -980,18 +1057,65 @@ for s in ('top', 'right'):
 ruta_g4 = guardar(fig, 'G4_frecuencia_vs_mediana.png', 'G4')
 
 
+# --- G4b  Sueldo NETO según cantidad de lenguajes declarados ----
+# Boxplot por cantidad de lenguajes (1, 2, 3, ...) con una línea que
+# conecta las medianas. Se limita a los conteos con al menos 15
+# observaciones para que los cuartiles sean razonablemente estables.
+n_lang_plot = resumen_n_lang[resumen_n_lang['n'] >= 15]['n_lenguajes'].tolist()
+datos_n_lang = [
+    df.loc[df['n_lenguajes'] == k, 'salary_monthly_NETO'].values / 1e6
+    for k in n_lang_plot
+]
+fig, ax = plt.subplots(figsize=(10, 5.5))
+bp4b = ax.boxplot(
+    datos_n_lang,
+    positions=n_lang_plot,
+    widths=0.55,
+    patch_artist=True,
+    showfliers=False,
+    medianprops=dict(color='#2E3440', linewidth=1.6),
+    boxprops=dict(facecolor='#BBD0F0', edgecolor='#5B8DEF', linewidth=1.1),
+    whiskerprops=dict(color='#5B8DEF', linewidth=1.1),
+    capprops=dict(color='#5B8DEF', linewidth=1.1),
+)
+medianas_n_lang = [np.median(d) for d in datos_n_lang]
+ax.plot(n_lang_plot, medianas_n_lang,
+        color='#C96C6C', linewidth=1.6, marker='o',
+        markersize=5, label='mediana por conteo')
+for k, m, d in zip(n_lang_plot, medianas_n_lang, datos_n_lang):
+    ax.text(k, m + 0.25, f'$ {m:.2f} M\n(n={len(d)})',
+            ha='center', va='bottom', fontsize=7.5, color='#2E3440')
+ax.set_xlabel('Cantidad de lenguajes declarados por el respondente')
+ax.set_ylabel('Sueldo NETO (millones de ARS)')
+ax.set_title('Sueldo NETO según cantidad de lenguajes declarados',
+             fontsize=13, pad=14, loc='left')
+ax.text(
+    0, -0.18,
+    f'Correlación Pearson {corr_n_lang_pearson:.2f}  ·  '
+    f'Spearman {corr_n_lang_spearman:.2f}  '
+    '(asociación débil en esta muestra)',
+    fontsize=8, color='#5E6472', transform=ax.transAxes,
+)
+ax.legend(loc='upper right', frameon=True,
+          facecolor='white', edgecolor='#E6E8EF', fontsize=8)
+for s in ('top', 'right'):
+    ax.spines[s].set_visible(False)
+ruta_g4b = guardar(fig, 'G4b_sueldo_vs_n_lenguajes.png', 'G4b')
+
+
 graficos_generados = pd.DataFrame({
     'gráfico': [
         'G1 - Ranking por mediana',
         'G2 - Distribución por lenguaje (violin + box + atípicos)',
         'G3 - Mediana por lenguaje y grupo de moneda',
         'G4 - Frecuencia vs sueldo mediano',
+        'G4b - Sueldo NETO vs cantidad de lenguajes declarados',
     ],
     'archivo': [
-        ruta_g1.name, ruta_g2.name, ruta_g3.name, ruta_g4.name,
+        ruta_g1.name, ruta_g2.name, ruta_g3.name, ruta_g4.name, ruta_g4b.name,
     ],
     'libreria': [
-        'matplotlib', 'matplotlib', 'matplotlib', 'matplotlib',
+        'matplotlib', 'matplotlib', 'matplotlib', 'matplotlib', 'matplotlib',
     ],
 })
 mostrar('1.8  Gráficos equivalentes generados (matplotlib/seaborn)',
@@ -1038,12 +1162,62 @@ mostrar('2.0  Variables seleccionadas para el ejercicio 2', seleccion_ej2)
 
 
 # ============================================================
+# 2.0.1  Filtro local de edad biológica (sólo ejercicio 2)
+# ============================================================
+# La columna profile_age contiene algunos valores implausibles
+# (por ejemplo 999 años) que no fueron removidos en los filtros
+# F1-F5 del ejercicio 1, porque allí la edad no participaba del
+# análisis. Para el ejercicio 2 —donde sí se usa la edad como
+# variable numérica— se aplica un filtro LOCAL al tramo
+# [15, 80] años, que es el rango laboralmente plausible.
+#
+# IMPORTANTE: este filtro NO se propaga al ejercicio 1. El
+# ranking de lenguajes (sección 1) ya fue calculado sobre df
+# completo. Aquí se crea un DataFrame separado df_ej2 para no
+# alterar el flujo del ejercicio 1.
+EDAD_MIN_EJ2 = 15
+EDAD_MAX_EJ2 = 80
+
+mask_edad_ej2 = df['profile_age'].between(EDAD_MIN_EJ2, EDAD_MAX_EJ2)
+n_antes_ej2 = len(df)
+df_ej2 = df[mask_edad_ej2].copy()
+n_despues_ej2 = len(df_ej2)
+n_descartados_ej2 = n_antes_ej2 - n_despues_ej2
+
+edades_descartadas = (
+    df.loc[~mask_edad_ej2, 'profile_age']
+    .dropna().sort_values(ascending=False).unique().tolist()
+)
+filtro_edad_ej2 = pd.DataFrame({
+    'métrica': [
+        'N antes del filtro (N_FINAL del ej 1)',
+        'tramo retenido (años)',
+        'N después del filtro',
+        'filas descartadas',
+        'ejemplos de edades descartadas',
+        'alcance del filtro',
+    ],
+    'valor': [
+        n_antes_ej2,
+        f'[{EDAD_MIN_EJ2}, {EDAD_MAX_EJ2}]',
+        n_despues_ej2,
+        n_descartados_ej2,
+        ', '.join(str(int(x)) for x in edades_descartadas[:6])
+        if edades_descartadas else '—',
+        'sólo ejercicio 2 (no afecta al ejercicio 1)',
+    ],
+})
+mostrar('2.0.1  Filtro local de edad biológica (sólo ej 2)',
+        filtro_edad_ej2)
+
+
+# ============================================================
 # 2.a  Densidad conjunta (3 numéricas + 2 categóricas)
 # ============================================================
 
 # --- 2.a.1  Estadísticos descriptivos de las 3 numéricas ---
 describe_num = (
-    df[VARS_NUMERICAS]
+    df_ej2[VARS_NUMERICAS]
     .describe(percentiles=[.10, .25, .50, .75, .90])
     .round(2)
 )
@@ -1051,8 +1225,8 @@ mostrar('2.a.1  Estadísticos descriptivos de las variables numéricas',
         describe_num)
 
 # --- 2.a.2 y 2.a.3  Matrices de correlación ---
-corr_pearson = df[VARS_NUMERICAS].corr(method='pearson').round(3)
-corr_spearman = df[VARS_NUMERICAS].corr(method='spearman').round(3)
+corr_pearson = df_ej2[VARS_NUMERICAS].corr(method='pearson').round(3)
+corr_spearman = df_ej2[VARS_NUMERICAS].corr(method='spearman').round(3)
 mostrar('2.a.2  Correlación de Pearson entre numéricas', corr_pearson)
 mostrar('2.a.3  Correlación de Spearman entre numéricas', corr_spearman)
 
@@ -1511,21 +1685,21 @@ mostrar('2.d.4  Brecha salarial entre grupos de género', brecha_tabla)
 fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
 especs_g5 = [
     {
-        'datos': df['salary_monthly_NETO'] / 1e6,
+        'datos': df_ej2['salary_monthly_NETO'] / 1e6,
         'titulo': 'Sueldo NETO (millones de ARS)',
         'color': COLOR_ARS,
         'bins': 50,
         'rango': None,
     },
     {
-        'datos': df['profile_years_experience'],
+        'datos': df_ej2['profile_years_experience'],
         'titulo': 'Años de experiencia',
         'color': '#6BBF80',
         'bins': 40,
         'rango': None,
     },
     {
-        'datos': df['profile_age'],
+        'datos': df_ej2['profile_age'],
         'titulo': 'Edad (años)',
         'color': '#E8A04F',
         'bins': 30,  # reducido respecto a sueldo/experiencia para suavizar ruido
