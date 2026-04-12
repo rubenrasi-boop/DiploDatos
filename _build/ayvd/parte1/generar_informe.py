@@ -929,8 +929,8 @@ fig_g5.add_trace(go.Histogram(
     marker_color='#6BBF80', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=2)
 fig_g5.add_trace(go.Histogram(
-    x=df['profile_age'], nbinsx=50,
-    xbins=dict(start=15, end=80, size=1.3),
+    x=df['profile_age'], nbinsx=30,
+    xbins=dict(start=15, end=80, size=2.2),
     marker_color='#E8A04F', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=3)
 layout_claro(fig_g5,
