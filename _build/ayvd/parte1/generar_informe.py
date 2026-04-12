@@ -955,16 +955,35 @@ tabla_medidas_subpob_html = tabla_medidas_subpob.to_html(
 # Análisis de independencia vía probabilidad condicional (clase 01)
 #   A = sueldo NETO > mediana global del subset con estudios declarados
 #   B_i = nivel de estudio = subpoblación seleccionada i
-# Si fueran independientes, P(A|B_i) ≈ P(A).
+# Independencia ⇔ P(A∩B) = P(A)·P(B) ⇔ P(A|B) = P(A) ⇔ P(B|A) = P(B).
+# Se reportan AMBAS direcciones para mayor certeza cualitativa; sus
+# magnitudes difieren porque cada distancia escala con su marginal
+# (ver narrativa del informe y comentario en datos_parte1.py).
 sal_todos_est = df_estudios['salary_monthly_NETO']
+N_estudios = len(df_estudios)
 umbral_mediana_est = sal_todos_est.median()
 P_A_est = (sal_todos_est > umbral_mediana_est).mean()
+df_A_est = df_estudios[sal_todos_est > umbral_mediana_est]
+N_A_est = len(df_A_est)
 
-p_cond_subpob = {}
+# Para cada subpoblación B_i, calcular P(B), P(A|B), P(B|A) y las dos
+# distancias a la independencia.
+ind_subpob = {}
 for nivel in SUBPOB_SELECCIONADAS:
-    sub = df_estudios[
-        df_estudios['profile_studies_level'] == nivel]['salary_monthly_NETO']
-    p_cond_subpob[nivel] = (sub > umbral_mediana_est).mean()
+    sub_B = df_estudios[df_estudios['profile_studies_level'] == nivel]
+    n_B = len(sub_B)
+    P_B = n_B / N_estudios
+    P_A_dado_B = (sub_B['salary_monthly_NETO']
+                  > umbral_mediana_est).mean()
+    n_B_dado_A = int((df_A_est['profile_studies_level'] == nivel).sum())
+    P_B_dado_A = n_B_dado_A / N_A_est if N_A_est else float('nan')
+    ind_subpob[nivel] = {
+        'P_B':        P_B,
+        'P_A_dado_B': P_A_dado_B,
+        'P_B_dado_A': P_B_dado_A,
+        'd_AB':       abs(P_A_dado_B - P_A_est),
+        'd_BA':       abs(P_B_dado_A - P_B),
+    }
 
 titulo('2.c  Sueldo NETO por nivel de estudio')
 print(f'  cobertura: {len(df_estudios)}/{len(df)} '
@@ -972,9 +991,13 @@ print(f'  cobertura: {len(df_estudios)}/{len(df)} '
 print(describe_estudios.to_string())
 print(f'\n  subpoblaciones más numerosas: {SUBPOB_SELECCIONADAS}')
 print(f'  P(A) marginal (sueldo > mediana global): {P_A_est:.4f}')
-for nivel, p in p_cond_subpob.items():
-    print(f'  P(A | {nivel}): {p:.4f}   '
-          f'(distancia a P(A): {abs(p - P_A_est):.4f})')
+for nivel in SUBPOB_SELECCIONADAS:
+    v = ind_subpob[nivel]
+    print(f'  B = "{nivel}"  P(B)={v["P_B"]:.4f}')
+    print(f'     P(A|B)={v["P_A_dado_B"]:.4f}  '
+          f'|P(A|B)−P(A)|={v["d_AB"]:.4f}')
+    print(f'     P(B|A)={v["P_B_dado_A"]:.4f}  '
+          f'|P(B|A)−P(B)|={v["d_BA"]:.4f}')
 
 
 # --- 2.d  Por seniority y por género ---
@@ -1266,7 +1289,11 @@ corr_p_sal_exp = corr_pearson.loc['salary_monthly_NETO',
 corr_p_sal_age = corr_pearson.loc['salary_monthly_NETO', 'profile_age']
 
 dist_p_cond = {
-    nivel: abs(p_cond_subpob[nivel] - P_A_est)
+    nivel: ind_subpob[nivel]['d_AB']
+    for nivel in SUBPOB_SELECCIONADAS
+}
+dist_p_cond_inv = {
+    nivel: ind_subpob[nivel]['d_BA']
     for nivel in SUBPOB_SELECCIONADAS
 }
 
@@ -1288,13 +1315,18 @@ conclusiones_ej2 = [
     f'de análisis.',
 
     f'El análisis comparativo de las dos subpoblaciones más numerosas '
-    f'({SUBPOB_SELECCIONADAS[0]}, {SUBPOB_SELECCIONADAS[1]}) muestra '
-    f'que la distancia |P(A|B) − P(A)| no es cercana a cero en ambos '
-    f'grupos (P(A) = {P_A_est:.3f}, distancias '
-    f'{dist_p_cond[SUBPOB_SELECCIONADAS[0]]:.3f} y '
-    f'{dist_p_cond[SUBPOB_SELECCIONADAS[1]]:.3f}). En términos '
-    f'descriptivos, esto sugiere que nivel de estudio y sueldo NO son '
-    f'independientes en esta muestra. Solo el '
+    f'({SUBPOB_SELECCIONADAS[0]}, {SUBPOB_SELECCIONADAS[1]}) se realizó '
+    f'chequeando las dos formas equivalentes de la definición de '
+    f'independencia: |P(A|B) − P(A)| y |P(B|A) − P(B)|. Ninguna de las '
+    f'dos distancias es cercana a cero en ambos grupos —en particular '
+    f'para {SUBPOB_SELECCIONADAS[1]} ambas distancias son marcadas '
+    f'({dist_p_cond[SUBPOB_SELECCIONADAS[1]]:.3f} y '
+    f'{dist_p_cond_inv[SUBPOB_SELECCIONADAS[1]]:.3f}) y para '
+    f'{SUBPOB_SELECCIONADAS[0]} son pequeñas pero tampoco nulas '
+    f'({dist_p_cond[SUBPOB_SELECCIONADAS[0]]:.3f} y '
+    f'{dist_p_cond_inv[SUBPOB_SELECCIONADAS[0]]:.3f})—, por lo que en '
+    f'términos descriptivos se observa que nivel de estudio y sueldo '
+    f'NO son independientes en esta muestra. Solo el '
     f'{100*len(df_estudios)/len(df):.0f} % de los respondentes '
     f'declararon su nivel de estudio, lo que acota el alcance.',
 
@@ -1902,29 +1934,78 @@ html = f"""<!doctype html>
 <div class="card">
   <h3>¿Son independientes el nivel de estudio y el sueldo NETO?</h3>
   <p>El marco teórico se toma de la clase 01 (probabilidad condicional).
-  Dos eventos A y B son independientes si y sólo si</p>
-  <div class="formula">$$P(A \\mid B) = P(A)$$</div>
-  <p>Definimos:</p>
+  Dos eventos <b>A</b> y <b>B</b> son independientes si y sólo si la
+  probabilidad conjunta coincide con el producto de las marginales,
+  lo que equivale a chequear <b>cualquiera de las dos formas
+  condicionales</b>:</p>
+  <div class="formula">$$P(A \\cap B) = P(A)\\,P(B) \\;\\; \\Longleftrightarrow \\;\\; P(A \\mid B) = P(A) \\;\\; \\Longleftrightarrow \\;\\; P(B \\mid A) = P(B)$$</div>
+  <p>En este informe se reportan <b>ambas direcciones</b> para dar una
+  lectura cualitativa más robusta. Definimos:</p>
   <ul>
     <li><b>A</b> = evento <i>"sueldo NETO mayor que la mediana global"</i> (umbral calculado sobre el conjunto con estudios declarados).</li>
     <li><b>B</b> = evento <i>"nivel de estudio = X"</i> (para cada subpoblación seleccionada).</li>
   </ul>
-  <p>Si las variables fueran independientes en esta muestra, las
-  probabilidades condicionales serían similares a la marginal. Los
-  valores observados son:</p>
+  <p>Si las variables fueran independientes en esta muestra, tanto
+  <code>|P(A|B) − P(A)|</code> como <code>|P(B|A) − P(B)|</code>
+  deberían ser cercanas a cero. Los valores observados son:</p>
   <table class="filtros">
-    <thead><tr><th>Probabilidad</th><th>Valor</th><th>|distancia a P(A)|</th></tr></thead>
+    <thead>
+      <tr>
+        <th rowspan="2">Subpoblación B</th>
+        <th colspan="3">Dirección 1: P(A|B) vs P(A) = {P_A_est:.4f}</th>
+        <th colspan="3">Dirección 2: P(B|A) vs P(B)</th>
+      </tr>
+      <tr>
+        <th>P(A|B)</th><th>|d|</th><th>—</th>
+        <th>P(B)</th><th>P(B|A)</th><th>|d|</th>
+      </tr>
+    </thead>
     <tbody>
-      <tr><td>P(A) &nbsp; <i>marginal</i></td><td class="num">{P_A_est:.4f}</td><td class="num">—</td></tr>
-      <tr><td>P(A | {SUBPOB_SELECCIONADAS[0]})</td><td class="num">{p_cond_subpob[SUBPOB_SELECCIONADAS[0]]:.4f}</td><td class="num">{abs(p_cond_subpob[SUBPOB_SELECCIONADAS[0]] - P_A_est):.4f}</td></tr>
-      <tr><td>P(A | {SUBPOB_SELECCIONADAS[1]})</td><td class="num">{p_cond_subpob[SUBPOB_SELECCIONADAS[1]]:.4f}</td><td class="num">{abs(p_cond_subpob[SUBPOB_SELECCIONADAS[1]] - P_A_est):.4f}</td></tr>
+      <tr>
+        <td>{SUBPOB_SELECCIONADAS[0]}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[0]]['P_A_dado_B']:.4f}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[0]]['d_AB']:.4f}</td>
+        <td class="num">—</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[0]]['P_B']:.4f}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[0]]['P_B_dado_A']:.4f}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[0]]['d_BA']:.4f}</td>
+      </tr>
+      <tr>
+        <td>{SUBPOB_SELECCIONADAS[1]}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[1]]['P_A_dado_B']:.4f}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[1]]['d_AB']:.4f}</td>
+        <td class="num">—</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[1]]['P_B']:.4f}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[1]]['P_B_dado_A']:.4f}</td>
+        <td class="num">{ind_subpob[SUBPOB_SELECCIONADAS[1]]['d_BA']:.4f}</td>
+      </tr>
     </tbody>
   </table>
   <div class="nota">
-    <b>Lectura descriptiva:</b> las dos probabilidades condicionales
-    no son iguales a P(A). La subpoblación {SUBPOB_SELECCIONADAS[1]}
-    muestra una distancia marcada respecto de la marginal, mientras
-    que {SUBPOB_SELECCIONADAS[0]} se aparta poco. En términos
+    <b>Sobre la asimetría numérica de ambas distancias (masas marginales):</b>
+    aunque las dos condiciones son matemáticamente equivalentes, las
+    magnitudes <code>|P(A|B) − P(A)|</code> y <code>|P(B|A) − P(B)|</code>
+    <em>no coinciden</em>. Partiendo de la identidad exacta
+    <div class="formula">$$P(A \\mid B) - P(A) = \\frac{{P(A, B) - P(A)\\,P(B)}}{{P(B)}} \\;\\;,\\;\\; P(B \\mid A) - P(B) = \\frac{{P(A, B) - P(A)\\,P(B)}}{{P(A)}}$$</div>
+    el numerador es el mismo en ambas direcciones (es la
+    "sobrerepresentación" de la conjunta respecto del caso independiente),
+    pero el denominador cambia: cada distancia se divide por la
+    <b>masa marginal</b> del evento que se condiciona. Cuando P(A) y
+    P(B) son muy distintas —como acá para Terciario, donde
+    P(A) ≈ 0,50 y P(B) ≈ 0,14— las dos distancias se ven
+    numéricamente disímiles aunque reflejen <b>la misma asociación
+    subyacente</b>. En otras palabras: basta con que la diferencia
+    <code>P(A, B) − P(A)·P(B)</code> sea no nula para que ambas
+    direcciones detecten la asociación, pero cada una la amplifica en
+    proporción inversa a la marginal por la que se divide.
+  </div>
+  <div class="nota">
+    <b>Lectura descriptiva en esta muestra:</b> para
+    <b>{SUBPOB_SELECCIONADAS[1]}</b> las dos distancias son claramente
+    no nulas, de modo que <u>cualquiera</u> de las dos direcciones
+    descarta la independencia. Para <b>{SUBPOB_SELECCIONADAS[0]}</b>
+    las dos distancias son pequeñas pero tampoco nulas, por lo que
+    la cercanía a la independencia es sólo aproximada. En términos
     <b>puramente descriptivos</b>, esto sugiere que nivel de estudio y
     sueldo NETO <u>no son independientes</u> en esta muestra. No se
     realiza ningún test inferencial; una afirmación más fuerte

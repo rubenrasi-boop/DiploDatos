@@ -240,16 +240,37 @@ RESP_2C = md("""\
 Se seleccionan las dos subpoblaciones más numerosas con nivel de \
 estudio declarado: **Universitario** y **Terciario**. Se comparan \
 histogramas, se calculan medidas de centralización y dispersión por \
-subpoblación y se evalúa la independencia vía `P(A|B)` versus `P(A)` \
-según el marco descriptivo de Clase 01.
+subpoblación y se evalúa la independencia **chequeando las dos formas \
+equivalentes** que da la Clase 01:
+
+$$P(A \\cap B) = P(A)\\,P(B) \\;\\;\\Longleftrightarrow\\;\\; P(A \\mid B) = P(A) \\;\\;\\Longleftrightarrow\\;\\; P(B \\mid A) = P(B)$$
+
+con `A = "sueldo NETO > mediana global"` y `B = "nivel de estudio = X"`.
 
 ![G9 — Histogramas comparativos](datos_parte1_img/G9_histogramas_subpob_estudios.png)
 
-En esta muestra `|P(A|B) − P(A)|` no es cercana a cero para las \
-subpoblaciones seleccionadas, lo que sugiere que nivel de estudio y \
-sueldo **no son independientes**. Sólo el 35 % de los respondentes \
-del conjunto filtrado declararon su nivel de estudio, lo que acota el \
-alcance de la observación.
+**Asimetría numérica de las distancias (masas marginales).** Aunque \
+ambas condiciones son matemáticamente equivalentes, las magnitudes \
+`|P(A|B) − P(A)|` y `|P(B|A) − P(B)|` **no coinciden**: de la \
+identidad exacta
+
+$$P(A\\mid B) - P(A) = \\frac{P(A,B) - P(A)\\,P(B)}{P(B)} \\;\\;,\\;\\; P(B\\mid A) - P(B) = \\frac{P(A,B) - P(A)\\,P(B)}{P(A)}$$
+
+se ve que el numerador es el **mismo** en ambas direcciones (es la \
+"sobrerepresentación" de la conjunta respecto del caso independiente), \
+pero cada distancia se divide por la **masa marginal** del evento que \
+se condiciona. Cuando `P(A)` y `P(B)` son muy distintas, las dos \
+distancias se ven numéricamente disímiles aunque reflejen la misma \
+asociación subyacente.
+
+**Lectura en esta muestra:** para **Terciario** las dos distancias son \
+claramente no nulas, por lo que cualquiera de las dos direcciones \
+descarta la independencia. Para **Universitario** las dos son \
+pequeñas pero tampoco nulas, de modo que la cercanía a la \
+independencia es sólo aproximada. En términos descriptivos, nivel de \
+estudio y sueldo **no son independientes** en esta muestra. Sólo el \
+35 % de los respondentes del conjunto filtrado declararon su nivel de \
+estudio, lo que acota el alcance de la observación.
 
 """)
 
