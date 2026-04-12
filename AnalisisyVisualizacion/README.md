@@ -110,8 +110,8 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Entrega** | Lunes 13/04/2026, 23:59 |
 | **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1devPC-DscjuaA-5FId39jgDAz6B-Vr03/view?usp=sharing) |
 | **Objetivos** | Describir y analizar la base desde varios ángulos, múltiples variables, visualmente y con medidas descriptivas. Observar relaciones. Plantear preguntas, hipótesis y diseñar un abordaje. |
-| **Estado** | 🔍 En revisión — ver [entregables/parte1/](entregables/parte1/README.md) |
-| **Archivo principal** | [`entregables/parte1/entregable_ayvd_parte1.html`](entregables/parte1/entregable_ayvd_parte1.html) |
+| **Estado** | 🟢 Finalizado parcial — ver [entregables/parte1/](entregables/parte1/README.md) |
+| **Archivo principal** | [`entregables/parte1/entregable_ayvd_parte1.ipynb`](entregables/parte1/entregable_ayvd_parte1.ipynb) |
 | **Apéndice de datos** | [`entregables/parte1/datos_parte1.py`](entregables/parte1/datos_parte1.py) |
 
 ### Entregable Parte 2
@@ -140,13 +140,14 @@ AnalisisyVisualizacion/
 │   ├── 04_Estadisticos.ipynb
 │   └── 05_Test_de_Hipotesis.ipynb
 └── entregables/
-    ├── parte1/                         ← ✅ Entregable Parte 1 (listo)
+    ├── parte1/                           ← 🟢 Entregable Parte 1 (finalizado parcial)
     │   ├── README.md
-    │   ├── consigna_parte1.ipynb
-    │   ├── entregable_ayvd_parte1.html ← informe principal
-    │   ├── datos_parte1.py             ← apéndice de datos ejecutable
-    │   ├── datos_parte1_img/           ← 11 gráficos matplotlib/seaborn
-    │   └── data/                       ← dataset sysarmy 2026 procesado
+    │   ├── consigna_parte1.ipynb         ← consigna oficial (intacta)
+    │   ├── entregable_ayvd_parte1.ipynb  ← notebook entregable (consigna + respuestas)
+    │   ├── entregable_ayvd_parte1.html   ← informe HTML interactivo (Plotly)
+    │   ├── datos_parte1.py               ← apéndice de datos ejecutable
+    │   ├── datos_parte1_img/             ← 12 gráficos matplotlib/seaborn
+    │   └── data/                         ← dataset sysarmy 2026 procesado
     └── parte2/                         ← 🕒 Entregable Parte 2 (pendiente)
         ├── README.md
         └── consigna_parte2.ipynb

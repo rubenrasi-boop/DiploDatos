@@ -4,7 +4,7 @@
 **Alumno:** Rubén Rasi
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
-> **🔍 Estado: en revisión.** El informe principal y el apéndice de datos están completos y son funcionales. Actualmente se están iterando ajustes de redacción, justificaciones metodológicas y consistencia de narrativa antes de considerarlo definitivo para presentación.
+> **🟢 Estado: Finalizado parcial.** El desarrollo, los datos, los filtros, los estadísticos y los 12 gráficos ya **no se modifican**. Queda abierta únicamente la iteración de redacción y consistencia narrativa antes de considerarlo definitivo para presentación.
 
 ---
 
@@ -69,9 +69,11 @@ Todas las conclusiones se redactan en términos descriptivos *"en esta muestra"*
 ```
 parte1/
 ├── README.md                               ← Este archivo
-├── consigna_parte1.ipynb                   ← Consigna oficial del curso
+├── consigna_parte1.ipynb                   ← Consigna oficial del curso (intacta)
 │
-├── entregable_ayvd_parte1.html             ← 📄 INFORME PRINCIPAL
+├── entregable_ayvd_parte1.ipynb            ← 📓 NOTEBOOK ENTREGABLE
+│                                              (consigna + respuestas integradas)
+├── entregable_ayvd_parte1.html             ← 📄 INFORME PRINCIPAL (Plotly interactivo)
 │
 ├── datos_parte1.py                         ← 📄 Apéndice ejecutable de datos
 │
@@ -98,11 +100,15 @@ parte1/
 
 ## 🚀 Cómo revisar el entregable
 
-### Opción 1 — Lectura directa (recomendada)
+### Opción 1 — Notebook entregable (recomendada)
+
+Abrir **`entregable_ayvd_parte1.ipynb`** en Jupyter, VS Code o Google Colab. El notebook se construye sobre la consigna oficial del curso (celdas originales intactas) e intercala después de cada ejercicio una celda de respuesta breve con los hallazgos clave y los gráficos correspondientes embebidos desde `datos_parte1_img/`. Desde ese mismo notebook se enlaza al informe HTML y al apéndice `datos_parte1.py` para el desarrollo completo.
+
+### Opción 2 — Informe HTML interactivo
 
 Abrir **`entregable_ayvd_parte1.html`** en cualquier navegador moderno. El informe es autocontenido: los gráficos interactivos de Plotly se cargan desde CDN, por lo que se requiere conexión a internet para la primera visualización.
 
-### Opción 2 — Cotejar los datos por consola
+### Opción 3 — Cotejar los datos por consola
 
 El archivo **`datos_parte1.py`** es el apéndice de datos del informe. Imprime por consola los 44 cuadros intermedios (DataFrames, estadísticos, valores derivados) que sustentan cada afirmación del HTML, y regenera los 11 gráficos equivalentes con matplotlib/seaborn (las librerías vistas en clase).
 
@@ -118,7 +124,7 @@ python datos_parte1.py --csv
 # → crea datos_parte1_csv/ con un CSV por cuadro
 ```
 
-### Opción 3 — Revisión cruzada HTML ↔ código
+### Opción 4 — Revisión cruzada HTML ↔ código
 
 Cada estadístico, gráfico o cuadro que aparece en el HTML se puede rastrear hasta su cálculo en `datos_parte1.py`. El archivo está organizado con los mismos identificadores de sección que el informe (1.0, 1.1, ..., 2.a, 2.b, 2.c, 2.d), lo que facilita el cotejo línea por línea.
 
