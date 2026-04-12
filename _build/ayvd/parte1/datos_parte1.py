@@ -1568,6 +1568,11 @@ ax.set_title('Matriz de correlación (Pearson) entre numéricas',
 ruta_g6 = guardar(fig, 'G6_matriz_correlacion.png', 'G6')
 
 # --- G7  Distribución de las 2 variables categóricas ---
+# Para género se muestran los tres grupos analíticos definidos en
+# 2.d (Hombre Cis, Mujer Cis y Diversidades), no los valores crudos
+# del formulario. Los valores literales minoritarios quedan agregados
+# dentro de "Diversidades" para que el análisis los incluya sin
+# producir un gráfico con barras minúsculas ilegibles.
 fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
 s_plot = df['work_seniority'].value_counts().reindex(
     ['Junior', 'Semi-Senior', 'Senior'])
@@ -1579,14 +1584,21 @@ axes[0].set_ylabel('frecuencia')
 for s in ('top', 'right'):
     axes[0].spines[s].set_visible(False)
 
-g_plot = df['profile_gender'].value_counts()
-cols_g = [COLOR_ARS if g in GENEROS_CIS else '#BFC4D3'
-          for g in g_plot.index]
-axes[1].bar(g_plot.index, g_plot.values, color=cols_g,
+# Se usa la clasificación analítica definida para 2.d
+df_g7 = df.copy()
+df_g7['genero_grupo'] = df_g7['profile_gender'].apply(
+    clasificar_genero_analitico)
+g_plot = df_g7['genero_grupo'].value_counts().reindex(GRUPOS_GENERO)
+col_g_grupos = {
+    'Hombre Cis':   COLOR_ARS,
+    'Mujer Cis':    '#C96C6C',
+    'Diversidades': '#9673C0',
+}
+axes[1].bar(g_plot.index, g_plot.values,
+            color=[col_g_grupos[g] for g in g_plot.index],
             alpha=0.85, edgecolor='white')
-axes[1].set_title('Identidad de género', fontsize=11, pad=8, loc='left')
+axes[1].set_title('Grupo de género', fontsize=11, pad=8, loc='left')
 axes[1].set_ylabel('frecuencia')
-axes[1].tick_params(axis='x', rotation=25, labelsize=8)
 for s in ('top', 'right'):
     axes[1].spines[s].set_visible(False)
 fig.suptitle('Distribución de las variables categóricas',

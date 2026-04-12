@@ -807,15 +807,21 @@ def _fmt_int(v):
 
 
 # Tablas HTML con formato correcto: $ sólo en columnas monetarias,
-# enteros sin decimal en las columnas de conteo.
-describe_estudios_html = describe_estudios.to_html(
-    classes='datos', border=0,
-    formatters={
-        'n':       _fmt_int,
-        'mediana': _fmt_ars,
-        'q1':      _fmt_ars,
-        'q3':      _fmt_ars,
-    },
+# enteros sin decimal en las columnas de conteo. Se limpia el nombre
+# del índice para que pandas no agregue una fila extra con el nombre
+# de la columna original (profile_studies_level).
+describe_estudios_html = (
+    describe_estudios
+    .rename_axis(None)
+    .to_html(
+        classes='datos', border=0,
+        formatters={
+            'n':       _fmt_int,
+            'mediana': _fmt_ars,
+            'q1':      _fmt_ars,
+            'q3':      _fmt_ars,
+        },
+    )
 )
 
 # Para la tabla de medidas por subpoblación: $ en todas las columnas
@@ -962,27 +968,36 @@ fig_g6.update_xaxes(tickangle=-20)
 
 
 # --- G7  Distribución de las categóricas (subplots 1x2) ---
+# Para género se muestran los tres grupos analíticos definidos en
+# 2.d (Hombre Cis, Mujer Cis y Diversidades), coherente con G11.
+gender_grupos_counts = (
+    df_gender['genero_grupo'].value_counts().reindex(GRUPOS_GENERO)
+)
+COL_G_GRUPOS = {
+    'Hombre Cis':   '#5B8DEF',
+    'Mujer Cis':    '#C96C6C',
+    'Diversidades': '#9673C0',
+}
+
 fig_g7 = make_subplots(rows=1, cols=2,
                        subplot_titles=('Nivel de seniority',
-                                       'Identidad de género'))
+                                       'Grupo de género'))
 fig_g7.add_trace(go.Bar(
     x=seniority_counts.index, y=seniority_counts.values,
     marker_color=['#5B8DEF', '#6BBF80', '#E8A04F'],
     marker_line=dict(color='white', width=1),
     showlegend=False,
 ), row=1, col=1)
-colores_gender_bar = ['#5B8DEF' if g in GENEROS_CIS else '#BFC4D3'
-                      for g in gender_counts.index]
 fig_g7.add_trace(go.Bar(
-    x=gender_counts.index, y=gender_counts.values,
-    marker_color=colores_gender_bar,
+    x=gender_grupos_counts.index,
+    y=gender_grupos_counts.values,
+    marker_color=[COL_G_GRUPOS[g] for g in gender_grupos_counts.index],
     marker_line=dict(color='white', width=1),
     showlegend=False,
 ), row=1, col=2)
 layout_claro(fig_g7,
              'Distribución de las variables categóricas',
              alto=400)
-fig_g7.update_xaxes(tickangle=-20, row=1, col=2)
 
 
 # --- G8  Scatter BRUTO vs NETO con línea de identidad y regresión ---
@@ -1617,11 +1632,14 @@ html = f"""<!doctype html>
 <div class="chart">{fig_div(fig_g6)}<div class="chart-id">G6</div></div>
 
 <div class="card">
-  <p>En el plano categórico, se observa la distribución de seniority y
-  de identidad de género. Los grupos minoritarios (No binarie, Trans,
-  Queer, Agénero, Prefiero no decir) aparecen atenuados en G7 porque
-  cada uno suma menos de 55 observaciones y no se incluirán en los
-  análisis visuales posteriores.</p>
+  <p>En el plano categórico se observa la distribución del nivel de
+  seniority y del grupo de género. Para género se utilizan los tres
+  grupos analíticos definidos más adelante en el ejercicio 2.d
+  (<b>Hombre Cis</b>, <b>Mujer Cis</b> y <b>Diversidades</b>, donde
+  esta última agrupa las identidades con baja cobertura muestral
+  individual). Esto garantiza que todas las identidades del
+  formulario estén representadas en el análisis sin producir barras
+  minúsculas ilegibles en el gráfico.</p>
 </div>
 
 <div class="chart">{fig_div(fig_g7)}<div class="chart-id">G7</div></div>
