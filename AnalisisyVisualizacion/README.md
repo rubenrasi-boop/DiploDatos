@@ -121,9 +121,10 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Entrega** | Domingo 27/04/2026, 23:59 |
 | **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1FBA-CVfB-EUfHtpOCndy_wCI4u2kFya7/view?usp=sharing) |
 | **Objetivos** | 1) Describir y analizar desde múltiples ángulos. 2) Diferenciar datos de modelos. 3) Inferencia: estimación y testeo. 4) Comunicar resultados. |
-| **Estado** | ⏳ Pendiente de inicio — ver [entregables/parte2/](entregables/parte2/README.md) |
-| **Archivo principal** | *(pendiente — se generará al iniciar el entregable)* |
-| **Apéndice de datos** | *(pendiente — se generará al iniciar el entregable)* |
+| **Estado** | 🟡 Borrador inicial — ver [entregables/parte2/](entregables/parte2/README.md) |
+| **Archivo principal** | [`entregables/parte2/entregable_ayvd_parte2.ipynb`](entregables/parte2/entregable_ayvd_parte2.ipynb) |
+| **Apéndice de datos** | [`entregables/parte2/datos_parte2.py`](entregables/parte2/datos_parte2.py) |
+| **Comunicación Ej 3** | [`entregables/parte2/comunicacion_ej3.pdf`](entregables/parte2/comunicacion_ej3.pdf) |
 
 ---
 
@@ -148,9 +149,14 @@ AnalisisyVisualizacion/
     │   ├── datos_parte1.py               ← apéndice de datos ejecutable
     │   ├── datos_parte1_img/             ← 12 gráficos matplotlib/seaborn
     │   └── data/                         ← dataset sysarmy 2026 procesado
-    └── parte2/                         ← 🕒 Entregable Parte 2 (pendiente)
+    └── parte2/                           ← 🟡 Entregable Parte 2 (borrador inicial)
         ├── README.md
-        └── consigna_parte2.ipynb
+        ├── consigna_parte2.ipynb         ← consigna oficial (intacta)
+        ├── entregable_ayvd_parte2.ipynb  ← notebook entregable (consigna + respuestas)
+        ├── datos_parte2.py               ← apéndice de datos ejecutable
+        ├── datos_parte2_img/             ← 5 gráficos matplotlib/seaborn
+        ├── comunicacion_ej3.pdf          ← PDF del ejercicio 3 (reporte técnico A4)
+        └── data/                         ← dataset sysarmy 2026 procesado
 ```
 
 ---
