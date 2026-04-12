@@ -183,6 +183,16 @@ def aplicar_filtro(dataframe: pd.DataFrame, nombre: str,
     n_antes = len(dataframe)
     nuevo = dataframe[mascara].copy()
     n_despues = len(nuevo)
+    # Kurtosis (Fisher) del sueldo NETO después del filtro — sirve
+    # para monitorear la forma de la distribución y verificar que
+    # los filtros no alteran significativamente las colas (salvo F4
+    # y F5 que sí deben reducirla por diseño).
+    kurt = None
+    if 'salary_monthly_NETO' in nuevo.columns and len(nuevo) > 3:
+        try:
+            kurt = round(float(nuevo['salary_monthly_NETO'].kurt()), 2)
+        except Exception:
+            kurt = None
     filtros_aplicados.append({
         'filtro': nombre,
         'motivo': motivo,
@@ -190,8 +200,15 @@ def aplicar_filtro(dataframe: pd.DataFrame, nombre: str,
         'n_despues': n_despues,
         'recorte': n_antes - n_despues,
         'pct': round(100 * (n_antes - n_despues) / n_antes, 1) if n_antes else 0,
+        'kurtosis': kurt,
     })
     return nuevo
+
+
+# Kurtosis basal del sueldo NETO (sin filtros) para la narrativa
+kurtosis_inicial = round(
+    float(df['salary_monthly_NETO'].dropna().kurt()), 2
+)
 
 
 # F1 — sin lenguaje declarado o sin sueldo NETO
@@ -618,11 +635,71 @@ layout_claro(fig_nm,
 fig_nm.update_xaxes(title='Cantidad de respondentes (escala logarítmica)', type='log')
 fig_nm.update_yaxes(title='Sueldo NETO mediano (millones de ARS)')
 
+# G4b — Sueldo NETO según cantidad de lenguajes declarados (nivel persona).
+df['n_lenguajes'] = (
+    df['tools_programming_languages']
+    .fillna('')
+    .str.split(',')
+    .apply(lambda lst: sum(1 for l in lst if l.strip()))
+)
+resumen_n_lang = (
+    df[df['n_lenguajes'] >= 1]
+    .groupby('n_lenguajes')['salary_monthly_NETO']
+    .agg(n='count', mediana='median',
+         q1=lambda x: x.quantile(.25),
+         q3=lambda x: x.quantile(.75))
+    .reset_index()
+    .sort_values('n_lenguajes')
+)
+corr_n_lang_pearson = df[['n_lenguajes', 'salary_monthly_NETO']].corr(
+    method='pearson').iloc[0, 1]
+corr_n_lang_spearman = df[['n_lenguajes', 'salary_monthly_NETO']].corr(
+    method='spearman').iloc[0, 1]
+
+n_lang_plot_keys = resumen_n_lang[resumen_n_lang['n'] >= 15]['n_lenguajes'].tolist()
+fig_nlang = go.Figure()
+for k in n_lang_plot_keys:
+    vals = df.loc[df['n_lenguajes'] == k, 'salary_monthly_NETO'].values / 1e6
+    fig_nlang.add_trace(go.Box(
+        y=vals,
+        x=[k] * len(vals),
+        name=f'{k}',
+        boxpoints=False,
+        marker=dict(color='#5B8DEF'),
+        line=dict(color='#3A63A8'),
+        fillcolor='rgba(91, 141, 239, 0.35)',
+        hovertemplate=('n lenguajes: %{x}<br>'
+                       'NETO: $ %{y:.2f} M<extra></extra>'),
+        showlegend=False,
+    ))
+medianas_k = [float(np.median(
+    df.loc[df['n_lenguajes'] == k, 'salary_monthly_NETO'] / 1e6))
+    for k in n_lang_plot_keys]
+fig_nlang.add_trace(go.Scatter(
+    x=n_lang_plot_keys, y=medianas_k,
+    mode='lines+markers',
+    line=dict(color='#C96C6C', width=2),
+    marker=dict(size=7, color='#C96C6C'),
+    name='mediana por conteo',
+    hovertemplate=('n lenguajes: %{x}<br>'
+                   'mediana: $ %{y:.2f} M<extra></extra>'),
+))
+layout_claro(fig_nlang,
+             'Sueldo NETO según cantidad de lenguajes declarados',
+             alto=460)
+fig_nlang.update_xaxes(
+    title='Cantidad de lenguajes declarados por el respondente',
+    tickmode='array', tickvals=n_lang_plot_keys)
+fig_nlang.update_yaxes(title='Sueldo NETO (millones de ARS)')
+
 titulo('1.7  Gráficos generados')
 print('G1  Ranking de lenguajes por sueldo NETO mediano')
 print('G2  Distribución de sueldos NETO por lenguaje')
 print('G3  Mediana por lenguaje y grupo de moneda')
 print('G4  Frecuencia vs sueldo mediano')
+print('G4b Sueldo NETO vs cantidad de lenguajes declarados')
+print(f'    corr Pearson: {corr_n_lang_pearson:.3f}  ·  '
+      f'Spearman: {corr_n_lang_spearman:.3f}')
 
 
 # ============================================================
@@ -706,13 +783,40 @@ print(f'  numéricas:   {VARS_NUMERICAS}')
 print(f'  categóricas: {VARS_CATEGORICAS}')
 
 
+# --- 2.0.1  Filtro local de edad biológica (sólo ej 2) ---
+# profile_age trae algunos valores implausibles (p.ej. 999 años) que
+# no fueron removidos en F1-F5 porque la edad no participaba del
+# ejercicio 1. Para el ej 2, donde sí se usa como numérica, se aplica
+# un filtro LOCAL al tramo laboralmente plausible [15, 80]. El filtro
+# NO se propaga al ej 1: el ranking de lenguajes ya está calculado
+# sobre df completo.
+EDAD_MIN_EJ2 = 15
+EDAD_MAX_EJ2 = 80
+mask_edad_ej2 = df['profile_age'].between(EDAD_MIN_EJ2, EDAD_MAX_EJ2)
+n_antes_ej2 = len(df)
+df_ej2 = df[mask_edad_ej2].copy()
+n_despues_ej2 = len(df_ej2)
+n_descartados_ej2 = n_antes_ej2 - n_despues_ej2
+edades_descartadas_ej2 = (
+    df.loc[~mask_edad_ej2, 'profile_age']
+    .dropna().sort_values(ascending=False).unique().tolist()
+)
+titulo('2.0.1  Filtro local de edad biológica (sólo ej 2)')
+print(f'  tramo retenido: [{EDAD_MIN_EJ2}, {EDAD_MAX_EJ2}] años')
+print(f'  N antes:  {n_antes_ej2}')
+print(f'  N después:{n_despues_ej2}  ({n_descartados_ej2} descartados)')
+if edades_descartadas_ej2:
+    print(f'  ejemplos de edades descartadas: '
+          + ', '.join(str(int(x)) for x in edades_descartadas_ej2[:6]))
+
+
 # --- 2.a  Estadísticos y correlaciones ---
 describe_num = (
-    df[VARS_NUMERICAS]
+    df_ej2[VARS_NUMERICAS]
     .describe(percentiles=[.10, .25, .50, .75, .90]).round(2)
 )
-corr_pearson = df[VARS_NUMERICAS].corr(method='pearson').round(3)
-corr_spearman = df[VARS_NUMERICAS].corr(method='spearman').round(3)
+corr_pearson = df_ej2[VARS_NUMERICAS].corr(method='pearson').round(3)
+corr_spearman = df_ej2[VARS_NUMERICAS].corr(method='spearman').round(3)
 
 seniority_counts = df['work_seniority'].value_counts().reindex(
     ['Junior', 'Semi-Senior', 'Senior'])
@@ -927,15 +1031,15 @@ fig_g5 = make_subplots(rows=1, cols=3,
                            'Años de experiencia',
                            'Edad (años)'))
 fig_g5.add_trace(go.Histogram(
-    x=df['salary_monthly_NETO'] / 1e6, nbinsx=50,
+    x=df_ej2['salary_monthly_NETO'] / 1e6, nbinsx=50,
     marker_color='#5B8DEF', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=1)
 fig_g5.add_trace(go.Histogram(
-    x=df['profile_years_experience'], nbinsx=40,
+    x=df_ej2['profile_years_experience'], nbinsx=40,
     marker_color='#6BBF80', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=2)
 fig_g5.add_trace(go.Histogram(
-    x=df['profile_age'], nbinsx=30,
+    x=df_ej2['profile_age'], nbinsx=30,
     xbins=dict(start=15, end=80, size=2.2),
     marker_color='#E8A04F', marker_line=dict(color='white', width=0.4),
     opacity=0.85, showlegend=False), row=1, col=3)
@@ -1236,6 +1340,8 @@ def fig_div(fig: go.Figure) -> str:
 def tabla_filtros_html() -> str:
     filas = ''
     for f in filtros_aplicados:
+        kurt_str = (f'{f["kurtosis"]:.2f}'
+                    if f.get('kurtosis') is not None else '—')
         filas += (
             f'<tr>'
             f'<td>{f["filtro"]}</td>'
@@ -1243,6 +1349,7 @@ def tabla_filtros_html() -> str:
             f'<td class="num">{f["n_antes"]}</td>'
             f'<td class="num">{f["n_despues"]}</td>'
             f'<td class="num">−{f["recorte"]} ({f["pct"]:.1f} %)</td>'
+            f'<td class="num">{kurt_str}</td>'
             f'</tr>'
         )
     return (
@@ -1250,6 +1357,7 @@ def tabla_filtros_html() -> str:
         '<thead><tr>'
         '<th>Filtro</th><th>Motivo</th>'
         '<th>N antes</th><th>N después</th><th>Recorte</th>'
+        '<th>Kurtosis NETO</th>'
         '</tr></thead>'
         f'<tbody>{filas}</tbody></table>'
     )
@@ -1527,7 +1635,18 @@ html = f"""<!doctype html>
 
 <div class="card">
   <h3>1.3  Limpieza y filtrado progresivo</h3>
-  <p>Los filtros se aplican en orden, declarando motivo y N resultante en cada paso. Las cuatro etapas llevan la muestra de <b>{N_INICIAL}</b> a <b>{N_FINAL}</b> filas ({100*(N_INICIAL-N_FINAL)/N_INICIAL:.1f} % de recorte total).</p>
+  <p>Los filtros se aplican en orden, declarando motivo y N resultante en cada paso. Las cinco etapas llevan la muestra de <b>{N_INICIAL}</b> a <b>{N_FINAL}</b> filas ({100*(N_INICIAL-N_FINAL)/N_INICIAL:.1f} % de recorte total).</p>
+  <p>La tabla incluye además la <b>kurtosis del sueldo NETO</b>
+  calculada después de cada filtro. La kurtosis (definición de
+  Fisher, normal = 0) mide el peso relativo de las colas de la
+  distribución: valores positivos altos indican colas pesadas con
+  observaciones extremas. La kurtosis <b>antes de cualquier filtro</b>
+  es <b>{kurtosis_inicial:.2f}</b>. Sirve como chequeo para
+  verificar que los filtros que no operan sobre el sueldo (F1, F2,
+  F3) preservan aproximadamente la forma de la distribución,
+  mientras que los que sí filtran por sueldo (F4, F5) deberían
+  reducir la kurtosis al eliminar observaciones extremas de las
+  colas.</p>
   {tabla_filtros_html()}
 </div>
 
@@ -1593,6 +1712,29 @@ html = f"""<!doctype html>
 <div class="chart">{fig_div(fig_nm)}<div class="chart-id">G4</div></div>
 
 <div class="card">
+  <h3>1.6.e  Sueldo NETO según cantidad de lenguajes declarados</h3>
+  <p>Como análisis complementario —también a nivel persona, sobre el
+  mismo <code>df</code> filtrado del ejercicio 1— se computa la cantidad
+  de lenguajes declarados por cada respondente y se resume el sueldo
+  NETO por cada valor de ese conteo. La pregunta detrás de este cuadro
+  es: <em>¿saber más lenguajes aparenta estar asociado con un sueldo
+  más alto en esta muestra?</em></p>
+  <ul>
+    <li>Correlación muestral de Pearson
+      <code>(n_lenguajes, NETO)</code>: <b>{corr_n_lang_pearson:.3f}</b></li>
+    <li>Correlación muestral de Spearman
+      <code>(n_lenguajes, NETO)</code>: <b>{corr_n_lang_spearman:.3f}</b></li>
+  </ul>
+  <p>En esta muestra, la cantidad de lenguajes declarados aparenta tener
+  una asociación débil con el sueldo NETO: saber más lenguajes no se
+  traduce linealmente en un sueldo mayor. El boxplot siguiente (G4b)
+  muestra la distribución completa para cada valor del conteo que tiene
+  al menos 15 observaciones.</p>
+</div>
+
+<div class="chart">{fig_div(fig_nlang)}<div class="chart-id">G4b</div></div>
+
+<div class="card">
   <h3>1.8  Conclusiones del ejercicio 1</h3>
   <ol>
     {''.join(f'<li>{c}</li>' for c in conclusiones)}
@@ -1615,6 +1757,26 @@ html = f"""<!doctype html>
     <li><b>Categóricas:</b>
       <code>work_seniority</code> (nivel de seniority),
       <code>profile_gender</code> (identidad de género).</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>2.0.1  Filtro local de edad biológica (sólo ej 2)</h3>
+  <p>La columna <code>profile_age</code> contiene algunos valores
+  implausibles (por ejemplo, <b>999 años</b>) que no fueron removidos
+  en los filtros F1–F5 del ejercicio 1 porque allí la edad no
+  participaba del análisis. Para el ejercicio 2 —donde sí se usa como
+  variable numérica— se aplica un <b>filtro LOCAL</b> al tramo
+  laboralmente plausible <b>[{EDAD_MIN_EJ2}, {EDAD_MAX_EJ2}]</b> años.</p>
+  <p><b>Alcance:</b> este filtro NO se propaga al ejercicio 1. El
+  ranking de lenguajes (sección 1) ya fue calculado sobre <code>df</code>
+  completo; aquí se construye un DataFrame separado <code>df_ej2</code>
+  que se usa exclusivamente en los análisis de esta sección.</p>
+  <ul>
+    <li>N antes del filtro: <b>{n_antes_ej2}</b></li>
+    <li>N después del filtro: <b>{n_despues_ej2}</b>
+      (<b>{n_descartados_ej2}</b> filas descartadas)</li>
+    {('<li>Ejemplos de edades descartadas: <b>' + ', '.join(str(int(x)) for x in edades_descartadas_ej2[:6]) + '</b></li>') if edades_descartadas_ej2 else ''}
   </ul>
 </div>
 
