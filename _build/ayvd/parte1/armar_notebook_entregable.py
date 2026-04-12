@@ -305,18 +305,6 @@ condicional.
 
 Todas son herramientas estrictamente descriptivas y suficientes para \
 responder las preguntas planteadas en esta parte del entregable.
-
----
-
-### 📎 Material de referencia
-
-| Clase | Uso en el entregable |
-|---|---|
-| **Clase 01 — Probabilidad** | Independencia y probabilidad condicional `P(A\\|B)` (2c); kurtosis de Fisher usada como estadístico de forma en el log de filtrado |
-| **Clase 02 — Datos y Modelos** | Medidas de tendencia central, dispersión, IQR, boxplots, regla de Tukey 1,5·IQR, coeficiente de variación |
-| **Clase 03 — Varias Variables** | Histogramas, `crosstab`, histogramas superpuestos para subpoblaciones, `np.corrcoef` (Pearson), Spearman, columna derivada `DESCUENTOS`, scatterplots con hue |
-
-Filminas con mirror local en `_site/filminas/` (PDF + TXT).
 """)
 
 

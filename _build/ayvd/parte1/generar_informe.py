@@ -477,10 +477,16 @@ fig_rank = go.Figure(go.Bar(
     hovertemplate=('<b>%{y}</b><br>'
                    'Mediana: $ %{x:.2f} M ARS<extra></extra>'),
 ))
-fig_rank.update_layout(yaxis=dict(autorange='reversed'))
+fig_rank.update_layout(
+    yaxis=dict(autorange='reversed'),
+    bargap=0.22,
+)
 layout_claro(fig_rank,
              'Ranking de lenguajes por sueldo NETO mediano',
-             alto=max(420, 32 * len(orden_lenguajes) + 180))
+             alto=max(340, 26 * len(orden_lenguajes) + 110))
+# Margen inferior acotado para que no quede una gran franja blanca
+# entre el eje X y el pie de gráfico con la nota del criterio.
+fig_rank.update_layout(margin=dict(l=80, r=40, t=60, b=54))
 fig_rank.update_xaxes(title='Sueldo NETO mediano (millones de ARS)',
                       range=[0, max_mediana_m * 1.55])
 fig_rank.update_yaxes(title='')
@@ -493,7 +499,7 @@ else:
                 f'Tukey = {UMBRAL_CV:.0f} %. Ningún lenguaje supera el umbral.')
 fig_rank.add_annotation(
     text=_anot_g1,
-    xref='paper', yref='paper', x=0, y=-0.08, showarrow=False,
+    xref='paper', yref='paper', x=0, y=-0.14, showarrow=False,
     font=dict(size=10, color='#5E6472'), xanchor='left',
 )
 
