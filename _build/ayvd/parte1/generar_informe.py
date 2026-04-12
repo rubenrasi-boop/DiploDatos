@@ -366,7 +366,7 @@ df_rank = df_long[df_long['lenguaje'].isin(lenguajes_mostrables)].copy()
 #   lenguaje marcado  ⇔  CV_robusto_i  >  Q3(CV) + 1,5 · IQR(CV)
 #
 # Ambos elementos (CV y regla 1,5·IQR) son citables directamente de
-# clase 02 sin introducir herramientas de parte 2.
+# clase 02.
 
 def resumen_robusto(serie: pd.Series) -> pd.Series:
     q1, mediana, q3 = serie.quantile([.25, .5, .75])
@@ -1336,10 +1336,7 @@ conclusiones_ej2 = [
     f'registra, en esta muestra, una brecha relativa de '
     f'{100*(1-ratio_mujer):.1f} % para Mujer Cis respecto de Hombre '
     f'Cis y de {100*(1-ratio_diversidades):.1f} % para el grupo '
-    f'Diversidades respecto del mismo grupo de referencia (G11). Una '
-    f'afirmación sólida sobre brechas poblacionales requeriría un '
-    f'análisis multivariado y herramientas inferenciales que exceden '
-    f'el alcance de esta parte.',
+    f'Diversidades respecto del mismo grupo de referencia (G11).',
 
     # Cierre: pregunta general del ejercicio 2 respondida a modo de
     # síntesis de lo visto en los sub-ejercicios.
@@ -2007,9 +2004,7 @@ html = f"""<!doctype html>
     las dos distancias son pequeñas pero tampoco nulas, por lo que
     la cercanía a la independencia es sólo aproximada. En términos
     <b>puramente descriptivos</b>, esto sugiere que nivel de estudio y
-    sueldo NETO <u>no son independientes</u> en esta muestra. No se
-    realiza ningún test inferencial; una afirmación más fuerte
-    requeriría herramientas de la parte 2 del entregable.
+    sueldo NETO <u>no son independientes</u> en esta muestra.
   </div>
 </div>
 

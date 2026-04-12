@@ -799,7 +799,7 @@ Y propone un abordaje **puramente descriptivo** (sin test inferencial) para eval
 - Si todas las distancias son cercanas a cero → la muestra es compatible con independencia entre las dos variables.
 - Si alguna distancia es apreciablemente distinta de cero → en la muestra, la variable categórica **sí aporta información** sobre la variable numérica. No son independientes.
 
-**Este abordaje NO realiza un test de independencia.** No produce un p-valor ni una región de rechazo. Es una herramienta puramente descriptiva que compara probabilidades empíricas. La conclusión se formula en términos de *"en esta muestra, la distancia es de X"*, sin extrapolar a la población general. Un test formal (Chi-cuadrado) es material de la parte 2 del entregable.
+Es una herramienta puramente descriptiva que compara probabilidades empíricas. La conclusión se formula en términos de *"en esta muestra, la distancia es de X"*, sin extrapolar a la población general.
 
 **Ejemplo del dataset:** ¿Son independientes el salario y el nivel de estudio? Si al separar por nivel de estudio las distribuciones de salario son muy similares, entonces son aproximadamente independientes. Si los universitarios ganan sistemáticamente más, no son independientes.
 

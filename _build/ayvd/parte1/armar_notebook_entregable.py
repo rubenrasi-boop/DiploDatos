@@ -172,9 +172,7 @@ la sección 2.0.1 del informe; este filtro NO se propaga al ejercicio \
 numérica.
 
 Todas las conclusiones se redactan en términos descriptivos *"en esta \
-muestra"*, *"se observa"*, *"aparenta"*, sin emplear herramientas \
-inferenciales (intervalos de confianza, tests de hipótesis, \
-p-valores) que pertenecen a la Parte 2 del entregable.
+muestra"*, *"se observa"*, *"aparenta"*.
 
 """)
 
@@ -294,9 +292,7 @@ experiencia ↔ sueldo se mantiene creciente en los datos observados.
 Entre los tres grupos analíticos de género se registra, en esta \
 muestra, una brecha relativa del **16,8 %** para Mujer Cis respecto \
 de Hombre Cis y del **6,4 %** para el grupo Diversidades respecto del \
-mismo grupo de referencia. Una afirmación más sólida sobre brechas \
-poblacionales requeriría un análisis multivariado y herramientas \
-inferenciales que exceden el alcance de esta parte.
+mismo grupo de referencia.
 
 """)
 

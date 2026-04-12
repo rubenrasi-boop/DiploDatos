@@ -694,10 +694,8 @@ print('  ')
 print('  4. CAMBIO RESPECTO AL CRITERIO ANTERIOR:')
 print('     La versión previa de este criterio incluía un factor √n')
 print('     en la fórmula, lo que mezclaba el tamaño de muestra con la')
-print('     dispersión. Ese factor no tiene respaldo en el material de')
-print('     parte 1 (aparece en error estándar, que es de parte 2). El')
-print('     cambio a CV robusto puro + regla Tukey deja el criterio')
-print('     enteramente citable de clase 02.')
+print('     dispersión. El cambio a CV robusto puro + regla Tukey deja')
+print('     el criterio enteramente citable de clase 02.')
 
 marcados = (
     resumen_global[~resumen_global['estable']]
@@ -2031,10 +2029,7 @@ conclusiones_ej2 = [
     f'registra, en esta muestra, una brecha relativa de '
     f'{100*(1-ratio_mujer):.1f} % para Mujer Cis respecto de Hombre Cis '
     f'y de {100*(1-ratio_diversidades):.1f} % para el grupo Diversidades '
-    f'respecto del mismo grupo de referencia (G11). Una afirmación más '
-    f'sólida sobre brechas poblacionales requeriría un análisis '
-    f'multivariado y herramientas inferenciales que exceden el alcance '
-    f'de esta parte.',
+    f'respecto del mismo grupo de referencia (G11).',
 
     # Cierre: respuesta a la pregunta general del ejercicio 2
     f'Respondiendo la pregunta general del ejercicio 2 ("¿qué '
