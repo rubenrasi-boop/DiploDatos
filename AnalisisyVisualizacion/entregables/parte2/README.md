@@ -4,6 +4,8 @@
 **Alumno:** Rubén Rasi
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
+> **⏳ Estado: pendiente de inicio.** El entregable todavía no comenzó a desarrollarse. Esta carpeta contiene únicamente la consigna oficial del curso y este README como placeholder. El desarrollo arrancará una vez cerrada la revisión de la parte 1.
+
 ---
 
 ## 📅 Fechas
