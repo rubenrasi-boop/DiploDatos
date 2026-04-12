@@ -122,6 +122,8 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1FBA-CVfB-EUfHtpOCndy_wCI4u2kFya7/view?usp=sharing) |
 | **Objetivos** | 1) Describir y analizar desde múltiples ángulos. 2) Diferenciar datos de modelos. 3) Inferencia: estimación y testeo. 4) Comunicar resultados. |
 | **Estado** | ⏳ Pendiente de inicio — ver [entregables/parte2/](entregables/parte2/README.md) |
+| **Archivo principal** | *(pendiente — se generará al iniciar el entregable)* |
+| **Apéndice de datos** | *(pendiente — se generará al iniciar el entregable)* |
 
 ---
 
