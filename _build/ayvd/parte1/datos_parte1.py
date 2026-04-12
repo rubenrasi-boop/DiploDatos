@@ -79,7 +79,9 @@ IMG_DIR = BASE_DIR / 'datos_parte1_img'
 IMG_DIR.mkdir(exist_ok=True)
 
 # Umbral mínimo de observaciones para incluir un lenguaje en el ranking
-# del informe. No descarta datos: es una exclusión de visualización.
+# del informe. Regla práctica convencional: con n ≥ 30 cada cuartil
+# (Q1, Q3) contiene ~7-8 observaciones y resulta razonablemente estable.
+# No descarta datos: es una exclusión de visualización.
 N_MIN_LENGUAJE = 30
 
 EXPORTAR_CSV = '--csv' in sys.argv
@@ -206,15 +208,17 @@ mostrar('1.2.a  Valores crudos de salary_in_usd', crudos_usd)
 
 
 # --- 1.2.b  Preservación de los valores literales ---
-# Se conserva el contenido crudo de salary_in_usd. El único tratamiento
-# es reemplazar NaN por la etiqueta '(sin declarar)' para poder indexar
-# la fila correspondiente en agrupamientos posteriores. Todos los
-# demás strings son exactamente los que aparecen en el dataset.
+# Se conserva el contenido crudo de salary_in_usd. Los NaN representan
+# a respondentes que no declararon ninguna forma de dolarización, lo
+# que el propio dataset codifica como sueldo_dolarizado = False
+# (coincidencia exacta entre ambas columnas). Es decir, el grupo NaN
+# se interpreta como "cobra 100 % en pesos argentinos". Se etiqueta
+# como 'Cobro en pesos (NaN)' para dejar esto explícito.
 
-df['moneda_categoria'] = df['salary_in_usd'].fillna('(sin declarar)')
+df['moneda_categoria'] = df['salary_in_usd'].fillna('Cobro en pesos (NaN)')
 
 orden_cats = [
-    '(sin declarar)',
+    'Cobro en pesos (NaN)',
     'Mi sueldo está dolarizado (pero cobro en moneda local)',
     'Cobro parte del salario en dólares',
     'Cobro todo el salario en dólares',
@@ -232,14 +236,11 @@ mostrar('1.2.b  Sueldo NETO por categoría (describe completo)',
 
 # --- 1.2.d  Chequeo de orden de magnitud ---
 # Confirma empíricamente que salary_monthly_NETO es el total pesificado.
-med_sin_dato = describe_moneda.loc['(sin declarar)', '50%']
-med_ligado   = describe_moneda.loc[
-    'Mi sueldo está dolarizado (pero cobro en moneda local)', '50%']
-med_parcial  = describe_moneda.loc[
+med_pesos   = describe_moneda.loc['Cobro en pesos (NaN)', '50%']
+med_parcial = describe_moneda.loc[
     'Cobro parte del salario en dólares', '50%']
-med_total    = describe_moneda.loc[
+med_total   = describe_moneda.loc[
     'Cobro todo el salario en dólares', '50%']
-diff_pct = 100 * (med_ligado - med_sin_dato) / med_sin_dato
 
 
 def fmt_ars(v: float) -> str:
@@ -248,22 +249,18 @@ def fmt_ars(v: float) -> str:
 
 chequeo_magnitud = pd.DataFrame({
     'métrica': [
-        'mediana cuando salary_in_usd es NaN',
-        'mediana de "Mi sueldo está dolarizado (pero cobro en moneda local)"',
-        'diferencia entre las dos medianas anteriores',
-        'mediana de "Cobro parte del salario en dólares"',
-        'relación con la mediana del grupo NaN',
-        'mediana de "Cobro todo el salario en dólares"',
-        'relación con la mediana del grupo NaN',
+        'mediana "Cobro en pesos (NaN)"',
+        'mediana "Cobro parte del salario en dólares"',
+        'relación con la mediana del grupo en pesos',
+        'mediana "Cobro todo el salario en dólares"',
+        'relación con la mediana del grupo en pesos',
     ],
     'valor': [
-        fmt_ars(med_sin_dato),
-        fmt_ars(med_ligado),
-        f'{diff_pct:+.2f} %',
+        fmt_ars(med_pesos),
         fmt_ars(med_parcial),
-        f'{med_parcial/med_sin_dato:.2f} ×',
+        f'{med_parcial/med_pesos:.2f} ×',
         fmt_ars(med_total),
-        f'{med_total/med_sin_dato:.2f} ×',
+        f'{med_total/med_pesos:.2f} ×',
     ],
 })
 mostrar('1.2.c  Chequeo de orden de magnitud', chequeo_magnitud)
@@ -274,10 +271,11 @@ print('    no centenares de USD. La columna salary_monthly_NETO contiene el')
 print('    TOTAL PESIFICADO del sueldo para todos los respondentes, con')
 print('    independencia del valor declarado en salary_in_usd. Se usa como')
 print('    variable respuesta unificada.')
-print('  - La diferencia entre el grupo NaN y el valor literal')
-print('    "Mi sueldo está dolarizado (pero cobro en moneda local)" es')
-print('    inferior al 1 %. Ambas categorías literales se unifican en un')
-print('    grupo analítico derivado llamado ARS.')
+print('  - El valor literal "Mi sueldo está dolarizado (pero cobro en')
+print('    moneda local)" representa un cobro efectivo en pesos, igual')
+print('    que el grupo "Cobro en pesos (NaN)". Por ser ambos de la misma')
+print('    naturaleza (cobro efectivo en pesos), se unifican bajo la')
+print('    etiqueta analítica ARS.')
 
 # --- 1.2.e  Mapeo de valores literales a grupos analíticos derivados ---
 # Los grupos ARS, USD parcial y USD total NO son valores del dataset:
@@ -285,7 +283,7 @@ print('    grupo analítico derivado llamado ARS.')
 # salary_in_usd en 3 subpoblaciones con comportamiento salarial
 # comparable.
 MAPEO_GRUPO = {
-    '(sin declarar)':                                           'ARS',
+    'Cobro en pesos (NaN)':                                     'ARS',
     'Mi sueldo está dolarizado (pero cobro en moneda local)':   'ARS',
     'Cobro parte del salario en dólares':                       'USD parcial',
     'Cobro todo el salario en dólares':                         'USD total',
@@ -387,10 +385,11 @@ df = aplicar_filtro(
     'F4 - valores atípicos con regla 1,5·IQR por grupo de moneda',
     'Se aplica la regla clásica de Tukey [Q1 − 1,5·IQR, Q3 + 1,5·IQR] '
     'al sueldo NETO, calculando Q1, Q3 e IQR por separado dentro de '
-    'cada grupo de moneda (ARS, USD parcial, USD total). La '
-    'estratificación impide mezclar poblaciones con medianas distintas '
-    'en un único cálculo, que resultaría demasiado amplio para detectar '
-    'atípicos dentro de cada subpoblación.',
+    'cada grupo de moneda (ARS, USD parcial, USD total). Un único '
+    'cálculo combinado produciría límites demasiado amplios para el '
+    'grupo ARS y demasiado estrechos para los grupos USD; la '
+    'estratificación permite evaluar cada observación contra el rango '
+    'natural de su propia subpoblación.',
     mascara_iqr_por_grupo(df, 'salary_monthly_NETO', 'moneda_grupo'),
 )
 

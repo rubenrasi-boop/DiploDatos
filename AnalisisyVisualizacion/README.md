@@ -110,7 +110,7 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Entrega** | Lunes 13/04/2026, 23:59 |
 | **Consigna** | [Ver en Google Drive](https://drive.google.com/file/d/1devPC-DscjuaA-5FId39jgDAz6B-Vr03/view?usp=sharing) |
 | **Objetivos** | Describir y analizar la base desde varios ángulos, múltiples variables, visualmente y con medidas descriptivas. Observar relaciones. Plantear preguntas, hipótesis y diseñar un abordaje. |
-| **Estado** | ✅ Listo para presentar — ver [entregables/parte1/](entregables/parte1/README.md) |
+| **Estado** | 🔍 En revisión — ver [entregables/parte1/](entregables/parte1/README.md) |
 | **Archivo principal** | [`entregables/parte1/entregable_ayvd_parte1.html`](entregables/parte1/entregable_ayvd_parte1.html) |
 | **Apéndice de datos** | [`entregables/parte1/datos_parte1.py`](entregables/parte1/datos_parte1.py) |
 

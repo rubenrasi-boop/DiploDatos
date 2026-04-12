@@ -4,6 +4,8 @@
 **Alumno:** Rubén Rasi
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
+> **🔍 Estado: en revisión.** El informe principal y el apéndice de datos están completos y son funcionales. Actualmente se están iterando ajustes de redacción, justificaciones metodológicas y consistencia de narrativa antes de considerarlo definitivo para presentación.
+
 ---
 
 ## 📅 Fechas

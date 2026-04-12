@@ -48,7 +48,9 @@ DATA_PATH = BASE_DIR / 'data' / 'sysarmy_survey_2026_processed.csv'
 OUTPUT_HTML = BASE_DIR / 'informe_parte1.html'
 
 # Umbral mínimo de observaciones para mostrar un lenguaje en el ranking.
-# No descarta datos: es una exclusión de visualización (ver sección 1.5).
+# Regla práctica convencional: con n ≥ 30 cada cuartil (Q1, Q3) contiene
+# ~7-8 observaciones y resulta razonablemente estable. No descarta datos:
+# es una exclusión de visualización (ver sección 1.5).
 N_MIN_LENGUAJE = 30
 
 # Paleta clara con contraste suave pero perceptible
@@ -109,13 +111,16 @@ print(pd.DataFrame({'columna': COLUMNAS_RELEVANTES}))
 # Se ejecuta antes del filtrado: define cómo interpretar la columna
 # respuesta y cómo se estratifica el análisis por grupo de moneda.
 
-# Se preserva el valor literal de salary_in_usd. El único tratamiento
-# es reemplazar NaN por la etiqueta '(sin declarar)' para poder indexar
-# la fila correspondiente en los agrupamientos.
-df['moneda_categoria'] = df['salary_in_usd'].fillna('(sin declarar)')
+# Se preserva el valor literal de salary_in_usd. Los NaN representan a
+# respondentes que no declararon ninguna forma de dolarización; la
+# columna booleana sueldo_dolarizado del dataset los codifica como
+# False (coincidencia exacta con los NaN). Por lo tanto el grupo NaN
+# se interpreta como "cobra 100 % en pesos" y se etiqueta como
+# 'Cobro en pesos (NaN)'.
+df['moneda_categoria'] = df['salary_in_usd'].fillna('Cobro en pesos (NaN)')
 
 orden_cats = [
-    '(sin declarar)',
+    'Cobro en pesos (NaN)',
     'Mi sueldo está dolarizado (pero cobro en moneda local)',
     'Cobro parte del salario en dólares',
     'Cobro todo el salario en dólares',
@@ -130,21 +135,14 @@ resumen_moneda = (
     .round(0)
 )
 
-med_sin_dato = resumen_moneda.loc['(sin declarar)', 'mediana']
-med_ligado = resumen_moneda.loc[
-    'Mi sueldo está dolarizado (pero cobro en moneda local)', 'mediana']
-diff_pct = 100 * (med_ligado - med_sin_dato) / med_sin_dato
-
 titulo('1.2  Sueldo NETO por valor literal de salary_in_usd')
 print(resumen_moneda)
-print(f'\ndiferencia grupo NaN vs "Mi sueldo está dolarizado '
-      f'(pero cobro en moneda local)": {diff_pct:+.2f} %')
 
 # Grupos analíticos derivados: ARS, USD parcial, USD total. No son
 # valores del dataset sino etiquetas para agrupar los 4 estados
-# literales en 3 subpoblaciones con comportamiento salarial comparable.
+# literales en 3 subpoblaciones según la moneda efectiva de cobro.
 MAPEO_GRUPO = {
-    '(sin declarar)':                                           'ARS',
+    'Cobro en pesos (NaN)':                                     'ARS',
     'Mi sueldo está dolarizado (pero cobro en moneda local)':   'ARS',
     'Cobro parte del salario en dólares':                       'USD parcial',
     'Cobro todo el salario en dólares':                         'USD total',
@@ -238,10 +236,11 @@ df = aplicar_filtro(
     'F4 - valores atípicos con regla 1,5·IQR por grupo de moneda',
     'Se aplica la regla clásica de Tukey [Q1 − 1,5·IQR, Q3 + 1,5·IQR] '
     'al sueldo NETO, calculando Q1, Q3 e IQR por separado dentro de '
-    'cada grupo de moneda (ARS, USD parcial, USD total). La '
-    'estratificación impide mezclar poblaciones con medianas distintas '
-    'en un único cálculo, que resultaría demasiado amplio para detectar '
-    'atípicos dentro de cada subpoblación.',
+    'cada grupo de moneda (ARS, USD parcial, USD total). Un único '
+    'cálculo combinado produciría límites demasiado amplios para el '
+    'grupo ARS y demasiado estrechos para los grupos USD; la '
+    'estratificación permite evaluar cada observación contra el rango '
+    'natural de su propia subpoblación.',
     mascara_iqr_por_grupo(df, 'salary_monthly_NETO', 'moneda_grupo'),
 )
 
@@ -1208,34 +1207,32 @@ html = f"""<!doctype html>
 <div class="card">
   <h3>1.2  Análisis de la variable sueldo y su dolarización</h3>
   <p>La columna <code>salary_in_usd</code> del dataset toma tres valores
-  literales cuando el respondente contesta la pregunta sobre moneda del
-  sueldo, y queda en <code>NaN</code> cuando no la contesta:</p>
+  literales cuando el respondente declara alguna forma de dolarización
+  del sueldo, y queda en <code>NaN</code> cuando no declara ninguna.
+  El dataset confirma esta lectura con una columna booleana derivada,
+  <code>sueldo_dolarizado</code>, que es <code>False</code>
+  exactamente en los 3.356 registros con <code>NaN</code> y
+  <code>True</code> en los 1.583 restantes. Por lo tanto, el grupo
+  <code>NaN</code> se interpreta como <b>"cobra 100 % en pesos
+  argentinos, sin dolarización alguna"</b>, y se etiqueta en este
+  análisis como <code>Cobro en pesos (NaN)</code>.</p>
+  <p>Los cuatro valores posibles del sueldo según su vínculo con el
+  dólar son entonces:</p>
   <ul>
-    <li><code>Cobro todo el salario en dólares</code></li>
-    <li><code>Cobro parte del salario en dólares</code></li>
-    <li><code>Mi sueldo está dolarizado (pero cobro en moneda local)</code></li>
-    <li><code>NaN</code> — representado en este análisis como <code>(sin declarar)</code></li>
+    <li><code>Cobro en pesos (NaN)</code> — 3.356 registros</li>
+    <li><code>Mi sueldo está dolarizado (pero cobro en moneda local)</code> — 353 registros</li>
+    <li><code>Cobro parte del salario en dólares</code> — 493 registros</li>
+    <li><code>Cobro todo el salario en dólares</code> — 737 registros</li>
   </ul>
   <p>Las medianas del sueldo NETO, antes del filtrado, para cada valor
-  literal son:</p>
+  son:</p>
   {df_moneda_html()}
-  <p>Dos observaciones orientan el resto del análisis:</p>
-  <ul>
-    <li>
-      Los cuatro grupos reportan valores del mismo orden de magnitud
-      (millones de ARS), no centenares de USD. Esto muestra que la
-      columna <code>salary_monthly_NETO</code> contiene el
-      <b>total pesificado</b> del sueldo para todos los respondentes,
-      con independencia del valor declarado en <code>salary_in_usd</code>.
-      Se puede usar como variable respuesta unificada.
-    </li>
-    <li>
-      El valor literal <code>Mi sueldo está dolarizado (pero cobro en
-      moneda local)</code> tiene mediana prácticamente idéntica al grupo
-      <code>(sin declarar)</code> (diferencia de <b>{diff_pct:+.2f} %</b>).
-      A efectos salariales son una misma población.
-    </li>
-  </ul>
+  <p>Los cuatro grupos reportan valores del mismo orden de magnitud
+  (millones de ARS), no centenares de USD. Esto muestra que la columna
+  <code>salary_monthly_NETO</code> contiene el <b>total pesificado</b>
+  del sueldo para todos los respondentes, con independencia del valor
+  declarado en <code>salary_in_usd</code>. Se puede usar como variable
+  respuesta unificada.</p>
   <p>Para los cortes posteriores se definen <b>tres grupos analíticos
   derivados</b> a partir de los cuatro valores literales. Las etiquetas
   <b>ARS</b>, <b>USD parcial</b> y <b>USD total</b>
@@ -1247,17 +1244,20 @@ html = f"""<!doctype html>
       <th>Grupo analítico derivado</th>
     </tr></thead>
     <tbody>
-      <tr><td><code>(sin declarar)</code> (NaN)</td><td><b>ARS</b></td></tr>
+      <tr><td><code>Cobro en pesos (NaN)</code></td><td><b>ARS</b></td></tr>
       <tr><td><code>Mi sueldo está dolarizado (pero cobro en moneda local)</code></td><td><b>ARS</b></td></tr>
       <tr><td><code>Cobro parte del salario en dólares</code></td><td><b>USD parcial</b></td></tr>
       <tr><td><code>Cobro todo el salario en dólares</code></td><td><b>USD total</b></td></tr>
     </tbody>
   </table>
   <div class="nota">
-    La unificación del grupo <code>(sin declarar)</code> con
-    <code>Mi sueldo está dolarizado (pero cobro en moneda local)</code>
-    se justifica por la diferencia de medianas menor al 1 % entre ambos
-    valores literales (ver cuadro anterior).
+    El valor literal <code>Mi sueldo está dolarizado (pero cobro en
+    moneda local)</code> representa un cobro efectivo en pesos — la
+    persona recibe el dinero en pesos, aunque el contrato esté atado al
+    dólar —, igual que el grupo <code>Cobro en pesos (NaN)</code>. Por
+    ser ambos de la misma naturaleza (cobro efectivo en pesos), se
+    unifican bajo la etiqueta analítica <b>ARS</b> para el resto del
+    análisis.
   </div>
 </div>
 
@@ -1279,12 +1279,14 @@ html = f"""<!doctype html>
 
 <div class="card">
   <h3>1.5  Umbral de frecuencia mínima</h3>
-  <p>Para la visualización y el ranking se muestran únicamente los lenguajes con al menos <b>{N_MIN_LENGUAJE} respondentes</b>. Quedan <b>{len(lenguajes_mostrables)}</b> lenguajes dentro del ranking y <b>{n_excluidos}</b> fuera.</p>
+  <p>Para la visualización y el ranking se muestran únicamente los lenguajes con al menos <b>{N_MIN_LENGUAJE} respondentes</b>, una regla práctica convencional para que Q1 y Q3 contengan ~7-8 observaciones cada uno y resulten estables. Quedan <b>{len(lenguajes_mostrables)}</b> lenguajes dentro del ranking y <b>{n_excluidos}</b> fuera.</p>
   <div class="nota">
     Este umbral <b>no es un filtro sobre los datos</b>. Ninguna observación
     se descarta del conjunto; es una exclusión de visualización. Los
     lenguajes excluidos permanecen en <code>df_long</code> y pueden
-    utilizarse en otros análisis.
+    utilizarse en otros análisis. El criterio fino que identifica los
+    lenguajes con ranking inestable es el de dispersión relativa definido
+    en la sección 1.6.
   </div>
 </div>
 
