@@ -1528,7 +1528,7 @@ especs_g5 = [
         'datos': df['profile_age'],
         'titulo': 'Edad (años)',
         'color': '#E8A04F',
-        'bins': 50,
+        'bins': 30,  # reducido respecto a sueldo/experiencia para suavizar ruido
         'rango': (15, 80),
     },
 ]
