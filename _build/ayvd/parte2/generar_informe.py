@@ -809,18 +809,21 @@ html = f"""<!doctype html>
   es la diferencia de medias muestrales (Clase 03 — Estimación
   puntual):</p>
   <div class="formula">$$\\widehat{{\\Delta}} = \\bar{{X}}_A - \\bar{{X}}_B$$</div>
-  <p>Es insesgado y de mínima varianza para estimar
-  \\(\\mu_A - \\mu_B\\). En esta muestra:</p>
-  <div class="formula">\\(\\widehat{{\\Delta}}\\) = {fmt_ars(mediaA)} − {fmt_ars(mediaB)} = <b>{fmt_ars(delta_hat)}</b></div>
+  <p>Es insesgado y de mínima varianza para estimar la diferencia
+  de medias poblacionales. En esta muestra el estimador puntual
+  toma el valor <b>{fmt_ars(delta_hat)}</b>, computado como
+  {fmt_ars(mediaA)} − {fmt_ars(mediaB)}.</p>
 </div>
 
 <div class="card">
   <h3>2.2  Intervalo de confianza por Welch</h3>
   <p>Dado que los dos grupos tienen tamaños muestrales muy distintos
-  (\\(n_A = {nA}\\), \\(n_B = {nB}\\)) y varianzas muestrales también
-  distintas (\\(s_A\\) = {fmt_ars(sA)}, \\(s_B\\) = {fmt_ars(sB)}), el
-  IC se construye con el procedimiento de <b>Welch</b> usando los
-  grados de libertad de <b>Satterthwaite</b>:</p>
+  (<i>n<sub>A</sub></i> = {nA}, <i>n<sub>B</sub></i> = {nB}) y
+  varianzas muestrales también distintas
+  (<i>s<sub>A</sub></i> = {fmt_ars(sA)},
+  <i>s<sub>B</sub></i> = {fmt_ars(sB)}), el IC se construye con el
+  procedimiento de <b>Welch</b> usando los grados de libertad de
+  <b>Satterthwaite</b>:</p>
   <div class="formula">$$\\widehat{{\\Delta}} \\pm t_{{\\alpha/2,\\;\\nu_W}}\\,\\sqrt{{\\frac{{s_A^2}}{{n_A}} + \\frac{{s_B^2}}{{n_B}}}}$$</div>
   <div class="formula">$$\\nu_W = \\frac{{\\left(s_A^2/n_A + s_B^2/n_B\\right)^2}}{{\\dfrac{{(s_A^2/n_A)^2}}{{n_A-1}} + \\dfrac{{(s_B^2/n_B)^2}}{{n_B-1}}}}$$</div>
   <p>La elección de Welch sobre el t de Student pooled sigue la
@@ -833,16 +836,16 @@ html = f"""<!doctype html>
   <h3>2.3  IC por bootstrap percentil (verificación de robustez)</h3>
   <p>Como control de robustez se calcula también un IC del 95 % por
   <b>bootstrap percentil</b>: 10 000 resamples con reposición de cada
-  grupo (semilla fija para reproducibilidad), se computa
-  \\(\\bar{{X}}_A^{{*}} - \\bar{{X}}_B^{{*}}\\) en cada remuestreo y el IC son
-  los percentiles 2,5 y 97,5 de la distribución empírica. Si el IC
-  paramétrico y el bootstrap son similares, la aproximación de Welch
-  es razonable para estos tamaños muestrales.</p>
+  grupo (semilla fija para reproducibilidad), se computa la diferencia
+  de medias en cada remuestreo y el IC son los percentiles 2,5 y 97,5
+  de la distribución empírica. Si el IC paramétrico y el bootstrap son
+  similares, la aproximación de Welch es razonable para estos tamaños
+  muestrales.</p>
   {tabla_ic_html()}
   <div class="nota">
     La similitud entre ambos IC indica que la aproximación a la t de
-    Student usada por Welch es adecuada para estos \\(n\\). El bootstrap
-    se reporta como <b>verificación</b>, no como reemplazo.
+    Student usada por Welch es adecuada para estos tamaños. El
+    bootstrap se reporta como <b>verificación</b>, no como reemplazo.
   </div>
 </div>
 
@@ -850,15 +853,15 @@ html = f"""<!doctype html>
 
 <div class="card">
   <h3>2.4  Relación IC ↔ test de hipótesis</h3>
-  <p>Un IC del \\((1 - \\alpha)\\) para \\(\\mu_A - \\mu_B\\) está en
-  <b>dualidad exacta</b> con el test bilateral al nivel \\(\\alpha\\) para
-  \\(H_0: \\mu_A - \\mu_B = 0\\). Concretamente:</p>
+  <p>Un IC del (1 − α) para la diferencia de medias poblacionales
+  está en <b>dualidad exacta</b> con el test bilateral al nivel α
+  para la hipótesis nula de igualdad de medias. Concretamente:</p>
   <div class="formula">$$0 \\notin \\text{{IC}}_{{1-\\alpha}} \\;\\;\\Longleftrightarrow\\;\\; \\text{{se rechaza }} H_0 \\text{{ al nivel }} \\alpha$$</div>
   <p>En este caso el IC del 95 % de Welch es
   <b>[{fmt_ars(ic_welch_low)} , {fmt_ars(ic_welch_high)}]</b> y
   <b>no contiene el 0</b>, por lo que el test bilateral al 5 % del
-  ejercicio 2 <b>rechaza</b> \\(H_0\\). El ejercicio 2 verifica esta
-  equivalencia numéricamente.</p>
+  ejercicio 2 <b>rechaza</b> <i>H</i><sub>0</sub>. El ejercicio 2
+  verifica esta equivalencia numéricamente.</p>
 </div>
 
 <h2>3.  Ejercicio 2 — Test de hipótesis</h2>
@@ -907,18 +910,18 @@ html = f"""<!doctype html>
   {tabla_test_html()}
   <div class="formula">$$\\text{{p-valor bilateral (Welch)}} = {p_bilateral:.3e}$$</div>
   <div class="nota">
-    <b>Interpretación cuidada del p-valor.</b> Bajo \\(H_0\\) (medias
+    <b>Interpretación cuidada del p-valor.</b> Bajo <i>H</i><sub>0</sub> (medias
     poblacionales iguales), la probabilidad de observar una diferencia
     de medias <b>tan o más extrema</b> que la observada en esta
-    muestra es \\(p \\approx {p_bilateral:.2e}\\). El valor es enormemente
-    inferior al nivel \\(\\alpha = 0{{,}}05\\) fijado, por lo que los datos
-    son <b>incompatibles</b> con \\(H_0\\) al nivel elegido y la hipótesis
+    muestra es <i>p</i> ≈ {p_bilateral:.2e}. El valor es enormemente
+    inferior al nivel α = 0,05 fijado, por lo que los datos
+    son <b>incompatibles</b> con <i>H</i><sub>0</sub> al nivel elegido y la hipótesis
     nula se <b>rechaza</b>.
   </div>
   <div class="nota">
     <b>Robustez al supuesto de normalidad.</b> El test de Mann-Whitney
     U —que no asume normalidad— arroja la <b>misma decisión</b> que el
-    Welch (\\(p \\approx {p_mwu:.2e}\\)), lo que indica que el resultado no
+    Welch (<i>p</i> ≈ {p_mwu:.2e}), lo que indica que el resultado no
     es artefacto del supuesto distribucional. Dos procedimientos
     distintos llegan a la misma conclusión cualitativa sobre estos
     datos.
@@ -929,9 +932,9 @@ html = f"""<!doctype html>
 
 <div class="card">
   <p>Se calcula el tamaño del efecto (<b>Cohen's d</b>) con desvío
-  pooled y se resuelve el tamaño muestral \\(n_A\\) necesario para
+  pooled y se resuelve el tamaño muestral <i>n<sub>A</sub></i> necesario para
   alcanzar potencias convencionales, manteniendo el mismo ratio
-  \\(n_B/n_A\\) observado:</p>
+  <i>n<sub>B</sub></i>/<i>n<sub>A</sub></i> observado:</p>
   <div class="formula">$$d = \\frac{{\\bar{{X}}_A - \\bar{{X}}_B}}{{s_\\text{{pooled}}}} \\;,\\quad s_\\text{{pooled}} = \\sqrt{{\\frac{{(n_A-1)s_A^2 + (n_B-1)s_B^2}}{{n_A + n_B - 2}}}}$$</div>
   {tabla_potencia_html()}
 </div>
@@ -940,26 +943,26 @@ html = f"""<!doctype html>
 
 <div class="card">
   <h3>3.4  Interpretación de la potencia</h3>
-  <p>La potencia \\(1 - \\beta\\) es la probabilidad de <b>rechazar \\(H_0\\)
-  cuando \\(H_1\\) es cierta</b> (es decir, detectar una diferencia real
+  <p>La potencia 1 − β es la probabilidad de <b>rechazar <i>H</i><sub>0</sub>
+  cuando <i>H</i><sub>1</sub> es cierta</b> (es decir, detectar una diferencia real
   del tamaño asumido). Una potencia alta implica baja probabilidad de
   falso negativo.</p>
   <div class="nota">
     <b>Cuidado con la interpretación inversa.</b> Un test con baja
-    potencia que <i>no rechaza</i> \\(H_0\\) <b>no es evidencia de
-    igualdad</b>: puede reflejar simplemente que el \\(n\\) es insuficiente
+    potencia que <i>no rechaza</i> <i>H</i><sub>0</sub> <b>no es evidencia de
+    igualdad</b>: puede reflejar simplemente que el tamaño muestral es insuficiente
     para detectar la diferencia existente.
   </div>
   <h3>¿Es esta muestra suficiente?</h3>
   <p><b>Para describir una tendencia general</b> en la encuesta: <b>sí,
-  con margen</b>. El \\(n_A\\) real ({nA}) supera varias veces el
+  con margen</b>. El <i>n<sub>A</sub></i> real ({nA}) supera varias veces el
   necesario para cualquier umbral convencional de potencia. La
   potencia observada al effect size real es prácticamente 1.</p>
   <p><b>Para una causa legal contra una empresa por discriminación
   salarial: no alcanza.</b> En ese contexto harían falta:</p>
   <ol>
     <li><b>Potencia ≥ 0,95</b> y control estricto del error tipo I
-    (\\(\\alpha \\leq 0{{,}}01\\) o corrección por comparaciones múltiples).</li>
+    (α ≤ 0,01 o corrección por comparaciones múltiples).</li>
     <li><b>Análisis multivariado</b> que controle por experiencia,
     seniority, especialización, provincia y otras variables
     correlacionadas, para separar el efecto del género del de los
@@ -998,12 +1001,12 @@ html = f"""<!doctype html>
   <p>El PDF entregado es una página A4 autocontenida en formato
   reporte técnico. Contiene:</p>
   <ul>
-    <li><b>Título y resumen</b> con la cifra central (\\(\\widehat{{\\Delta}}\\),
+    <li><b>Título y resumen</b> con la cifra central (Δ̂,
     IC 95 %, p-valor, tamaño del efecto).</li>
     <li><b>Figura principal</b>: forest plot con la diferencia estimada
     y los dos intervalos (Welch y bootstrap) lado a lado.</li>
-    <li><b>Tabla técnica</b> con \\(n\\), medias, desvíos, \\(t\\), \\(\\nu\\),
-    p-valor, Mann-Whitney \\(U\\), Cohen's d y potencia.</li>
+    <li><b>Tabla técnica</b> con <i>n</i>, medias, desvíos, <i>t</i>, ν,
+    p-valor, Mann-Whitney <i>U</i>, Cohen's d y potencia.</li>
     <li><b>Limitaciones</b> con cuatro bullets: análisis bivariado,
     sesgo de autoselección, filtros declarados, implicancia legal.</li>
     <li><b>Oración con énfasis</b> que resume el mensaje central
@@ -1025,16 +1028,16 @@ html = f"""<!doctype html>
     idéntico, lo que respalda la adecuación del procedimiento
     paramétrico a estos tamaños muestrales.</li>
 
-    <li>El test de Welch rechaza \\(H_0: \\mu_A = \\mu_B\\) al nivel
-    \\(\\alpha = 0{{,}}05\\) con un p-valor bilateral de
-    \\(\\approx {p_bilateral:.2e}\\). El test no paramétrico de
+    <li>El test de Welch rechaza <i>H</i><sub>0</sub>: <i>μ<sub>A</sub></i> = <i>μ<sub>B</sub></i> al nivel
+    α = 0,05 con un p-valor bilateral de
+    ≈ {p_bilateral:.2e}. El test no paramétrico de
     Mann-Whitney U llega a la misma decisión cualitativa, lo que
     indica que el resultado es robusto al supuesto de normalidad. El
     IC del 95 % no contiene el valor 0, en línea con la dualidad
     exacta entre IC y test bilateral.</li>
 
     <li>El tamaño del efecto Cohen's d = {cohens_d:.3f} describe una
-    diferencia moderada. La potencia observada con el \\(n_A\\) real es
+    diferencia moderada. La potencia observada con el <i>n<sub>A</sub></i> real es
     prácticamente 1: la muestra es holgada para describir la tendencia
     general en la encuesta.</li>
 
