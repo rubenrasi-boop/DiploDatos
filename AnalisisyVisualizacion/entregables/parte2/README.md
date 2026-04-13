@@ -4,7 +4,7 @@
 **Alumno:** Rubén Rasi
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
-> **🟡 Estado: Borrador inicial.** Todos los cálculos, tests, intervalos de confianza, gráficos y el PDF de comunicación ya están implementados y son funcionales. Queda una iteración pendiente de revisión de redacción y consistencia narrativa antes de considerarlo definitivo.
+> **🟡 Estado: En curso.** Todos los cálculos, tests, intervalos de confianza, gráficos y el PDF de comunicación ya están implementados y son funcionales. Continúan iteraciones de revisión de redacción, ajustes de diseño y consistencia narrativa.
 
 ---
 
