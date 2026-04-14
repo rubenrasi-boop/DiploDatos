@@ -1,141 +1,114 @@
-Análisis y Visualización de Datos
-Diplomatura Diplodatos  2026
-
-Prueba, Test, Dócima, Contraste de Hipótesis
-
+Análisis y 
+Visualización de Datos
+Diplomatura 
+Diplodatos  2026
+Prueba, Test, Dócima o 
+Contraste de Hipótesis
+(Muchos nombres para el mismo 
+procedimiento
+Generalidades
 Proposiciones a validar
-compare_arrows
-Clasificador A vs B
-"Mi clasificador es mejor que el tuyo"
-assessment
+
+Clasiﬁcador A vs B
+"Mi clasiﬁcador es mejor que el 
+tuyo"
+
 Baseline
-"Mi clasificador es mejor que el mínimo aceptable"
-groups
+"Mi clasiﬁcador es mejor que el 
+mínimo aceptable"
+
 Brecha Salarial
-"El salario de los hombres es mayor que el de las mujeres"
-En muchos problemas se requiere tomar una decisión o verificar una afirmación sobre un parámetro o una población.
-
+"El salario de los hombres es 
+mayor que el de las mujeres"
+En muchos problemas se requiere tomar una decisión o veriﬁcar 
+una aﬁrmación sobre un parámetro o una población.
 Test de Hipótesis
-assignment
-Definición Base
-Esta proposición o afirmación recibe el nombre de hipótesis estadística.
-El proceso de decisión se conoce como prueba o test de hipótesis.
-gavel
+
+Deﬁnición Base
+ESupongamos tener una  hipótesis 
+estadística que debemos evaluar.
+El proceso de decisión se conoce como 
+prueba o test de hipótesis.
+
 Propósito
-Es un procedimiento para juzgar si una propiedad es compatible con lo observado.
-Se basa en el análisis de una muestra aleatoria de la población.
-
-fact_check
+Es un procedimiento para juzgar si una 
+propiedad asociada con la hipótesis 
+estadística es compatible con lo observado.
+Se basa en el análisis de una muestra 
+aleatoria de la población.
+Python: Scipy / testing
+
 Formulación
-La prueba de hipótesis formula dos hipótesis estadísticas que deben anunciarse explícitamente:
-Hipótesis nula (H0)
-Hipótesis alternativa (H1)
-info_outline
+La prueba de hipótesis formula dos hipótesis 
+estadísticas que deben anunciarse 
+explícitamente:
+● Hipótesis nula (H0)
+● Hipótesis alternativa (H1)
+
 Hipótesis Nula (H0)
-Se conoce también como la hipótesis de no diferencia, ya que es una proposición de conformidad.
-Esta hipótesis siempre se opone a la hipótesis del investigador.
+Se conoce también como la hipótesis de no 
+diferencia, ya que es una proposición de 
+conformidad.
+Esta hipótesis siempre se opone a la hipótesis 
+del investigador.
 Pasos para la prueba de hipótesis
-
 Pasos para la prueba de hipótesis
-lightbulb
+
 Hipótesis Alternativa (H1)
-•La segunda, identificada mediante el símbolo H1, es una proposición que se creerá cierta si los datos de la muestra llevan al rechazo de la H0.
-•Por lo general, la H1 y la hipótesis de investigación son la misma y, de hecho; se utilizan los dos términos indistintamente.
-
+•La segunda hipótesis,  identiﬁcada mediante el símbolo H1, es una 
+proposición que se creerá cierta si los datos de la muestra llevan al rechazo 
+de la H0.
+•Por lo general, la H1 y la hipótesis de investigación son la misma y, de 
+hecho; se utilizan los dos términos indistintamente.
 Pasos para la prueba de hipótesis
-target
-En general H₀ se establece con el propósito expreso de ser rechazada.
-rule
-Si no se rechaza, no significa que sea verdadera; simplemente los datos no proporcionan evidencia suficiente para el rechazo.
-verified
-Si se rechaza, se concluye que la hipótesis alternativa puede ser verdadera.
-
-Test de Hipótesis
+targe
+t En general H₀ se establece con el propósito expreso de ser rechazada.
+
+Si no se rechaza, no signiﬁca que sea verdadera; simplemente los datos 
+no proporcionan evidencia suﬁciente para el rechazo.
+
+Si se rechaza, se concluye que la hipótesis alternativa puede ser 
+verdadera.
+
+Si se rechaza, se concluye que la hipótesis alternativa puede ser 
+verdadera y solo se rechaza si hay una evidencia abrumadora a su favor
 El proceso estadístico busca contrastar dos proposiciones opuestas: H₀ vs H₁
-anchor
-H₀: Hipótesis nula
-Se presume cierta inicialmente; se le otorga el beneficio de la duda.
-lightbulb
-H₁: Hipótesis alternativa
-Representa la afirmación que se desea probar o investigar.
-gavel
+ H₀: Hipótesis nula
+Se presume cierta inicialmente; se le 
+otorga el beneﬁcio de la duda.
+ H₁: Hipótesis alternativa
+Representa la aﬁrmación que se 
+desea probar o investigar.
+
 La Regla de Decisión
-¿Cuándo es suficiente la evidencia para rechazar H₀?
-Es fundamental establecer una norma objetiva para tomar la decisión final.
-
-Plantear la hipótesis
-H₀: Hipótesis nula
-H₁: Hipótesis alternativa
-analytics
+● ¿Cuándo es suﬁciente la evidencia para rechazar H₀?
+● Es fundamental establecer una norma objetiva para tomar la decisión ﬁnal.
+Test de Hipótesis
+H₀: Hipótesis nula H₁: Hipótesis alternativa
+
 1. Construcción del Estadístico
-A partir de la muestra se construye o elige un estadístico (función de la m.a.) para afirmar o rechazar H₀.
-fact_check
+A partir de la muestra se construye o elige un estadístico (función de la m.a.) para 
+aﬁrmar o rechazar H₀.
+
 2. Evaluación de la Evidencia
-La evidencia empírica (la muestra) debe proporcionar razones contundentes para rechazar (o no) H₀.
-
-Son poco probables
-
-Si H0 es verdadera
-
-
-analytics
-
-1. Los valores del estadístico de prueba que forman la región de rechazo son aquellos que tienen la menor probabilidad de ocurrir.
-
-fact_check
-2. Los que forman la región de no rechazo tienen la mayor probabilidad de ocurrencia, si la H0 es verdadera para ambas regiones.
-
-Test de Hipótesis: H0 vs H1 
-H0
-Rechazo H0
- No rechazo H0
-Verdadera
-Error tipo I
-Decisión correcta
- Falsa
-Decisión correcta
-Error tipo II
-
-En resumen
-error_outline
-Error Tipo I (α)
-Nivel de significancia. Probabilidad de "rechazar" la H₀ cuando ésta es verdadera.
-report_problem
-Error Tipo II (β)
-Valor predictivo. Probabilidad de "no rechazar" la H₀ cuando ésta es falsa.
-track_changes
-Objetivo del procedimiento:
-El procedimiento busca fijar la probabilidad de cometer Error Tipo I (α), y minimizar la de cometer Error Tipo II (β).
-
-P(Error tipo I) = α P(Error tipo II) = 𝜷
-
-
-Test de Hipótesis: H₀ vs H₁
-analytics
-1. El Estadístico
-Se construye o elige una función de la muestra para decidir sobre H₀.
-fact_check
-2. Evidencia Empírica
-La muestra aporta las razones suficientes para rechazar o no la hipótesis nula.
-gavel
-3. Regla de Decisión
-Determinados valores del estadístico implican el rechazo inevitable de H₀.
-map
-4. Regiones Críticas
-Los valores críticos definen la zona de rechazo frente a la zona de aceptación.
-
-
-Test de Hipótesis: H0 vs H1 
-
-Formular la H0 a contrastar
-Establecer el nivel de significancia del test 𝜶
-Cálculo/elección del estadístico de contraste
-Regla de decisión—--------------------------
-¿Qué me dijeron los datos?
-Conclusión 
-
+La evidencia empírica (la muestra) debe proporcionar razones contundentes para 
+rechazar (o no) H₀.
 Test de Hipótesis: Formulación
-Contexto: Muestra aleatoria (m.a.) de una población con media μ.
+ 1. El Estadístico
+Se construye o elige una función de la 
+muestra para decidir sobre H₀.
+ 2. Evidencia Empírica
+La muestra aporta las razones suﬁcientes 
+para rechazar o no la hipótesis nula.
+ 3. Regla de Decisión
+Determinados valores del estadístico 
+implican el rechazo inevitable de H₀.
+ 4. Regiones Críticas
+Los valores críticos deﬁnen la zona de 
+rechazo frente a la zona de aceptación.
+Test de Hipótesis: Formulación
+Ejemplo: Z-test para la media
+Contexto: Muestra aleatoria grande de una población con media μ.
 Unilateral (Menor)
 H0 : μ = 0
 vs.
@@ -152,44 +125,125 @@ vs.
 H1 : μ ≠ 0
 Hipótesis alternativa bilateral
 Hay tres tipos de planteamientos comunes.
+Valores del estadístico son poco probables en estas áreas                    rechazo  
+Ejemplo: Z-test bilateral para la media
+● 
+1. Los valores del estadístico de prueba que forman la región 
+de rechazo son aquellos que tienen la menor probabilidad de 
+ocurrir.
+
+2. Los que forman la región de no rechazo tienen la mayor 
+probabilidad de ocurrencia, si la H0 es verdadera.
+Si H0 es verdadera
+
+Error Tipo I (α)
+Nivel de signiﬁcancia. Probabilidad de 
+"rechazar" la H₀ cuando ésta es 
+verdadera.
+
+Error Tipo II (β)
+Valor predictivo. Probabilidad de "no 
+rechazar" la H₀ cuando ésta es falsa.
+
+Objetivo del procedimiento:
+El procedimiento busca ﬁjar la probabilidad de cometer Error Tipo I (α), y 
+minimizar la de cometer Error Tipo II (β).
+Errores
+Deﬁnición en Inferencia
+El p-ésimo percentil (xⱼ) es el valor tal que la 
+probabilidad de que la variable aleatoria X sea 
+menor o igual a xⱼ es exactamente p.
+En un test de hipótesis, el valor crítico se 
+deﬁne mediante percentiles de la distribución 
+del estadístico bajo H₀.
+● Cola Derecha: Percentil (1 - α)
+● Cola Izquierda: Percentil (α)
+● Bilateral: Percentiles (α/2) y (1 - α/2)
+Relación Visual
+α deﬁne el área de la "Región de Rechazo".
+El percentil marca el límite exacto de esa zona.
+Percentiles y nivel de signiﬁcación α
+Ejemplo: Z-test cola izq. para la media
+percentil α=0.05
+¿Qué es el p-valor?
+Deﬁnición Conceptual
+El p-valor es la probabilidad de obtener un resultado 
+al menos tan extremo como el observado, asumiendo 
+que la hipótesis nula (H₀) es cierta.
+Es una medida de la evidencia contra H₀: cuanto 
+menor es el p-valor, más fuerte es la evidencia para 
+rechazarla.
+● p < α: Se rechaza H₀.
+● p ≥ α: No se rechaza H₀.
+● Indica la probabilidad de error Tipo I cometida.
+Interpretación Visual
+El p-valor representa el área bajo la curva
+más allá del estadístico observado.
+Criterios de Decisión
+1. Región de Rechazo
+Se basa en la posición del valor calculado 
+respecto a los valores críticos.
+Si el estadístico calculado entra en la región 
+de rechazo:
+➔ SE RECHAZA H₀
+2. Criterio del p-valor
+Se compara la probabilidad observada con el 
+nivel de signiﬁcancia (α) del test.
+Si el p-valor es menor que el nivel del test (p 
+< α):
+➔ SE RECHAZA H₀
+1. Formular la H0 a contrastar
+2. Establecer el nivel de 
+signiﬁcancia del test 𝜶
+3. Cálculo/elección del 
+estadístico de contraste
+4. Regla de decisión 
+—--------------------------
+5. ¿Qué me dijeron los datos?
+6. Conclusión
+ 
+Test de Hipótesis
+Ejemplos
 
-                ¿Qué estadístico uso? 
-Z Test para 𝝁 bajo normalidad o muestras grandes 
-
-
-
-Ejemplo: Test de Hipótesis Bilateral
-analytics Contexto: Muestra aleatoria de una distribución Normal, con media μ y sigma (σ) desconocida.
+Z test
+¿Diferencia signiﬁcativa 
+entre las medias?
+ Contexto: Muestra aleatoria de una distribución Normal, con media μ y sigma 
+(σ) desconocida.
 Hipótesis
-H₀: μ = μ₀ (43)
-H₁: μ ≠ μ₀ (43)
-Nivel de Significancia
+H₀: μ = μ₀
+H₁: μ ≠ μ₀
+Nivel de Signiﬁcancia
 α
 Se elije el estadistico de prueba
-Bajo H0: 
+ Bajo H0: 
+Z-Test Bilateral
+Comparación de una media poblacional | Muestra chica
+Z-Test Bilateral
+Comparación de una media poblacional | Muestra chica
+Hipótesis Nula
+H₀: 𝝁 = 𝝁₀
+SUPUESTOS Y VARIABLES
+Muestra aleatoria de una distribución Normal, con media μ y 
+sigma (σ) desconocida, n<100
+Estadístico de Prueba (Z-calc)
+Criterio de Decisión
+• Se rechaza H₀ si |Z| > Z_{α/2} (Bilateral)
+• Valor-p: P(|Z| > |z_{obs}|) bajo H₀
+• Nivel de signiﬁcancia α común: 0.05 o 0.01
 
-Ejemplo: Test de Hipótesis Bilateral
-analyticsH0 : μ =43=μ0 vs. H1 : μ ≠ 43 (bilateral)
-
-
-
-
-
-
-Ejemplo: Test de Hipótesis Bilateral
-Potencia
-
-Test de Hipótesis Bilateral: p-valor
-Se calcula para la realización de NUESTRA muestra, nuestros datos
-
-Es el nivel de significancia más pequeño que conduce al rechazo de la hipótesis nula H0 : 𝝻=𝝻0 En el primer ejemplo:
-estadístico Tn-1
-realización
-
-Test de Hipótesis Bilateral: p-valor
-Se usan nuestros datos, NUESTRA muestra. El resultado experimental es la realización del estadístico para nuestros datos (del experimento o estudio) .
-realización/ experimental
-
+H0 : μ =43 vs. H1 : μ ≠ 43 (bilateral)
+rechazamos si |Z| > tα/2 
+Z-Test Bilateral
+Comparación de una media poblacional | Muestra chica
+● P-valor Se calcula para la realización de la muestra
+● El p-valor representa el área bajo la curva más allá del estadístico 
+observado.
+estadístico Z realización
+Z-Test Bilateral
+Comparación de una media poblacional | Muestra chica
+Ejemplos: una población
+Ejercicio 1 Notebook
 Z-Test para Proporciones: Bilateral
 Comparación de una proporción poblacional | Muestras Grandes
 Hipótesis Nula
@@ -201,31 +255,32 @@ Estadístico de Prueba (Z-calc)
 Criterio de Decisión
 • Se rechaza H₀ si |Z| > Z_{α/2} (Bilateral)
 • Valor-p: P(|Z| > |z_{obs}|) bajo H₀
-• Nivel de significancia α común: 0.05 o 0.01
+• Nivel de signiﬁcancia α común: 0.05 o 0.01
 
 Z-Test para Proporciones: cola derecha
 Comparación de una proporción poblacional | Muestras Grandes
 Criterio de Decisión
 • Se rechaza H₀ si Z > Z_{α} 
 • Valor-p: P( Z > z_{obs}) bajo H₀
-• Nivel de significancia α común: 0.05 o 0.01
-
-Test de Hipótesis generales
-Independencia
-Variables categóricas: Test Chi-Cuadrado
-Normalidad
-Distribución de los datos: Test K-S (Kolmogorov-Smirnov)
-Homocedasticidad
-Igualdad de varianzas
-Igualdad de Medias
-Dos o más distribuciones o tratamientos
-Bondad de Ajuste
-Pruebas dedicadas a la verificación de supuestos en general.
-Test K-S (Kolmogorov-Smirnov)  y Pearson
-
-Tipos de test con distribución t
-
-
+• Nivel de signiﬁcancia α común: 0.05 o 0.01
+Dos muestras
+Una muestra, dos muestras
+muestras apareadas
+Una muestra Dos muestras 
+independientes
+Dos muestras 
+apareadas
+¿Hay diferencia 
+entre la muestra y 
+la población?
+¿Hay diferencias 
+entre las 
+muestras?
+¿Hay diferencias 
+en la muestra 
+entre dos puntos 
+del tiempo?
+Z-test muestras grandes: distribución N(0,1)
 Test para igualdad de medias: μ₁ = μ₂
 Varianza (σ²) conocida | Muestras Apareadas
 Hipótesis Nula
@@ -236,27 +291,27 @@ Muestras apareadas (n muestras de X, n muestras de Y)
 Transformación a Variable Diferencia (Zᵢ)
 Zᵢ = Xᵢ - Yᵢ
 Ejemplo: BRUTO y NETO
-Datos apareados
-Mismo tamaño de muestra (n)
+● Datos apareados
+● Mismo tamaño de muestra (n)
 Distribución de Z:
 N(μ₁-μ₂, σ₁² + σ₂² - 2ρσ₁σ₂)
 Bajo H₀:
 Z ~ N(0, σ²)
-functions
-
+
 Test para igualdad de medias: μ₁ = μ₂
 Varianza común (σ²) desconocida | Muestras Independientes
 Hipótesis Nula
 H₀: μ₁ - μ₂ = 0
 DEFINICIÓN DE VARIABLES
 X₁, ..., Xₙ₁ m.a. X ~ N(μ₁, σ²) | Y₁, ..., Yₙ₂ m.a. Y ~ N(μ₂, σ²)
-Muestras independientes con varianza común desconocida
+Muestras independientes con varianza común desconocida y  muestra chica
 Estadístico de Prueba y Varianza Amalgamada (Sₚ²)
 Distribución T de Student
-Bajo H₀, el estadístico T sigue una distribución t con n₁ + n₂ - 2 grados de libertad.
+Bajo H₀, el estadístico T sigue una distribución t con n₁ 
++ n₂ - 2 grados de libertad.
 Varianza Común Estimada (Pooled)
-Estimador insesgado de σ² combinando ambas muestras.
-
+Estimador insesgado de σ² combinando ambas 
+muestras.
 Test para igualdad de medias: μ₁ = μ₂
 Varianzas distintas (σ₁² ≠ σ₂²) desconocidas | Muestras Independientes
 Hipótesis Nula
@@ -265,116 +320,206 @@ DEFINICIÓN DE VARIABLES
 X₁, ..., Xₙ₁ m.a. X ~ N(μ₁, σ₁²) | Y₁, ..., Yₙ₂ m.a. Y ~ N(μ₂, σ₂²)
 Muestras independientes con varianzas no iguales y distinto tamaño (no apareadas)
 Estadístico de Prueba (Pivote) y Grados de Libertad (ν)
-Aproximación de Welch-Satterthwaite: Los grados de libertad (ν) se calculan para ajustar la distribución t cuando las varianzas son heterocedásticas.
-
-Test Chi-Cuadrado p/ independencia
+Aproximación de Welch-Satterthwaite: Los grados de libertad (ν) se calculan para ajustar la distribución t cuando las 
+varianzas son heterocedásticas.
+Dos muestras
+Notebook ejercicio 2
+Otras hipótesis
+Se pueden probar otras hipótesis
+Independencia
+Variables categóricas: Test 
+Chi-Cuadrado
+Normalidad
+Distribución de los datos: Test 
+K-S (Kolmogorov-Smirnov)
+Homocedasticidad
+Igualdad de varianzas
+Igualdad de Medias
+Dos o más distribuciones o 
+tratamientos Test ANOVA
+Bondad de Ajuste
+Pruebas dedicadas a la veriﬁcación de supuestos en general.
+Test K-S (Kolmogorov-Smirnov)  y Pearson
+Igualdad de poblaciones
+Dos o más distribuciones o 
+tratamientos
+Test de Kruskal-Wallis
+No paramétrico
+Análisis de Varianza (ANOVA)
+Comparación de medias para k > 2 grupos
+Hipótesis del Test
+H₀: No hay diferencia signiﬁcativa en las medias 
+de los grupos (μ₁ = μ₂ = ... = μₖ)
+H₁: Al menos una media es signiﬁcativamente 
+diferente a las demás
+Estadístico F
+F = Varianza entre groupos
+      Variance dentro groups
+Proceso de Decisión
+● Se asume normalidad de los datos y homogeneidad de 
+varianza.
+● Si p-valor < α, se rechaza H₀.
+● Un valor de F grande indica que la variabilidad entre 
+grupos supera la variabilidad interna.
+CONCEPTO
+Test de Kruskal-Wallis
+Alternativa no paramétrica al ANOVA de un factor
+Fundamentos y Uso
+Compara más de dos muestras independientes. 
+Se utiliza cuando no se cumplen los supuestos de 
+normalidad del ANOVA.
+Características clave:
+● Basado en el rango de los datos (no en sus 
+valores directos).
+● Evalúa si las poblaciones provienen de la 
+misma distribución.
+● Resistente a valores atípicos (outliers).
+Planteo de Hipótesis
+H₀: Las medianas de todos los grupos son iguales.
+H₁: Al menos una mediana es diferente a las 
+demás.
+MÉTODO
+Análisis unifactorial de rangos
+Calcula la suma de rangos para cada grupo y evalúa 
+la discrepancia global.
+Aplicaciones: Ecología, Psicología y Neurociencias para comparar tratamientos no normales.
+Más de Dos muestras: 
+Anova y Kruskal Wallis
+Notebook ejercicio 3  
+Test Chi-Cuadrado 
 Variables Aleatorias Categóricas
 Objetivo Principal
-Prueba si la distribución de datos categóricos de muestra coincide con una distribución esperada.
+Prueba si la distribución de datos categóricos 
+de muestra coincide con una distribución 
+esperada.
 Hipótesis de Independencia:
-Determina si existe una asociación significativa entre dos variables cualitativas.
+Determina si existe una asociación signiﬁcativa 
+entre dos variables cualitativas.
 Ejemplo de Aplicación
-¿Son independientes el género y el signo del zodíaco?
-Población determinada.
-Muestras observadas.
-Comparación contra frecuencias esperadas bajo independencia.
-
-Test Chi-Cuadrado p/ independencia
+¿Son independientes el género y el signo del 
+zodíaco?
+● Población determinada.
+● Muestras observadas.
+● Comparación contra frecuencias 
+esperadas bajo independencia.
+Test Chi-Cuadrado 
+Variables Aleatorias Categóricas
+¿Qué evalúa esta prueba?
+Determina si varias poblaciones independientes son homogéneas respecto a una variable 
+categórica. Es decir, si la distribución de la variable es la misma en todos los grupos.
+Hipótesis Nula (H₀)
+H₀: Las proporciones de las categorías son 
+iguales en todas las poblaciones.
+Ej: El % de éxito es el mismo en los 4 
+tratamientos.
+Diferencia con Independencia
+A diferencia del test de independencia (una 
+sola muestra), aquí se comparan múltiples 
+muestras o poblaciones ﬁjadas de antemano 
+por el investigador.
+
+Test Chi-Cuadrado
+Planteo de Hipótesis
+En primer lugar vamos a plantear nuestras hipótesis
+Hipótesis Nula (H₀)
+"Las dos variables en estudio son 
+independientes"
+Hipótesis Alternativa (H₁)
+"Las dos variables en estudio están 
+relacionadas"
+
+Como en los juicios, en estadística se cumple H₀ (independencia) hasta que 
+demostremos lo contrario.
+                           A es independiente de B  si  P(A⋂B)=P(A).P(B)
+Test Chi-Cuadrado 
 Variables Aleatorias Categóricas
 Limitación de Datos Categóricos
-Al trabajar con datos categóricos, los valores de las observaciones en sí mismos no son de mucha utilidad para las pruebas estadísticas porque las categorías como "masculino", "femenino" y "otro" no tienen ningún significado matemático.
+Al trabajar con datos categóricos, los valores de las observaciones en sí mismos no son de mucha utilidad para 
+las pruebas estadísticas porque las categorías como "masculino", "femenino" y "otro" no tienen ningún 
+signiﬁcado matemático.
 Fundamento de la Prueba
-Las pruebas que tratan con variables categóricas se basan en conteos de variables en lugar del valor real de las variables mismas.
-analytics
-
-Test Chi-Cuadrado p/ independencia de v.a. categóricas
-
-
-Supongamos que tenemos los datos de 4 tratamientos médicos y con una descripción de cómo lo han recibido los pacientes. Los plasmamos en una tabla de contingencia
-Trat_i \Res_ j 
-Peor
-igual
-mejor
-Tratamiento1
-7
-28
-115
-Tratamiento2
-15
-20
-85
-Tratamiento3
-10
-30
-90
-Tratamiento4
-5
-40
-115
-560
-
-Test Chi-Cuadrado p/ independencia de v.a. categóricas
-
-
+Las pruebas que tratan con variables categóricas se basan en conteos de variables en 
+lugar del valor real de las variables mismas.
+Test Chi-Cuadrado
+Planteo de Hipótesis
 En primer lugar vamos a plantear nuestras hipótesis
-
-H0=”las dos variables en estudio son independientes”
-
-H1=”las dos variables en estudio están relacionadas”
-
-Como en los juicios, en estadística, se cumple H0 (las variables son independientes) hasta que demostremos lo contrario.
-
-Test Chi-Cuadrado p/ independencia de v.a. categóricas
-
-
-Entonces como datos disponibles tenemos las frecuencias observadas, las frecuencias marginales y el número ‘gran total’ de la muestra
-i x j = 4*3
-Peor
-igual
-mejor
-Tratamiento1
-7
-28
-115
-150
-Tratamiento2
-15
-20
-85
-120
-Tratamiento3
-10
-30
-90
-130
-Tratamiento4
-5
-40
-115
-160
-37
-118
-405
-560
-
-Test Chi-Cuadrado p/ independencia de v.a. categóricas
-¿Cómo se contrasta la H₀?
+Hipótesis Nula (H₀)
+"La distribución de la variable en 
+varios grupos es la misma"
+Hipótesis Alternativa (H₁)
+"La distribución de la variable en 
+varios grupos no es la misma"
+
+CEl estadistico de test es el mismo para los test de independencia y de 
+homogeneidad, varia si tengo dos variables o si tengo una variable y varios 
+tratamientos.
+Supongamos que tenemos los datos de 4 tratamientos médicos y con una 
+descripción de cómo lo han recibido los pacientes. Los plasmamos en una 
+tabla de contingencia
+Trat_i \Res_ j Peor igual mejor 
+Tratamiento1 7 28 115 
+Tratamiento2 15 20 85 
+Tratamiento3 10 30 90 
+Tratamiento4 5 40 115 
+ 560
+Test Chi-Cuadrado 
+Variables Aleatorias Categóricas
+Entonces como datos disponibles tenemos las frecuencias observadas, las 
+frecuencias marginales y el número ‘gran total’ de la muestra
+i x j = 4*3 Peor igual mejor 
+Tratamiento1 7 28 115 150
+Tratamiento2 15 20 85 120
+Tratamiento3 10 30 90 130
+Tratamiento4 5 40 115 160
+ 37 118 405 560
+Test Chi-Cuadrado
+Variables Aleatorias Categóricas
 Frecuencias Esperadas (fₑ)
-fₑᵢⱼ = (total fila i) * (total col j)
+fₑᵢⱼ = (total ﬁla i) * (total col j)
 gran total
-Se calculan las frecuencias que cabría esperar si las 2 variables fueran independientes.
+- Se calculan las frecuencias que cabría 
+esperar si las 2 variables fueran 
+independientes.
+- Se calculan las frecuencias que cabría 
+esperar si los grupos fueran homogéneos
 Estadístico de Prueba (χ²)
-• Sigue una distribución Chi-cuadrado bajo H₀.
-• Depende de la suma de las diferencias al cuadrado entre frecuencias observadas (fₒ) y esperadas (fₑ).
+❏ Sigue una distribución Chi-cuadrado bajo H₀.
+❏ Depende de la suma de las diferencias al cuadrado entre 
+frecuencias observadas (fₒ) y esperadas (fₑ).
+❏ Se rechaza la independencia para valores grandes del 
+estadistico
+Test Chi-Cuadrado 
+Variables Aleatorias Categóricas
+¿Cómo se contrasta la H₀?
+Test Chi-cuadrado
+Notebook ejercicio 4 y 5 
+Test no 
+paramétricos
 
 
 
 
+Ejemplo
 
 
 
 
-
+Prueba de los Rangos con Signo de Wilcoxon
+¿Qué es?
+Es una prueba no paramétrica utilizada para comparar dos muestras 
+relacionadas (apareadas) o medidas repetidas en una sola muestra para 
+evaluar si sus rangos medios poblacionales difieren.
+Hipótesis del Test
+H₀: No hay diferencia entre las medianas de las diferencias (Rendimiento 
+equivalente).
+H₁: Existe una diferencia significativa entre las medianas (Rendimiento no 
+equivalente).
+Regla de Decisión:
+Rechazar H₀ si p-valor < α (nivel de significancia).
+Ejemplo de Aplicación
+Comparación del Accuracy en reconocimiento de individuos (e.g., tortugas 
+marinas) usando diferentes clasificadores.
+Alternativa a la prueba t
 
 
 
