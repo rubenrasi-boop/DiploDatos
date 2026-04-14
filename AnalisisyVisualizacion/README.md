@@ -153,7 +153,7 @@ AnalisisyVisualizacion/
     │   ├── Entregable_1_grupo_21.pdf        ← PDF entregado (15 MB)
     │   ├── entregable_parte_1_ayvd_g21.py   ← script entregado (export Colab)
     │   │
-    │   │  # Anexos técnicos exploratorios de cursada
+    │   │  # Material complementario
     │   ├── entregable_ayvd_parte1.ipynb     ← notebook con respuestas integradas
     │   ├── entregable_ayvd_parte1.html      ← informe HTML interactivo (Plotly)
     │   ├── datos_parte1.py                  ← apéndice de datos ejecutable

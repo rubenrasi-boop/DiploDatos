@@ -4,7 +4,7 @@
 **Alumno:** Rubén Rasi · **Grupo 21**
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
-> **🟢 Estado: Entregado.** Trabajo grupal finalizado y enviado al aula virtual. Esta carpeta contiene tanto los archivos oficiales del **Grupo 21** como los anexos técnicos exploratorios elaborados durante la cursada (informe HTML, notebook con respuestas integradas, apéndice ejecutable y 12 gráficos en matplotlib/seaborn) que sirvieron de insumo para la preparación del entregable grupal.
+> **🟢 Estado: Entregado.** Trabajo grupal finalizado y enviado al aula virtual. Esta carpeta contiene tanto los archivos oficiales del **Grupo 21** como el material complementario elaborado durante la cursada (informe HTML, notebook con respuestas integradas, apéndice ejecutable y 12 gráficos en matplotlib/seaborn) que sirvió de base para la preparación del entregable grupal.
 
 ---
 
@@ -77,11 +77,9 @@ Estos son los dos archivos que el **Grupo 21** envió al aula virtual de la mate
 
 ---
 
-## 🗂️ Anexos técnicos exploratorios de cursada
+## 🗂️ Material complementario
 
-Material técnico exhaustivo elaborado durante la cursada como **soporte de exploración y preparación del entregable grupal**. **No forma parte de la entrega oficial al aula virtual**, pero queda preservado en el repo como referencia técnica y metodológica. Es el material que desarrolla la consigna en profundidad y que sirvió de insumo para el trabajo grupal final.
-
-Estos anexos representan **valor técnico complementario del repositorio** y dejan trazabilidad del proceso de preparación del entregable.
+Material técnico de apoyo elaborado durante la cursada como base para la preparación del entregable grupal. **No forma parte de la entrega oficial al aula virtual**, pero queda preservado en el repo como referencia técnica y metodológica. Desarrolla la consigna en profundidad y deja trazabilidad del proceso de preparación.
 
 | Archivo / carpeta | Tipo | Qué aporta |
 |---|---|---|
@@ -101,7 +99,7 @@ parte1/
 ├── Entregable_1_grupo_21.pdf               ← PDF entregado oficialmente (15 MB)
 ├── entregable_parte_1_ayvd_g21.py          ← Script entregado oficialmente (export Colab)
 │
-├── 🗂️ ANEXOS TÉCNICOS EXPLORATORIOS DE CURSADA
+├── 🗂️ MATERIAL COMPLEMENTARIO
 ├── entregable_ayvd_parte1.ipynb            ← Notebook con respuestas integradas
 ├── entregable_ayvd_parte1.html             ← Informe HTML interactivo (Plotly + KaTeX)
 ├── datos_parte1.py                         ← Apéndice ejecutable de datos
