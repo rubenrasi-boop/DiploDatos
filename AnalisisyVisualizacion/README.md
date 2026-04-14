@@ -113,8 +113,8 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Estado** | 🟢 **Entregado** — ver [entregables/parte1/](entregables/parte1/README.md) |
 | **PDF entregado (Grupo 21)** | [`entregables/parte1/Entregable_1_grupo_21.pdf`](entregables/parte1/Entregable_1_grupo_21.pdf) |
 | **Script entregado (Grupo 21)** | [`entregables/parte1/entregable_parte_1_ayvd_g21.py`](entregables/parte1/entregable_parte_1_ayvd_g21.py) |
-| **Anexo — Notebook personal** | [`entregables/parte1/entregable_ayvd_parte1.ipynb`](entregables/parte1/entregable_ayvd_parte1.ipynb) |
-| **Anexo — Informe HTML personal** | [`entregables/parte1/entregable_ayvd_parte1.html`](entregables/parte1/entregable_ayvd_parte1.html) |
+| **Anexo — Notebook con respuestas integradas** | [`entregables/parte1/entregable_ayvd_parte1.ipynb`](entregables/parte1/entregable_ayvd_parte1.ipynb) |
+| **Anexo — Informe HTML interactivo** | [`entregables/parte1/entregable_ayvd_parte1.html`](entregables/parte1/entregable_ayvd_parte1.html) |
 | **Anexo — Apéndice de datos** | [`entregables/parte1/datos_parte1.py`](entregables/parte1/datos_parte1.py) |
 
 ### Entregable Parte 2
@@ -153,7 +153,7 @@ AnalisisyVisualizacion/
     │   ├── Entregable_1_grupo_21.pdf        ← PDF entregado (15 MB)
     │   ├── entregable_parte_1_ayvd_g21.py   ← script entregado (export Colab)
     │   │
-    │   │  # Anexos personales (Rubén Rasi)
+    │   │  # Anexos técnicos exploratorios de cursada
     │   ├── entregable_ayvd_parte1.ipynb     ← notebook con respuestas integradas
     │   ├── entregable_ayvd_parte1.html      ← informe HTML interactivo (Plotly)
     │   ├── datos_parte1.py                  ← apéndice de datos ejecutable

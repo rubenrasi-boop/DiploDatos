@@ -4,7 +4,7 @@
 **Alumno:** Rubén Rasi · **Grupo 21**
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
-> **🟢 Estado: Entregado.** Trabajo grupal finalizado y enviado al aula virtual. Esta carpeta contiene tanto los archivos oficiales del **Grupo 21** como los anexos personales de trabajo previo (informe HTML, notebook con respuestas integradas, apéndice ejecutable y 12 gráficos en matplotlib/seaborn).
+> **🟢 Estado: Entregado.** Trabajo grupal finalizado y enviado al aula virtual. Esta carpeta contiene tanto los archivos oficiales del **Grupo 21** como los anexos técnicos exploratorios elaborados durante la cursada (informe HTML, notebook con respuestas integradas, apéndice ejecutable y 12 gráficos en matplotlib/seaborn) que sirvieron de insumo para la preparación del entregable grupal.
 
 ---
 
@@ -77,11 +77,11 @@ Estos son los dos archivos que el **Grupo 21** envió al aula virtual de la mate
 
 ---
 
-## 🗂️ Anexos personales — Rubén Rasi
+## 🗂️ Anexos técnicos exploratorios de cursada
 
-Trabajo previo, individual y exhaustivo realizado durante la cursada. **No forma parte de la entrega oficial al aula virtual**, pero queda preservado en el repo como referencia técnica y metodológica. Es el material que más profundamente desarrolla la consigna y que sirvió de insumo para el trabajo grupal final.
+Material técnico exhaustivo elaborado durante la cursada como **soporte de exploración y preparación del entregable grupal**. **No forma parte de la entrega oficial al aula virtual**, pero queda preservado en el repo como referencia técnica y metodológica. Es el material que desarrolla la consigna en profundidad y que sirvió de insumo para el trabajo grupal final.
 
-Estos anexos son **el principal atractivo técnico del repositorio** y representan el grueso del trabajo invertido en la cursada.
+Estos anexos representan **valor técnico complementario del repositorio** y dejan trazabilidad del proceso de preparación del entregable.
 
 | Archivo / carpeta | Tipo | Qué aporta |
 |---|---|---|
@@ -101,7 +101,7 @@ parte1/
 ├── Entregable_1_grupo_21.pdf               ← PDF entregado oficialmente (15 MB)
 ├── entregable_parte_1_ayvd_g21.py          ← Script entregado oficialmente (export Colab)
 │
-├── 🗂️ ANEXOS PERSONALES — Rubén Rasi
+├── 🗂️ ANEXOS TÉCNICOS EXPLORATORIOS DE CURSADA
 ├── entregable_ayvd_parte1.ipynb            ← Notebook con respuestas integradas
 ├── entregable_ayvd_parte1.html             ← Informe HTML interactivo (Plotly + KaTeX)
 ├── datos_parte1.py                         ← Apéndice ejecutable de datos
@@ -133,7 +133,7 @@ Abrir **`Entregable_1_grupo_21.pdf`** con cualquier lector de PDF. Es el materia
 
 Para revisar el código que produjo ese informe, abrir **`entregable_parte_1_ayvd_g21.py`** (es un export de Colab a script Python con marcadores de celda `# %%`).
 
-### Opción 1 — Notebook personal con respuestas integradas *(anexo)*
+### Opción 1 — Notebook con respuestas integradas *(anexo)*
 
 Abrir **`entregable_ayvd_parte1.ipynb`** en Jupyter, VS Code o Google Colab. El notebook se construye sobre la consigna oficial del curso (celdas originales intactas) e intercala después de cada ejercicio una celda de respuesta con los hallazgos clave y los gráficos correspondientes embebidos desde `datos_parte1_img/`. Desde ese mismo notebook se enlaza al informe HTML y al apéndice `datos_parte1.py` para el desarrollo completo.
 
@@ -143,7 +143,7 @@ Abrir **`entregable_ayvd_parte1.html`** en cualquier navegador moderno. El infor
 
 ### Opción 3 — Cotejar los datos por consola *(anexo)*
 
-El archivo **`datos_parte1.py`** es el apéndice de datos del informe personal. Imprime por consola los 46 cuadros intermedios (DataFrames, estadísticos, valores derivados) que sustentan cada afirmación del HTML, y regenera los 12 gráficos equivalentes con matplotlib/seaborn (las librerías vistas en clase).
+El archivo **`datos_parte1.py`** es el apéndice de datos del informe HTML anexo. Imprime por consola los 46 cuadros intermedios (DataFrames, estadísticos, valores derivados) que sustentan cada afirmación del HTML, y regenera los 12 gráficos equivalentes con matplotlib/seaborn (las librerías vistas en clase).
 
 ```bash
 # Desde esta carpeta (entregables/parte1/)
@@ -168,7 +168,7 @@ Cada estadístico, gráfico o cuadro que aparece en el HTML se puede rastrear ha
 | Uso | Librería |
 |---|---|
 | Manipulación de datos | `pandas`, `numpy` |
-| Gráficos del informe HTML personal | `plotly` |
+| Gráficos del informe HTML anexo | `plotly` |
 | Gráficos equivalentes estáticos | `matplotlib`, `seaborn` |
 
 Dependencias: `pandas`, `numpy`, `plotly`, `matplotlib`, `seaborn`.
