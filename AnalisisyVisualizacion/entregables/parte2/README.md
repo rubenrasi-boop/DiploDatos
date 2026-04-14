@@ -44,6 +44,15 @@
 - **2.2 P-valor y decisión:** t observado = 9,746 · ν = 1575,4 · p-valor bilateral ≈ 7,84 × 10⁻²² → se rechaza H₀ al nivel α = 0,05. Se agrega test de **Mann-Whitney U** (p ≈ 1,12 × 10⁻¹⁵) como verificación no paramétrica de robustez: coincide en la decisión.
 - **2.3 Potencia:** Cohen's d = 0,324 (efecto moderado) · n_A necesario para potencia 0,80 / 0,90 / 0,95 = 380 / 507 / 627 · n_A real = 3 134 · potencia observada ≈ 1,0000. Se discute explícitamente la diferencia entre *tendencia general* (la muestra alcanza con holgura) y *causa legal por discriminación* (no alcanza: hace falta análisis multivariado, control de confounders y marco metodológico formal).
 
+### Sección 2.4 — Extensión natural a tres grupos analíticos *(ANOVA y Kruskal-Wallis)*
+
+Sección complementaria al ejercicio 2 que aprovecha el material que el docente sumó al notebook 05 y a las slides de Test de Hipótesis (ANOVA de un factor y Kruskal-Wallis como contraparte no paramétrica). Se agrega un tercer grupo `groupD = Diversidades` siguiendo la misma agrupación respetuosa que se usó en parte 1 (No binarie, Trans, Queer, Lesbiana, Agénero, Prefiero no decir).
+
+- **ANOVA** (`scipy.stats.f_oneway`) sobre los tres grupos: `F = 32,93 · p ≈ 6,5 × 10⁻¹⁵` → se rechaza H₀ global.
+- **Kruskal-Wallis** (`scipy.stats.kruskal`) como verificación no paramétrica: `H = 64,28 · p ≈ 1,1 × 10⁻¹⁴` → misma decisión.
+- Ambos tests son **omnibus** — rechazar H₀ implica que alguna diferencia entre los grupos existe, pero no identifica cuál par. Para esa identificación harían falta tests post-hoc (Tukey HSD para ANOVA, Dunn para Kruskal-Wallis), que el material del curso no incluye, por lo que **no se aplican**. La identificación cualitativa de los pares se hace con la tabla de medias y medianas, y para el par específico de la consigna (Varón cis vs Mujer cis) ya tenemos el contraste directo del test de Welch en 2.2.
+- **G6 — Tres grupos**: boxplot comparativo con jitter sobre los 3 grupos analíticos, con las medias marcadas en diamante.
+
 ### Ejercicio 3 — Comunicación y visualización
 
 **Opción elegida: 2 — Publicación científica / reporte técnico interno.** Se justifica en el notebook con una tabla comparativa de los tres medios: es el único que permite comunicar con honestidad lo que los datos soportan (diferencia bivariada con IC, test, potencia y limitaciones explícitas) sin caer en la tendencia natural de los otros dos medios a simplificar o exacerbar.
@@ -92,7 +101,8 @@ parte2/
 │   ├── G2_boxplot_comparativo.png       ← boxplot + puntos con jitter + medias
 │   ├── G3_qq_plots.png                  ← QQ-plots contra la normal
 │   ├── G4_forest_plot_IC.png            ← forest plot de los IC Welch y bootstrap
-│   └── G5_curva_potencia.png            ← curva de potencia vs tamaño muestral
+│   ├── G5_curva_potencia.png            ← curva de potencia vs tamaño muestral
+│   └── G6_tres_grupos.png               ← boxplot 3 grupos (ANOVA + KW, sección 2.4)
 │
 ├── comunicacion_ej3.pdf                ← 📄 PDF del ejercicio 3 (una página A4)
 │
@@ -133,7 +143,7 @@ python datos_parte2.py --csv    # además exporta cada cuadro a CSV
 | Uso | Librería |
 |---|---|
 | Manipulación de datos | `pandas`, `numpy` |
-| Tests estadísticos | `scipy.stats` (t de Welch, Mann-Whitney U) |
+| Tests estadísticos | `scipy.stats` (t de Welch, Mann-Whitney U, ANOVA con `f_oneway`, Kruskal-Wallis con `kruskal`) |
 | Potencia estadística | `statsmodels.stats.power` (Cohen's d, tt_ind_solve_power) |
 | Gráficos | `matplotlib`, `seaborn` |
 

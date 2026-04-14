@@ -592,6 +592,159 @@ print('  como prueba en un proceso legal.')
 
 
 # ============================================================
+# 2.4  Extensión natural a tres grupos analíticos — ANOVA y Kruskal-Wallis
+# ============================================================
+# La consigna pide específicamente la diferencia entre dos grupos
+# (Varón cis vs Mujer cis), y eso quedó resuelto con t-Welch y
+# Mann-Whitney U en 2.1 y 2.2. Para cubrir el material que el docente
+# agregó a las slides y al notebook 05 (ANOVA y su contraparte no
+# paramétrica Kruskal-Wallis), se incluye acá una extensión natural a
+# TRES grupos analíticos sumando "Diversidades", la misma agrupación
+# respetuosa de las identidades minoritarias del formulario que se
+# usó en parte 1 (ej 2d / G11): No binarie, Trans, Queer, Lesbiana,
+# Agénero, Prefiero no decir.
+#
+# La extensión es complementaria, no reemplaza el contenido obligatorio
+# de la consigna. Para 2 grupos, ANOVA es matemáticamente equivalente
+# al t pooled y Kruskal-Wallis es equivalente a Mann-Whitney U; sumar
+# un tercer grupo es lo que justifica realmente usar f_oneway / kruskal.
+
+print('\n\n' + '═' * 74)
+print('  EJERCICIO 2.4 — ANOVA y Kruskal-Wallis sobre tres grupos')
+print('═' * 74)
+
+# --- 2.4.0  Construcción del tercer grupo "Diversidades" ---
+CATEGORIAS_DIVERSIDADES = [
+    'No binarie', 'Trans', 'Queer', 'Lesbiana', 'Agénero',
+    'Prefiero no decir',
+]
+mask_div = df['profile_gender'].isin(CATEGORIAS_DIVERSIDADES)
+groupD = df.loc[mask_div, 'salary_monthly_NETO']
+nD = len(groupD)
+mediaD = float(groupD.mean()) if nD > 0 else float('nan')
+medianaD = float(groupD.median()) if nD > 0 else float('nan')
+sD = float(groupD.std(ddof=1)) if nD > 1 else float('nan')
+
+cobertura_div = (
+    df.loc[mask_div, 'profile_gender']
+    .value_counts(dropna=False)
+    .to_frame('n')
+    .reset_index()
+    .rename(columns={'index': 'categoría', 'profile_gender': 'categoría'})
+)
+mostrar('2.4.0  Cobertura por categoría de "Diversidades"', cobertura_div)
+print(f'\n  Total Diversidades: n = {nD}')
+
+# --- 2.4.1  Estadísticos descriptivos por grupo (3 grupos) ---
+desc_3g = pd.DataFrame(
+    [describir(groupA), describir(groupB), describir(groupD)],
+    index=['groupA (Varón cis)', 'groupB (Mujer cis)',
+           'groupD (Diversidades)'],
+)
+desc_3g_fmt = desc_3g.copy()
+for col in ('media', 'mediana', 'std', 'min', 'Q1', 'Q3', 'max'):
+    desc_3g_fmt[col] = desc_3g_fmt[col].apply(
+        lambda v: fmt_ars(v) if pd.notna(v) else '—'
+    )
+desc_3g_fmt['n'] = desc_3g_fmt['n'].astype(int)
+mostrar('2.4.1  Estadísticos descriptivos sobre los tres grupos',
+        desc_3g_fmt.reset_index().rename(columns={'index': 'grupo'}))
+
+
+# --- 2.4.2  ANOVA de un factor (paramétrico, k = 3) ---
+# H0: μ_A = μ_B = μ_D
+# H1: al menos una de las medias poblacionales difiere
+# Estadístico: F = MSB / MSW (varianza entre grupos / varianza dentro)
+# Bajo H0: F ~ F-Snedecor con (k-1, N-k) grados de libertad
+F_stat, p_anova = stats.f_oneway(groupA, groupB, groupD)
+k_grupos = 3
+N_total = nA + nB + nD
+gl_entre = k_grupos - 1
+gl_dentro = N_total - k_grupos
+
+resultado_anova = pd.DataFrame({
+    'métrica': [
+        'k (grupos)',
+        'N total',
+        'grados de libertad entre grupos (k-1)',
+        'grados de libertad dentro de grupos (N-k)',
+        'F observado',
+        'p-valor',
+        f'umbral α = {ALPHA}',
+        'Decisión',
+    ],
+    'valor': [
+        k_grupos, N_total, gl_entre, gl_dentro,
+        f'{F_stat:.4f}',
+        f'{p_anova:.3e}',
+        f'{ALPHA}',
+        'Se rechaza H₀' if p_anova < ALPHA else 'No se rechaza H₀',
+    ],
+})
+mostrar('2.4.2  ANOVA de un factor (stats.f_oneway, k = 3 grupos)',
+        resultado_anova)
+
+
+# --- 2.4.3  Kruskal-Wallis (no paramétrico, k = 3) ---
+# Test de Kruskal-Wallis H — extensión no paramétrica del Mann-Whitney
+# U para más de dos grupos (Clase 04). No asume normalidad. Trabaja
+# sobre rangos y contrasta si las distribuciones de los grupos son
+# iguales (en ausencia de diferencias de forma, es interpretable como
+# un contraste sobre las medianas, que es el framing que usa el
+# docente en el notebook 05).
+H_stat, p_kw = stats.kruskal(groupA, groupB, groupD)
+
+resultado_kw = pd.DataFrame({
+    'métrica': [
+        'k (grupos)',
+        'H observado (estadístico de Kruskal-Wallis)',
+        'grados de libertad (k-1)',
+        'p-valor',
+        f'umbral α = {ALPHA}',
+        'Decisión',
+    ],
+    'valor': [
+        k_grupos,
+        f'{H_stat:.4f}',
+        gl_entre,
+        f'{p_kw:.3e}',
+        f'{ALPHA}',
+        'Se rechaza H₀' if p_kw < ALPHA else 'No se rechaza H₀',
+    ],
+})
+mostrar('2.4.3  Kruskal-Wallis (stats.kruskal, alternativa no paramétrica)',
+        resultado_kw)
+
+
+# --- 2.4.4  Lectura conjunta y limitaciones ---
+print('\n  Lectura conjunta de ANOVA y Kruskal-Wallis:')
+print(f'  · ANOVA          F = {F_stat:.3f}    p = {p_anova:.3e}    '
+      f'→ {"rechaza H₀" if p_anova < ALPHA else "no rechaza H₀"}')
+print(f'  · Kruskal-Wallis H = {H_stat:.3f}    p = {p_kw:.3e}    '
+      f'→ {"rechaza H₀" if p_kw < ALPHA else "no rechaza H₀"}')
+print()
+print('  Ambos tests apuntan a la misma decisión cualitativa, lo que')
+print('  refuerza la robustez del resultado al supuesto de normalidad')
+print('  (mismo patrón que se observó con Welch y Mann-Whitney en 2.2).')
+print()
+print('  IMPORTANTE: ANOVA y Kruskal-Wallis son tests OMNIBUS — si')
+print('  rechazan H₀ global, sólo dicen que ALGUNA diferencia entre los')
+print('  k grupos existe, pero no identifican CUÁL par difiere. Para')
+print('  responder eso harían falta tests post-hoc (Tukey HSD para')
+print('  ANOVA, Dunn para Kruskal-Wallis), pero el material del curso')
+print('  no los incluye, por lo que NO se aplican aquí. La identificación')
+print('  de los pares se hace cualitativamente comparando las medias y')
+print('  medianas de la tabla 2.4.1.')
+print()
+print('  Conexión con 2.2: el test de Welch sobre los dos grupos de la')
+print('  consigna (Varón cis vs Mujer cis) ya rechazó H₀ con un p-valor')
+print(f'  bilateral de {p_bilateral:.2e}, por lo que la diferencia entre')
+print('  esos dos grupos específicos está bien establecida. La extensión')
+print('  a tres grupos sólo agrega información sobre dónde se sitúa el')
+print('  grupo Diversidades respecto de los otros dos.')
+
+
+# ============================================================
 # 4.0  Gráficos — datos_parte2_img/
 # ============================================================
 
@@ -763,6 +916,70 @@ for s in ('top', 'right'):
 ruta_g5 = guardar(fig, 'G5_curva_potencia.png', 'G5')
 
 
+# ---- G6  Boxplot/violin de los TRES grupos (sección 2.4) ----
+# Visualización de la extensión a tres grupos: misma estética de G2
+# (boxplot + jitter + diamantes para las medias) pero con una tercera
+# columna "Diversidades". Es el complemento visual a las tablas 2.4.1
+# y 2.4.2 (ANOVA) y 2.4.3 (Kruskal-Wallis).
+COLOR_D = '#9673C0'   # violeta — coherente con la paleta de parte 1
+
+fig, ax = plt.subplots(figsize=(10, 5.0))
+datos_3 = [groupA / 1e6, groupB / 1e6, groupD / 1e6]
+positions_3 = [1, 2, 3]
+colors_3 = [COLOR_A, COLOR_B, COLOR_D]
+labels_3 = [
+    f'groupA (Varón cis)\nn = {nA}',
+    f'groupB (Mujer cis)\nn = {nB}',
+    f'groupD (Diversidades)\nn = {nD}',
+]
+medias_3 = [descA['media'] / 1e6, descB['media'] / 1e6, mediaD / 1e6]
+
+bp3 = ax.boxplot(
+    datos_3, positions=positions_3, widths=0.55,
+    patch_artist=True, showfliers=False,
+    medianprops=dict(color=COLOR_REF, linewidth=1.8),
+    boxprops=dict(facecolor='#F0F3FB', edgecolor=COLOR_REF, linewidth=1.2),
+    whiskerprops=dict(color=COLOR_REF, linewidth=1.2),
+    capprops=dict(color=COLOR_REF, linewidth=1.2),
+)
+for patch, color in zip(bp3['boxes'], colors_3):
+    patch.set_facecolor(color)
+    patch.set_alpha(0.45)
+# Puntos individuales con jitter (poco alpha por la densidad de groupA)
+rng_g6 = np.random.default_rng(seed=11)
+for pos, serie, color in zip(positions_3, [groupA, groupB, groupD], colors_3):
+    if len(serie) == 0:
+        continue
+    x_jit = pos + rng_g6.uniform(-0.16, 0.16, size=len(serie))
+    ax.scatter(x_jit, serie / 1e6, s=5, alpha=0.25, color=color,
+               edgecolor='none')
+# Diamantes para las medias
+ax.scatter(positions_3, medias_3,
+           marker='D', s=70, color='white', edgecolor=COLOR_REF,
+           linewidth=1.6, zorder=5, label='media del grupo')
+ax.set_xticks(positions_3)
+ax.set_xticklabels(labels_3)
+ax.set_ylabel('Sueldo NETO (millones de ARS)')
+ax.set_title(
+    'Comparación del sueldo NETO sobre los tres grupos analíticos '
+    '(extensión 2.4)',
+    fontsize=13, pad=14, loc='left',
+)
+# Cita del resultado de los tests omnibus al pie del gráfico
+ax.text(
+    0, -0.18,
+    f'ANOVA  F = {F_stat:.2f}, p = {p_anova:.2e}   ·   '
+    f'Kruskal-Wallis  H = {H_stat:.2f}, p = {p_kw:.2e}',
+    fontsize=8, color=COLOR_REF, transform=ax.transAxes,
+    ha='left', va='top',
+)
+ax.legend(loc='upper right', fontsize=8, frameon=True,
+          facecolor='white', edgecolor='#E6E8EF')
+for s in ('top', 'right'):
+    ax.spines[s].set_visible(False)
+ruta_g6 = guardar(fig, 'G6_tres_grupos.png', 'G6')
+
+
 # ============================================================
 # 4.1  Resumen ejecutivo para el ej 3 (se vuelca al PDF)
 # ============================================================
@@ -811,18 +1028,24 @@ graficos_generados = pd.DataFrame({
         'G3 - QQ-plots contra la normal',
         'G4 - Forest plot de IC (Welch vs bootstrap)',
         'G5 - Curva de potencia',
+        'G6 - Tres grupos (ANOVA + Kruskal-Wallis, sección 2.4)',
     ],
     'archivo': [
-        ruta_g1.name, ruta_g2.name, ruta_g3.name, ruta_g4.name, ruta_g5.name,
+        ruta_g1.name, ruta_g2.name, ruta_g3.name, ruta_g4.name,
+        ruta_g5.name, ruta_g6.name,
     ],
 })
 mostrar('4.2  Gráficos generados', graficos_generados)
 print(f'\n  Guardados en: {IMG_DIR}/')
 
-# Variables exportadas para el PDF del ejercicio 3
+# Variables exportadas para el PDF del ejercicio 3 y otros consumidores
 RESULTADOS = {
-    'nA': nA, 'nB': nB,
-    'mediaA': descA['media'], 'mediaB': descB['media'],
+    'nA': nA, 'nB': nB, 'nD': nD,
+    'mediaA': descA['media'], 'mediaB': descB['media'], 'mediaD': mediaD,
+    'medianaD': medianaD, 'sD': sD,
+    'F_anova': F_stat, 'p_anova': p_anova,
+    'H_kw': H_stat, 'p_kw': p_kw,
+    'gl_entre': gl_entre, 'gl_dentro': gl_dentro,
     'delta_hat': delta_hat,
     'ic_welch': (ic_welch_low, ic_welch_high),
     'ic_boot': (ic_boot_low, ic_boot_high),
