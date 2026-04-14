@@ -1,10 +1,10 @@
 # 📝 Entregable AyVD — Parte 1
 
 **Materia:** Análisis y Visualización de Datos 2026
-**Alumno:** Rubén Rasi
+**Alumno:** Rubén Rasi · **Grupo 21**
 **Docente de seguimiento:** Fredy Alexander Restrepo Blandon
 
-> **🟢 Estado: Finalizado parcial.** El desarrollo, los datos, los filtros, los estadísticos y los 12 gráficos ya **no se modifican**. Queda abierta únicamente la iteración de redacción y consistencia narrativa antes de considerarlo definitivo para presentación.
+> **🟢 Estado: Entregado.** Trabajo grupal finalizado y enviado al aula virtual. Esta carpeta contiene tanto los archivos oficiales del **Grupo 21** como los anexos personales de trabajo previo (informe HTML, notebook con respuestas integradas, apéndice ejecutable y 12 gráficos en matplotlib/seaborn).
 
 ---
 
@@ -64,21 +64,48 @@ Todas las conclusiones se redactan en términos descriptivos *"en esta muestra"*
 
 ---
 
-## 📂 Archivos del entregable
+## 🚦 Archivos entregados oficialmente — Grupo 21
+
+Estos son los dos archivos que el **Grupo 21** envió al aula virtual de la materia. **Son la versión oficial entregada al docente** y los que cuentan a efectos de evaluación.
+
+| Archivo | Tipo | Descripción |
+|---|---|---|
+| 📄 [`Entregable_1_grupo_21.pdf`](Entregable_1_grupo_21.pdf) | PDF (≈ 15 MB) | Informe completo del entregable parte 1 con todas las visualizaciones y conclusiones del grupo |
+| 🐍 [`entregable_parte_1_ayvd_g21.py`](entregable_parte_1_ayvd_g21.py) | Python (export Colab → .py) | Notebook del trabajo grupal exportado a script ejecutable. Contiene el código completo que produjo el informe |
+
+> **Cómo abrir el `.py` como notebook:** el archivo es un export de un Colab y mantiene los marcadores `# %%` de celdas. Se puede abrir tal cual en VS Code (con el plugin Jupyter) o convertir a `.ipynb` con `jupytext --to ipynb entregable_parte_1_ayvd_g21.py`.
+
+---
+
+## 🗂️ Anexos personales — Rubén Rasi
+
+Trabajo previo, individual y exhaustivo realizado durante la cursada. **No forma parte de la entrega oficial al aula virtual**, pero queda preservado en el repo como referencia técnica y metodológica. Es el material que más profundamente desarrolla la consigna y que sirvió de insumo para el trabajo grupal final.
+
+Estos anexos son **el principal atractivo técnico del repositorio** y representan el grueso del trabajo invertido en la cursada.
+
+| Archivo / carpeta | Tipo | Qué aporta |
+|---|---|---|
+| 📓 [`entregable_ayvd_parte1.ipynb`](entregable_ayvd_parte1.ipynb) | Notebook Jupyter | Consigna oficial del curso intacta + celdas de respuesta integradas después de cada ejercicio, con los gráficos embebidos desde `datos_parte1_img/`. Pensado como soporte de revisión académica. |
+| 🌐 [`entregable_ayvd_parte1.html`](entregable_ayvd_parte1.html) | HTML autocontenido (≈ 800 KB) | Informe interactivo con 12 gráficos en **Plotly** (hover, zoom, desplazamiento), fórmulas matemáticas renderizadas con **KaTeX** y narrativa completa. Requiere conexión a internet para la primera visualización (CDN de Plotly y KaTeX). |
+| 🐍 [`datos_parte1.py`](datos_parte1.py) | Script ejecutable | **Apéndice ejecutable de datos**: imprime por consola los 46 cuadros intermedios (filtros, estadísticos, tablas) que sustentan cada afirmación del informe, y regenera los 12 gráficos equivalentes en `matplotlib` + `seaborn`. Soporta `--csv` para exportar cada cuadro a su archivo CSV. |
+| 🖼️ [`datos_parte1_img/`](datos_parte1_img/) | 12 PNGs | Versión estática de los gráficos del informe (G1–G11 + G4b), generados con las librerías vistas en clase. |
+
+### Estructura de archivos completa
 
 ```
 parte1/
 ├── README.md                               ← Este archivo
 ├── consigna_parte1.ipynb                   ← Consigna oficial del curso (intacta)
 │
-├── entregable_ayvd_parte1.ipynb            ← 📓 NOTEBOOK ENTREGABLE
-│                                              (consigna + respuestas integradas)
-├── entregable_ayvd_parte1.html             ← 📄 INFORME PRINCIPAL (Plotly interactivo)
+├── 🚦 ENTREGADOS AL AULA VIRTUAL (Grupo 21)
+├── Entregable_1_grupo_21.pdf               ← PDF entregado oficialmente (15 MB)
+├── entregable_parte_1_ayvd_g21.py          ← Script entregado oficialmente (export Colab)
 │
-├── datos_parte1.py                         ← 📄 Apéndice ejecutable de datos
-│
-├── datos_parte1_img/                       ← Gráficos equivalentes en
-│   │                                          matplotlib/seaborn (clase 02/03)
+├── 🗂️ ANEXOS PERSONALES — Rubén Rasi
+├── entregable_ayvd_parte1.ipynb            ← Notebook con respuestas integradas
+├── entregable_ayvd_parte1.html             ← Informe HTML interactivo (Plotly + KaTeX)
+├── datos_parte1.py                         ← Apéndice ejecutable de datos
+├── datos_parte1_img/                       ← 12 gráficos matplotlib/seaborn
 │   ├── G1_ranking_mediana.png               ← ranking de lenguajes por mediana
 │   ├── G2_violin_lenguajes.png              ← violin + box transparente + puntos
 │   ├── G3_mediana_por_moneda.png            ← mediana por lenguaje y moneda
@@ -100,17 +127,23 @@ parte1/
 
 ## 🚀 Cómo revisar el entregable
 
-### Opción 1 — Notebook entregable (recomendada)
+### Opción 0 — Lectura directa del entregado oficial *(la que vio el docente)*
 
-Abrir **`entregable_ayvd_parte1.ipynb`** en Jupyter, VS Code o Google Colab. El notebook se construye sobre la consigna oficial del curso (celdas originales intactas) e intercala después de cada ejercicio una celda de respuesta breve con los hallazgos clave y los gráficos correspondientes embebidos desde `datos_parte1_img/`. Desde ese mismo notebook se enlaza al informe HTML y al apéndice `datos_parte1.py` para el desarrollo completo.
+Abrir **`Entregable_1_grupo_21.pdf`** con cualquier lector de PDF. Es el material que el **Grupo 21** subió al aula virtual de FAMAF y el que cuenta a efectos de evaluación.
 
-### Opción 2 — Informe HTML interactivo
+Para revisar el código que produjo ese informe, abrir **`entregable_parte_1_ayvd_g21.py`** (es un export de Colab a script Python con marcadores de celda `# %%`).
+
+### Opción 1 — Notebook personal con respuestas integradas *(anexo)*
+
+Abrir **`entregable_ayvd_parte1.ipynb`** en Jupyter, VS Code o Google Colab. El notebook se construye sobre la consigna oficial del curso (celdas originales intactas) e intercala después de cada ejercicio una celda de respuesta con los hallazgos clave y los gráficos correspondientes embebidos desde `datos_parte1_img/`. Desde ese mismo notebook se enlaza al informe HTML y al apéndice `datos_parte1.py` para el desarrollo completo.
+
+### Opción 2 — Informe HTML interactivo *(anexo)*
 
 Abrir **`entregable_ayvd_parte1.html`** en cualquier navegador moderno. El informe es autocontenido: los gráficos interactivos de Plotly se cargan desde CDN, por lo que se requiere conexión a internet para la primera visualización.
 
-### Opción 3 — Cotejar los datos por consola
+### Opción 3 — Cotejar los datos por consola *(anexo)*
 
-El archivo **`datos_parte1.py`** es el apéndice de datos del informe. Imprime por consola los 44 cuadros intermedios (DataFrames, estadísticos, valores derivados) que sustentan cada afirmación del HTML, y regenera los 11 gráficos equivalentes con matplotlib/seaborn (las librerías vistas en clase).
+El archivo **`datos_parte1.py`** es el apéndice de datos del informe personal. Imprime por consola los 46 cuadros intermedios (DataFrames, estadísticos, valores derivados) que sustentan cada afirmación del HTML, y regenera los 12 gráficos equivalentes con matplotlib/seaborn (las librerías vistas en clase).
 
 ```bash
 # Desde esta carpeta (entregables/parte1/)
@@ -124,7 +157,7 @@ python datos_parte1.py --csv
 # → crea datos_parte1_csv/ con un CSV por cuadro
 ```
 
-### Opción 4 — Revisión cruzada HTML ↔ código
+### Opción 4 — Revisión cruzada HTML ↔ código *(anexo)*
 
 Cada estadístico, gráfico o cuadro que aparece en el HTML se puede rastrear hasta su cálculo en `datos_parte1.py`. El archivo está organizado con los mismos identificadores de sección que el informe (1.0, 1.1, ..., 2.a, 2.b, 2.c, 2.d), lo que facilita el cotejo línea por línea.
 
@@ -135,7 +168,7 @@ Cada estadístico, gráfico o cuadro que aparece en el HTML se puede rastrear ha
 | Uso | Librería |
 |---|---|
 | Manipulación de datos | `pandas`, `numpy` |
-| Gráficos del informe HTML | `plotly` |
+| Gráficos del informe HTML personal | `plotly` |
 | Gráficos equivalentes estáticos | `matplotlib`, `seaborn` |
 
 Dependencias: `pandas`, `numpy`, `plotly`, `matplotlib`, `seaborn`.
