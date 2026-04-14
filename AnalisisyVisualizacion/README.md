@@ -112,6 +112,7 @@ Los trabajos prácticos son **grupales** (grupos de 4 personas asignados para to
 | **Objetivos** | Describir y analizar la base desde varios ángulos, múltiples variables, visualmente y con medidas descriptivas. Observar relaciones. Plantear preguntas, hipótesis y diseñar un abordaje. |
 | **Estado** | 🟢 **Entregado** — ver [entregables/parte1/](entregables/parte1/README.md) |
 | **PDF entregado (Grupo 21)** | [`entregables/parte1/Entregable_1_grupo_21.pdf`](entregables/parte1/Entregable_1_grupo_21.pdf) |
+| **Notebook entregado (Grupo 21)** | [`entregables/parte1/Entregable_Parte_1_AyVD_G21.ipynb`](entregables/parte1/Entregable_Parte_1_AyVD_G21.ipynb) |
 | **Script entregado (Grupo 21)** | [`entregables/parte1/entregable_parte_1_ayvd_g21.py`](entregables/parte1/entregable_parte_1_ayvd_g21.py) |
 | **Anexo — Notebook con respuestas integradas** | [`entregables/parte1/entregable_ayvd_parte1.ipynb`](entregables/parte1/entregable_ayvd_parte1.ipynb) |
 | **Anexo — Informe HTML interactivo** | [`entregables/parte1/entregable_ayvd_parte1.html`](entregables/parte1/entregable_ayvd_parte1.html) |
@@ -150,8 +151,9 @@ AnalisisyVisualizacion/
     │   ├── consigna_parte1.ipynb            ← consigna oficial (intacta)
     │   │
     │   │  # Entregado oficialmente al aula virtual (Grupo 21)
-    │   ├── Entregable_1_grupo_21.pdf        ← PDF entregado (15 MB)
-    │   ├── entregable_parte_1_ayvd_g21.py   ← script entregado (export Colab)
+    │   ├── Entregable_1_grupo_21.pdf            ← PDF entregado (15 MB)
+    │   ├── Entregable_Parte_1_AyVD_G21.ipynb    ← notebook entregado (1,7 MB · 85 celdas)
+    │   ├── entregable_parte_1_ayvd_g21.py       ← script entregado (export Colab)
     │   │
     │   │  # Material complementario
     │   ├── entregable_ayvd_parte1.ipynb     ← notebook con respuestas integradas

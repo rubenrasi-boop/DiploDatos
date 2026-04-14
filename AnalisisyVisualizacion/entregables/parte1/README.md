@@ -66,14 +66,13 @@ Todas las conclusiones se redactan en términos descriptivos *"en esta muestra"*
 
 ## 🚦 Archivos entregados oficialmente — Grupo 21
 
-Estos son los dos archivos que el **Grupo 21** envió al aula virtual de la materia. **Son la versión oficial entregada al docente** y los que cuentan a efectos de evaluación.
+Estos son los archivos que el **Grupo 21** envió al aula virtual de la materia. **Son la versión oficial entregada al docente** y los que cuentan a efectos de evaluación.
 
 | Archivo | Tipo | Descripción |
 |---|---|---|
 | 📄 [`Entregable_1_grupo_21.pdf`](Entregable_1_grupo_21.pdf) | PDF (≈ 15 MB) | Informe completo del entregable parte 1 con todas las visualizaciones y conclusiones del grupo |
-| 🐍 [`entregable_parte_1_ayvd_g21.py`](entregable_parte_1_ayvd_g21.py) | Python (export Colab → .py) | Notebook del trabajo grupal exportado a script ejecutable. Contiene el código completo que produjo el informe |
-
-> **Cómo abrir el `.py` como notebook:** el archivo es un export de un Colab y mantiene los marcadores `# %%` de celdas. Se puede abrir tal cual en VS Code (con el plugin Jupyter) o convertir a `.ipynb` con `jupytext --to ipynb entregable_parte_1_ayvd_g21.py`.
+| 📓 [`Entregable_Parte_1_AyVD_G21.ipynb`](Entregable_Parte_1_AyVD_G21.ipynb) | Notebook Jupyter (≈ 1,7 MB · 85 celdas) | Notebook original del trabajo grupal con código, narrativa y outputs ejecutados. Es la fuente del PDF |
+| 🐍 [`entregable_parte_1_ayvd_g21.py`](entregable_parte_1_ayvd_g21.py) | Python (export Colab → .py) | Versión del notebook exportada a script ejecutable, con marcadores `# %%` de celdas. Útil para revisar el código sin abrir el notebook completo |
 
 ---
 
@@ -97,7 +96,8 @@ parte1/
 │
 ├── 🚦 ENTREGADOS AL AULA VIRTUAL (Grupo 21)
 ├── Entregable_1_grupo_21.pdf               ← PDF entregado oficialmente (15 MB)
-├── entregable_parte_1_ayvd_g21.py          ← Script entregado oficialmente (export Colab)
+├── Entregable_Parte_1_AyVD_G21.ipynb       ← notebook entregado oficialmente (1,7 MB · 85 celdas)
+├── entregable_parte_1_ayvd_g21.py          ← script entregado oficialmente (export Colab)
 │
 ├── 🗂️ MATERIAL COMPLEMENTARIO
 ├── entregable_ayvd_parte1.ipynb            ← Notebook con respuestas integradas
@@ -129,7 +129,7 @@ parte1/
 
 Abrir **`Entregable_1_grupo_21.pdf`** con cualquier lector de PDF. Es el material que el **Grupo 21** subió al aula virtual de FAMAF y el que cuenta a efectos de evaluación.
 
-Para revisar el código que produjo ese informe, abrir **`entregable_parte_1_ayvd_g21.py`** (es un export de Colab a script Python con marcadores de celda `# %%`).
+Para revisar el notebook ejecutable que produjo ese informe, abrir **`Entregable_Parte_1_AyVD_G21.ipynb`** en Jupyter, VS Code o Google Colab. Si sólo se quiere leer el código sin levantar un kernel, alcanza con abrir **`entregable_parte_1_ayvd_g21.py`** (es el mismo notebook exportado a script Python con marcadores de celda `# %%`).
 
 ### Opción 1 — Notebook con respuestas integradas *(anexo)*
 
