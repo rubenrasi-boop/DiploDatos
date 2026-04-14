@@ -215,6 +215,41 @@ print(f"  Cohen's d = {cohens_d:.4f}  ·  potencia observada = {power_obs:.4f}")
 
 
 # ============================================================
+# 2.4  Extensión a tres grupos — ANOVA y Kruskal-Wallis
+# ============================================================
+# Aprovecha el material que el docente sumó al notebook 05 y a las
+# slides de Test de Hipótesis: ANOVA de un factor (paramétrico) y
+# Kruskal-Wallis (no paramétrico) sobre los TRES grupos analíticos
+# (Varón cis, Mujer cis, Diversidades). La extensión a Diversidades
+# sigue la misma agrupación respetuosa de identidades minoritarias
+# que se usó en parte 1 (ej 2d / G11). Es complementaria a la
+# consigna obligatoria de 2 grupos.
+COLOR_D = '#9673C0'
+CATEGORIAS_DIVERSIDADES = [
+    'No binarie', 'Trans', 'Queer', 'Lesbiana', 'Agénero',
+    'Prefiero no decir',
+]
+mask_div = df['profile_gender'].isin(CATEGORIAS_DIVERSIDADES)
+groupD = df.loc[mask_div, 'salary_monthly_NETO']
+nD = len(groupD)
+mediaD = float(groupD.mean()) if nD > 0 else float('nan')
+medianaD = float(groupD.median()) if nD > 0 else float('nan')
+sD = float(groupD.std(ddof=1)) if nD > 1 else float('nan')
+
+F_anova, p_anova = stats.f_oneway(groupA, groupB, groupD)
+H_kw, p_kw = stats.kruskal(groupA, groupB, groupD)
+N_total_3g = nA + nB + nD
+gl_entre = 2
+gl_dentro = N_total_3g - 3
+
+titulo('2.4  ANOVA y Kruskal-Wallis sobre tres grupos')
+print(f'  groupD (Diversidades): n = {nD}, '
+      f'media = ${mediaD:,.0f}'.replace(',', '.'))
+print(f'  ANOVA           F = {F_anova:.3f}  p = {p_anova:.3e}')
+print(f'  Kruskal-Wallis  H = {H_kw:.3f}  p = {p_kw:.3e}')
+
+
+# ============================================================
 # Helpers Plotly
 # ============================================================
 
@@ -421,6 +456,47 @@ layout_claro(fig_g5, 'Curva de potencia del test para el effect size observado',
              alto=470)
 fig_g5.update_xaxes(title='Tamaño muestral n_A  (n_B = ratio · n_A)')
 fig_g5.update_yaxes(title='Potencia 1 − β', range=[0, 1.05])
+
+
+# ----- G6  Boxplot/violin de los TRES grupos (sección 2.4) -----
+fig_g6 = go.Figure()
+for nombre, serie, color in [
+    (f'groupA (Varón cis)<br>n = {nA}', groupA / 1e6, COLOR_A),
+    (f'groupB (Mujer cis)<br>n = {nB}', groupB / 1e6, COLOR_B),
+    (f'groupD (Diversidades)<br>n = {nD}', groupD / 1e6, COLOR_D),
+]:
+    fig_g6.add_trace(go.Box(
+        y=serie, name=nombre,
+        boxpoints='all', jitter=0.5, pointpos=0,
+        marker=dict(color=color, size=3, opacity=0.35),
+        line=dict(color=COLOR_MUTED, width=1.3),
+        fillcolor=color, opacity=0.55,
+        hovertemplate='NETO: $ %{y:.2f} M<extra></extra>',
+    ))
+fig_g6.add_trace(go.Scatter(
+    x=[f'groupA (Varón cis)<br>n = {nA}',
+       f'groupB (Mujer cis)<br>n = {nB}',
+       f'groupD (Diversidades)<br>n = {nD}'],
+    y=[mediaA / 1e6, mediaB / 1e6, mediaD / 1e6],
+    mode='markers', marker=dict(symbol='diamond', size=13,
+                                color='white',
+                                line=dict(color=COLOR_MUTED, width=2)),
+    name='media del grupo',
+    hovertemplate='media: $ %{y:.2f} M<extra></extra>',
+))
+layout_claro(
+    fig_g6,
+    'Comparación del sueldo NETO sobre los tres grupos analíticos (2.4)',
+    alto=520,
+)
+fig_g6.update_yaxes(title='Sueldo NETO (millones de ARS)')
+fig_g6.update_xaxes(title='')
+fig_g6.add_annotation(
+    text=(f'ANOVA  F = {F_anova:.2f}, p = {p_anova:.2e}   ·   '
+          f'Kruskal-Wallis  H = {H_kw:.2f}, p = {p_kw:.2e}'),
+    xref='paper', yref='paper', x=0, y=-0.16, showarrow=False,
+    font=dict(size=10, color=COLOR_MUTED), xanchor='left',
+)
 
 
 # ============================================================
@@ -973,6 +1049,154 @@ html = f"""<!doctype html>
   <p>El test bivariado presentado describe una <b>diferencia en la
   muestra</b>: no establece <b>causalidad por género</b> y no debería
   usarse de manera aislada como prueba en un proceso legal.</p>
+</div>
+
+<h2>2.4  Extensión natural a tres grupos analíticos — ANOVA y Kruskal-Wallis</h2>
+
+<div class="card">
+  <h3>2.4.1  Justificación de la extensión</h3>
+  <p>Hasta acá el contraste se hizo entre los <b>dos grupos</b> que pide
+  la consigna (Varón cis vs Mujer cis) usando t de Welch y, como
+  verificación no paramétrica, Mann-Whitney U. El docente sumó al
+  notebook 05 y a las slides de Test de Hipótesis dos tests para
+  <b>k > 2 grupos</b>: <b>ANOVA</b> de un factor (paramétrico) y
+  <b>Kruskal-Wallis</b> (no paramétrico, contraparte de Mann-Whitney
+  para más de dos grupos).</p>
+  <p>Para incorporar ese material de forma honesta —sin reemplazar el
+  contenido obligatorio de la consigna— se agrega un tercer grupo
+  analítico, <b>Diversidades</b>, que reúne las identidades de género
+  minoritarias del formulario (<i>No binarie, Trans, Queer, Lesbiana,
+  Agénero, Prefiero no decir</i>) siguiendo la misma agrupación
+  respetuosa que se usó en parte 1 (ej 2d / G11). Sobre los <b>tres</b>
+  grupos se aplican ANOVA y Kruskal-Wallis como tests <b>omnibus</b>:
+  contrastan si <i>alguna</i> diferencia entre los grupos existe, sin
+  identificar cuál par difiere.</p>
+  <div class="nota">
+    <b>Por qué no aplicar KW sobre 2 grupos.</b> Para 2 grupos,
+    Kruskal-Wallis es matemáticamente equivalente a Mann-Whitney U y
+    ANOVA es matemáticamente equivalente al t de Student pooled. Sumar
+    un tercer grupo (Diversidades) es lo que justifica realmente usar
+    estos métodos.
+  </div>
+</div>
+
+<div class="card">
+  <h3>2.4.2  Estadísticos descriptivos sobre los tres grupos</h3>
+  <table class="filtros">
+    <thead><tr>
+      <th>Grupo</th><th>n</th><th>media</th><th>mediana</th><th>desvío std</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>groupA — Varón cis</td>
+          <td class="num">{nA}</td>
+          <td class="num">{fmt_ars(mediaA)}</td>
+          <td class="num">{fmt_ars(medianaA)}</td>
+          <td class="num">{fmt_ars(sA)}</td></tr>
+      <tr><td>groupB — Mujer cis</td>
+          <td class="num">{nB}</td>
+          <td class="num">{fmt_ars(mediaB)}</td>
+          <td class="num">{fmt_ars(medianaB)}</td>
+          <td class="num">{fmt_ars(sB)}</td></tr>
+      <tr><td>groupD — Diversidades</td>
+          <td class="num">{nD}</td>
+          <td class="num">{fmt_ars(mediaD)}</td>
+          <td class="num">{fmt_ars(medianaD)}</td>
+          <td class="num">{fmt_ars(sD)}</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>2.4.3  ANOVA de un factor (paramétrico)</h3>
+  <p>Hipótesis y formalización:</p>
+  <ul>
+    <li><b>H<sub>0</sub></b>: μ<sub>A</sub> = μ<sub>B</sub> = μ<sub>D</sub>
+    — las tres medias poblacionales son iguales</li>
+    <li><b>H<sub>1</sub></b>: al menos una de las medias difiere de las
+    otras (sin especificar cuál)</li>
+    <li><b>Estadístico</b>: F de Snedecor — cociente entre la varianza
+    <i>entre</i> grupos y la varianza <i>dentro</i> de los grupos</li>
+  </ul>
+  <div class="formula">$$F = \\frac{{\\text{{MSB}}}}{{\\text{{MSW}}}} \\;\\;\\sim\\;\\; F_{{(k-1,\\;N-k)}} \\text{{ bajo }} H_0$$</div>
+  <table class="filtros">
+    <thead><tr><th>Métrica</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>k (grupos)</td><td class="num">3</td></tr>
+      <tr><td>N total</td><td class="num">{N_total_3g}</td></tr>
+      <tr><td>grados de libertad ν<sub>1</sub> = k − 1</td><td class="num">{gl_entre}</td></tr>
+      <tr><td>grados de libertad ν<sub>2</sub> = N − k</td><td class="num">{gl_dentro}</td></tr>
+      <tr><td>F observado</td><td class="num"><b>{F_anova:.4f}</b></td></tr>
+      <tr><td>P-valor</td><td class="num"><b>{p_anova:.3e}</b></td></tr>
+      <tr><td>Decisión al α = 0,05</td>
+          <td class="num"><b style="color:#C96C6C">se rechaza H<sub>0</sub></b></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>2.4.4  Kruskal-Wallis (no paramétrico)</h3>
+  <p>Test no paramétrico análogo a Mann-Whitney U para más de dos
+  grupos. Trabaja sobre <b>rangos</b>, no sobre los valores en sí, por
+  lo que no asume normalidad. Bajo el supuesto adicional de que las
+  distribuciones de los grupos tienen la misma forma, el test contrasta
+  si las <b>medianas</b> son iguales (es el framing que usa el docente
+  en el notebook 05).</p>
+  <ul>
+    <li><b>H<sub>0</sub></b>: las distribuciones (o, equivalentemente,
+    las medianas) de los tres grupos son iguales</li>
+    <li><b>H<sub>1</sub></b>: al menos un grupo presenta una
+    distribución estocásticamente distinta</li>
+  </ul>
+  <table class="filtros">
+    <thead><tr><th>Métrica</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>k (grupos)</td><td class="num">3</td></tr>
+      <tr><td>H observado (estadístico de Kruskal-Wallis)</td>
+          <td class="num"><b>{H_kw:.4f}</b></td></tr>
+      <tr><td>grados de libertad k − 1</td><td class="num">{gl_entre}</td></tr>
+      <tr><td>P-valor</td><td class="num"><b>{p_kw:.3e}</b></td></tr>
+      <tr><td>Decisión al α = 0,05</td>
+          <td class="num"><b style="color:#C96C6C">se rechaza H<sub>0</sub></b></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="chart">{fig_div(fig_g6)}<div class="chart-id">G6</div></div>
+
+<div class="card">
+  <h3>2.4.5  Lectura conjunta y limitaciones del enfoque omnibus</h3>
+  <p><b>Ambos tests rechazan H<sub>0</sub> al nivel α = 0,05</b>, lo que
+  refuerza el resultado por dos vías independientes: una paramétrica
+  (ANOVA, sensible a diferencias de medias y dependiente del supuesto
+  de normalidad) y una no paramétrica (Kruskal-Wallis, basada en
+  rangos, sin supuestos distribucionales). El patrón es el mismo que
+  se observó en la sección 2.2 con Welch y Mann-Whitney sobre dos
+  grupos: dos procedimientos distintos arrojan la misma decisión
+  cualitativa, lo que indica que el resultado es robusto al supuesto
+  de normalidad.</p>
+  <div class="nota">
+    <b>Tests omnibus: lo que SÍ y lo que NO dicen.</b> ANOVA y
+    Kruskal-Wallis son tests <i>omnibus</i>: rechazar H<sub>0</sub>
+    significa que <i>alguna</i> diferencia entre los k grupos existe,
+    pero <b>no</b> identifican cuál par difiere. Para responder eso
+    haría falta aplicar tests <i>post-hoc</i> (Tukey HSD para ANOVA,
+    Dunn para Kruskal-Wallis, con corrección de Bonferroni o Holm).
+    El material de la materia <b>no incluye</b> tests post-hoc, por lo
+    que no se aplican aquí: la identificación de los pares se hace
+    cualitativamente comparando las medias y medianas de la tabla
+    2.4.2, y para el par específico Varón cis vs Mujer cis ya tenemos
+    el contraste directo del test de Welch en 2.2.
+  </div>
+  <div class="nota">
+    <b>Cuidado con las medianas observadas.</b> En la muestra, la
+    media del grupo Diversidades ({fmt_ars(mediaD)}) es <i>mayor</i>
+    que la de Varón cis ({fmt_ars(mediaA)}), y la de Mujer cis es la
+    más baja. La interpretación de esa observación requeriría
+    considerar el bajo n del grupo Diversidades (n = {nD}), la
+    composición interna de la categoría (donde <i>Prefiero no decir</i>
+    es el componente más numeroso) y posibles confounders sobre los
+    cuales este análisis bivariado no controla.
+  </div>
 </div>
 
 <h2>4.  Ejercicio 3 — Comunicación y visualización</h2>

@@ -46,6 +46,12 @@ Toda la guía se apoya en estas 4 filminas. Las referencias específicas a una f
    - 3.8 Test de Welch
    - 3.9 Z-test para proporciones
    - 3.10 Test Chi² para independencia de categóricas
+   - **3.11 Tests no paramétricos para diferencia entre grupos** *(nuevo)*
+     - 3.11.a Mann-Whitney U (2 grupos, no paramétrico)
+     - 3.11.b ANOVA de un factor (k > 2 grupos, paramétrico)
+     - 3.11.c Kruskal-Wallis (k > 2 grupos, no paramétrico)
+     - 3.11.d Tests omnibus y tests post-hoc
+     - 3.11.e Mapa: paramétrico ↔ no paramétrico
 4. [Errores y potencia del test](#4-errores-y-potencia-del-test)
    - 4.1 Error Tipo I (α)
    - 4.2 Error Tipo II (β)
@@ -491,6 +497,90 @@ contingencia = pd.crosstab(df['work_seniority'], df['profile_gender'])
 chi2, pval, dof, expected = chi2_contingency(contingencia)
 ```
 
+### 3.11 Tests no paramétricos para diferencia entre grupos
+
+Los tests t (Student y Welch) **asumen normalidad** del estadístico (vía el TCL para muestras grandes, o vía la distribución de los datos para muestras chicas). Cuando esa normalidad es dudosa —por ejemplo en distribuciones de ingresos, donde la asimetría a la derecha es marcada— conviene complementar el resultado con un test que **no dependa de ese supuesto**. Esos son los tests no paramétricos basados en **rangos**.
+
+#### 3.11.a Test de Mann-Whitney U *(2 grupos)*
+
+Es la contraparte no paramétrica del test t de dos muestras independientes.
+
+- **No asume normalidad.** Funciona transformando todos los valores observados a sus rangos en la muestra combinada y contrastando si los rangos están sistemáticamente más altos en un grupo que en el otro.
+- **Hipótesis (forma estricta):** $H_0$: las distribuciones de los dos grupos son iguales (estocásticamente). $H_1$: una distribución es estocásticamente mayor que la otra.
+- **Hipótesis (interpretación más usada):** bajo el supuesto adicional de que las distribuciones tienen la misma forma, $H_0$ se interpreta como igualdad de **medianas** (es como lo presenta el docente en el notebook 05).
+- **Estadístico U:**
+
+$$U_1 = n_1 n_2 + \frac{n_1(n_1+1)}{2} - R_1$$
+
+donde $R_1$ es la suma de los rangos del grupo 1 en la muestra combinada. Bajo $H_0$ y para muestras grandes, $U$ se aproxima a una normal con media $\mu_U = \frac{n_1 n_2}{2}$ y varianza conocida.
+
+- **Implementación:** `scipy.stats.mannwhitneyu(g1, g2, alternative='two-sided')`.
+- **Cuándo usarlo:** cuando los QQ-plots muestran apartamientos de la normal en las colas, o como verificación de robustez del test t cuando el resultado es ajustado.
+- **Limitación:** descarta información sobre la magnitud absoluta de los valores (sólo trabaja con rangos), por lo que su potencia es típicamente menor que la del t cuando los datos son verdaderamente normales.
+
+En el entregable parte 2 se aplica como verificación de robustez del test de Welch en la sección 2.2.
+
+#### 3.11.b ANOVA de un factor *(k > 2 grupos, paramétrico)*
+
+ANOVA (*Analysis of Variance*) de un factor extiende el test t pooled al caso de **más de dos grupos**. Está en el ejemplo 3 del notebook 05 del curso (4 laboratorios) y en las slides actualizadas.
+
+- **Hipótesis:** $H_0$: $\mu_1 = \mu_2 = \cdots = \mu_k$. $H_1$: al menos una de las medias difiere.
+- **Idea central:** la varianza total de los datos se descompone en *varianza entre grupos* (cuán distintos son los promedios de cada grupo respecto del promedio global) y *varianza dentro de grupos* (cuán dispersos están los datos alrededor del promedio de su propio grupo). Si $H_0$ es cierta, ambas estimaciones de varianza deberían ser parecidas; si $H_1$ es cierta, la varianza entre grupos será mayor.
+- **Estadístico F:**
+
+$$F = \frac{\text{MSB}}{\text{MSW}}, \quad \text{MSB} = \frac{\sum_{i=1}^k n_i (\bar{X}_i - \bar{X})^2}{k - 1}, \quad \text{MSW} = \frac{\sum_{i=1}^k (n_i - 1) s_i^2}{N - k}$$
+
+donde $N = \sum n_i$, $\bar{X}$ es la media global, $\bar{X}_i$ y $s_i^2$ son la media y varianza muestral del grupo $i$. Bajo $H_0$, $F \sim F_{(k-1,\,N-k)}$ (distribución F de Snedecor).
+
+- **Implementación:** `scipy.stats.f_oneway(g1, g2, g3, ...)`.
+- **Supuestos importantes:**
+  1. **Normalidad** dentro de cada grupo (igual que el t de Student). Robusto a apartamientos moderados si los $n_i$ son grandes.
+  2. **Homocedasticidad** — todas las varianzas poblacionales deben ser iguales. Si no lo son, existen variantes (Welch ANOVA con `scipy.stats.alexandergovern` o Brown-Forsythe).
+  3. **Independencia** entre observaciones.
+- **Caso particular:** para $k = 2$, ANOVA es **matemáticamente equivalente** al test t pooled. Por eso aplicar ANOVA sobre 2 grupos no agrega nada nuevo: la justificación práctica de usarlo aparece recién con $k \geq 3$.
+
+#### 3.11.c Kruskal-Wallis *(k > 2 grupos, no paramétrico)*
+
+Kruskal-Wallis es la contraparte no paramétrica del ANOVA de un factor, igual que Mann-Whitney U es la contraparte no paramétrica del t de dos muestras. Es contenido **nuevo** en las slides y en el notebook 05 a partir del 13/04/2026.
+
+- **Hipótesis (forma estricta):** $H_0$: las $k$ distribuciones son iguales. $H_1$: al menos una distribución es estocásticamente distinta.
+- **Hipótesis (interpretación frecuente, como la usa el docente):** bajo el supuesto adicional de igualdad de forma, $H_0$ se lee como igualdad de **medianas** entre grupos.
+- **Idea central:** combina los datos de todos los grupos en un único ranking, asigna rangos del 1 al $N$, y compara la suma de rangos por grupo contra la que se esperaría bajo $H_0$.
+- **Estadístico H:**
+
+$$H = \frac{12}{N(N+1)} \sum_{i=1}^k \frac{R_i^2}{n_i} - 3(N+1)$$
+
+donde $R_i$ es la suma de los rangos del grupo $i$ en la muestra combinada. Bajo $H_0$ y con $n_i$ no demasiado chicos, $H \sim \chi^2_{k-1}$ (distribución chi-cuadrado con $k-1$ grados de libertad).
+
+- **Implementación:** `scipy.stats.kruskal(g1, g2, g3, ...)`.
+- **Cuándo usarlo:** mismo uso que Mann-Whitney pero para más de dos grupos. Particularmente útil cuando los QQ-plots muestran apartamientos de la normal o cuando algún grupo tiene un $n$ chico.
+- **Caso particular:** para $k = 2$, Kruskal-Wallis es **matemáticamente equivalente** a Mann-Whitney U (módulo una transformación del estadístico). Por eso aplicar KW sobre 2 grupos es redundante: la justificación práctica aparece con $k \geq 3$.
+
+#### 3.11.d Tests omnibus y tests post-hoc
+
+ANOVA y Kruskal-Wallis son tests **omnibus**: rechazar $H_0$ significa que **alguna** diferencia entre los $k$ grupos existe, pero **no identifican cuál par** es el responsable. Para responder esa pregunta se usan tests **post-hoc**, que aplican el contraste por pares con corrección por comparaciones múltiples:
+
+| Test omnibus | Test post-hoc paramétrico | Test post-hoc no paramétrico |
+|---|---|---|
+| ANOVA | **Tukey HSD** *(Honestly Significant Difference)*, Bonferroni, Scheffé | — |
+| Kruskal-Wallis | — | **Test de Dunn**, generalmente con corrección de Bonferroni o Holm |
+
+Las **correcciones por comparaciones múltiples** controlan el error de tipo I global cuando se hacen muchos tests por pares: si se hicieran $m$ tests independientes al nivel $\alpha = 0{,}05$, la probabilidad de cometer **al menos** un error de tipo I subiría a $1 - (1-\alpha)^m$, que para $m = 10$ ya es del 40 %. Bonferroni (la más simple) pide que cada test individual se haga al nivel $\alpha / m$ para que la probabilidad global se mantenga acotada por $\alpha$.
+
+> ⚠️ **Decisión metodológica del entregable parte 2.** El material del curso (slides + notebook 05) **no incluye** tests post-hoc en su versión actual. Por consistencia con el alcance enseñado, en la sección 2.4 del entregable se aplican ANOVA y Kruskal-Wallis pero **no se aplican tests post-hoc**. La identificación de pares se hace cualitativamente con la tabla de medias y medianas, y el par específico de la consigna (Varón cis vs Mujer cis) ya tiene un contraste directo en la sección 2.2 vía Welch y Mann-Whitney.
+
+#### 3.11.e Mapa: paramétrico ↔ no paramétrico
+
+| Caso | Paramétrico (asume normalidad) | No paramétrico (basado en rangos) |
+|---|---|---|
+| **Una muestra** | $t$ de una muestra | Wilcoxon signed-rank |
+| **Dos muestras pareadas** | $t$ pareado | Wilcoxon signed-rank |
+| **Dos muestras independientes** | $t$ de Student / $t$ de Welch | **Mann-Whitney U** |
+| **k > 2 muestras independientes** | **ANOVA de un factor** (`f_oneway`) | **Kruskal-Wallis** (`kruskal`) |
+| **k > 2 muestras post-hoc** | Tukey HSD, Bonferroni *(no en el curso)* | Dunn *(no en el curso)* |
+
+---
+
 ### 📚 Otros tests generales (fuera del alcance del entregable)
 
 La filmina de clase 4 menciona también otros tests del ecosistema inferencial que pueden ser útiles como referencia:
@@ -741,6 +831,10 @@ El término *"chartjunk"* (basura visual) lo acuñó Tufte para referirse a todo
 | Distribución bajo H₀ | | ✅ | |
 | P-valor | | ✅ | ✅ |
 | Test de Welch | | ✅ | |
+| **Mann-Whitney U** *(no paramétrico, 2 grupos)* | | ✅ *(2.2 robustez)* | |
+| **ANOVA de un factor** *(k > 2 grupos)* | | ✅ *(2.4 extensión)* | |
+| **Kruskal-Wallis** *(no paramétrico, k > 2)* | | ✅ *(2.4 extensión)* | |
+| Tests omnibus vs post-hoc | | ✅ *(2.4)* | |
 | Error Tipo I (α) | | ✅ | |
 | Error Tipo II (β) | | ✅ | |
 | Potencia (1-β) | | ✅ | |
@@ -779,7 +873,7 @@ También disponibles en formato texto (`.txt`) en el mismo directorio, útiles p
 Las notebooks del curso están en [`AnalisisyVisualizacion/notebooks/`](../../../AnalisisyVisualizacion/notebooks/):
 
 - **`04_Estadisticos.ipynb`** — demo práctica de los conceptos de la filmina "Estadísticos y Estadística"
-- **`05_Test_de_Hipotesis.ipynb`** — demo práctica de los tests de hipótesis, incluyendo t de Student, Welch y Chi²
+- **`05_Test_de_Hipotesis.ipynb`** — demo práctica de los tests de hipótesis, incluyendo t de Student, Welch, Chi², ANOVA y Kruskal-Wallis (estos dos últimos agregados por el docente el 13/04/2026 como complemento para el caso de k > 2 grupos)
 
 ### 📚 Bibliografía citada en las filminas
 

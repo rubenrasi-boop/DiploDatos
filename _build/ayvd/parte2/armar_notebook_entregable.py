@@ -299,6 +299,94 @@ aislada como prueba en un proceso legal.
 """)
 
 
+RESP_2_4 = md("""\
+---
+
+### ✅ Respuesta complementaria al Ejercicio 2 — Sección 2.4 — ANOVA y Kruskal-Wallis sobre tres grupos
+
+#### 🎯 Por qué se agrega esta sección
+
+El docente actualizó las slides de Test de Hipótesis y el notebook 05 \
+agregando **ANOVA de un factor** (paramétrico) y **Kruskal-Wallis** \
+(no paramétrico, contraparte para *k* > 2 grupos del Mann-Whitney que \
+ya usamos en 2.2). Esos métodos cubren el caso de comparación entre \
+**más de dos grupos**, que la consigna de la parte 2 no pide \
+explícitamente porque trabaja con dos grupos (Varón cis vs Mujer cis).
+
+Para incorporar el material nuevo de forma honesta sin reemplazar el \
+contenido obligatorio, se agrega un **tercer grupo analítico**: \
+`groupD = Diversidades`, la misma agrupación respetuosa de las \
+identidades minoritarias del formulario que se usó en parte 1 \
+(ej 2d / G11): *No binarie, Trans, Queer, Lesbiana, Agénero, Prefiero \
+no decir*.
+
+> ⚠️ **Por qué no aplicar Kruskal-Wallis sobre 2 grupos.** Para *k* = 2, \
+Kruskal-Wallis es matemáticamente equivalente a Mann-Whitney U y ANOVA \
+es matemáticamente equivalente al t pooled. Sumar un tercer grupo es \
+lo que justifica realmente usar `f_oneway` y `kruskal`.
+
+#### 📐 Formalización (idéntica a la del notebook 05)
+
+**ANOVA de un factor:**
+
+- $H_0$: $\\mu_A = \\mu_B = \\mu_D$ — las tres medias poblacionales son iguales
+- $H_1$: al menos una difiere
+- Estadístico: $F = \\dfrac{\\text{MSB}}{\\text{MSW}} \\sim F_{(k-1,\\,N-k)}$ bajo $H_0$
+- Implementación: `scipy.stats.f_oneway(groupA, groupB, groupD)`
+
+**Kruskal-Wallis:**
+
+- $H_0$: las distribuciones (o las medianas, bajo igual forma) de los tres grupos son iguales
+- $H_1$: al menos un grupo presenta una distribución estocásticamente distinta
+- Implementación: `scipy.stats.kruskal(groupA, groupB, groupD)`
+
+#### 🔢 Resultados sobre el dataset filtrado
+
+| Grupo | n | media | mediana | desvío std |
+|---|---:|---:|---:|---:|
+| **groupA — Varón cis** | 3 134 | $ 3.481.276 | $ 3.000.000 | $ 2.095.359 |
+| **groupB — Mujer cis** | 773 | $ 2.834.425 | $ 2.500.000 | $ 1.523.917 |
+| **groupD — Diversidades** | 71 | $ 3.614.919 | $ 2.885.617 | $ 2.383.933 |
+
+| Test | Estadístico | gl | p-valor | Decisión al α = 0,05 |
+|---|---:|---:|---:|---|
+| **ANOVA** (`f_oneway`) | F = 32,93 | (2, 3 975) | 6,54 × 10⁻¹⁵ | **se rechaza H₀** |
+| **Kruskal-Wallis** (`kruskal`) | H = 64,28 | 2 | 1,10 × 10⁻¹⁴ | **se rechaza H₀** |
+
+![G6 — Tres grupos analíticos](datos_parte2_img/G6_tres_grupos.png)
+
+#### 🧠 Lectura conjunta y limitaciones
+
+Ambos tests **rechazan H₀** al nivel α = 0,05, por dos vías \
+independientes (paramétrica y no paramétrica). Es el mismo patrón que \
+se observó en 2.2 con Welch y Mann-Whitney sobre dos grupos: dos \
+procedimientos distintos arrojan la misma decisión cualitativa, lo \
+que indica que el resultado es **robusto** al supuesto de normalidad.
+
+> 🎯 **Tests omnibus: lo que sí y lo que no dicen.** ANOVA y \
+Kruskal-Wallis son tests *omnibus*. Rechazar H₀ significa que \
+**alguna** diferencia entre los k grupos existe, pero **no \
+identifican cuál par difiere**. Para responder eso harían falta tests \
+*post-hoc* (Tukey HSD para ANOVA, Dunn para Kruskal-Wallis). El \
+material de la materia **no incluye** post-hoc, por lo que **no se \
+aplican aquí**. La identificación cualitativa de los pares se hace \
+comparando las medias y medianas de la tabla de arriba, y para el par \
+específico Varón cis vs Mujer cis ya tenemos el contraste directo del \
+test de Welch en 2.2.
+
+> ⚠️ **Cuidado con el grupo Diversidades.** Su media observada \
+($ 3.614.919) es **mayor** que la de Varón cis ($ 3.481.276). Esa \
+observación no debe interpretarse de forma directa: el grupo \
+Diversidades tiene un n bajo (71), su composición interna está \
+dominada por *"Prefiero no decir"* (42 de 71), y el análisis es \
+bivariado sin controlar por experiencia, seniority o cualquier otro \
+confounder. Es una observación descriptiva sobre la muestra, no una \
+afirmación sobre la población.
+
+---
+""")
+
+
 RESP_EJ3 = md("""\
 ---
 
@@ -395,6 +483,9 @@ def main() -> None:
             nuevos.append(RESP_2_2)
         elif i == 18:
             nuevos.append(RESP_2_3)
+            # Sección 2.4 (extensión a 3 grupos) inmediatamente después
+            # de la respuesta a 2.3 — antes de la consigna del ej 3.
+            nuevos.append(RESP_2_4)
         elif i == 22:
             nuevos.append(RESP_EJ3)
 
